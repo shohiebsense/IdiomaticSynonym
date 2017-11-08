@@ -1,11 +1,43 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryColor</item>
     </style>
+
+    <style name="AppTheme2" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/secondaryColor</item>
+        <item name="colorPrimaryDark">@color/secondaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryLightColor</item>
+    </style>
+
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+    <style name="subtitleTextView">
+        <item name="android:textSize">@dimen/subtitle_text</item>
+    </style>
+
+
+    <!-- not working -->
+    <style name="matchParentWidthView">
+        <item name="android:layout_width">0dp</item>
+        <item name="layout_constraintLeft_toLeftOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintRight_toRightOf">parent</item>
+    </style>
+
+    <style name="topAndFullWidthView" parent="matchParentWidthView">
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="android:layout_height">0dp</item>
+    </style>
+    <!-- end not working -->
 
 </resources>

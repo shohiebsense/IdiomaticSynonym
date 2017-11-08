@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/design_snackbar_padding_horizontal"
+    android:paddingRight="@dimen/design_snackbar_padding_horizontal">
+
+    <TextView
+        android:id="@+id/loadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/design_snackbar_padding_vertical"
+        android:textColor="@color/primaryLightColor"
+        android:layout_gravity="center"
+        android:text="Aplikasi memerlukan database yang disimpan pada ponsel anda"
+        />
+
+   <!-- <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_gravity="center"
+        android:max="100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_dialog_between_title"
+        android:textAppearance="@style/TextAppearance.Design.Snackbar.Message"/>
+-->
+
+    <TextView
+        android:id="@+id/requestPermissionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/design_snackbar_padding_vertical"
+        android:paddingBottom="@dimen/design_snackbar_padding_vertical"
+        android:textColor="@color/secondaryDarkColor"
+        android:layout_gravity="center"
+        android:text="REQUEST PERMISSION"
+        />
+
+</LinearLayout>

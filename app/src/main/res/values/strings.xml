@@ -1,4 +1,36 @@
 <resources>
     <string name="app_name">StraightIdiomaLearn</string>
     <string name="translate_api">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
+    <string name="API_TRANSLATE_KEY">AIzaSyCQFyokRMIoC4JtMD4i5mWDbMTOrOmg6sM</string>
+    <!-- titles, subtitles -->
+    <string name="subtitle_upload">Please upload the pdf file</string>
+
+    <!-- menus -->
+    <string name="menuOptions_fetch">Fetch pdf</string>
+    <string name="menuOptions_translate">Translate</string>
+
+    <!-- buttons -->
+    <string name="text_button_upload">Upload pdf</string>
+    <string name="text_button_start">Start The Game</string>
+    <string name="text_button_statistics">Statistics</string>
+    <string name="text_button_booksTranslated">Books Translated</string>
+    <string name="text_button_timeElapsed">Time Elapsed</string>
+
+    <!-- errors -->
+    <string name="error_not_pdf">Not pdf</string>
+
+    <string name="text_action_requestPermission">Request Permission</string>
+    <string name="text_action_loading_queries">Fetching Queries... Please Wait</string>
+    <string name="text_action_loading_finished">Loading finished</string>
+
+    <string name="text_error_loading_queries">Error loading Queries</string>
+
+
+    <string name="lipsum">
+        Lorem ipsum dolor sit amet, congue id facilisis, quis tincidunt fusce venenatis montes eos. Tincidunt est eget, neque dapibus ipsum maecenas nonummy sodales, quisque eget imperdiet. Pellentesque tempor at blandit vel ullamcorper, luctus sit, in ultricies neque ipsum. Posuere odio urna augue, faucibus sed dapibus pellentesque tincidunt volutpat magna, vel dictum tincidunt, pretium luctus felis, vivamus massa. Orci massa arcu feugiat a, consectetuer mauris non taciti nemo porttitor quis. In tortor eget duis nunc, vel id ultricies sed ligula, fusce a, ante sit, sit tenetur scelerisque sagittis sit.
+Sed id taciti morbi parturient metus, nec sed ut ullamcorper. At sit, natoque sollicitudin viverra. Ultricies vestibulum purus, non dictum auctor sit, lacinia fusce. Lectus velit lorem cras. Nec id faucibus praesent placerat viverra, rutrum neque tristique varius in eu, metus fringilla egestas, in lacinia justo vel lectus eu vivamus. Urna sed feugiat, donec sed. Dolor dolor adipiscing magna, dui nascetur nostra tellus, ligula cras sunt aliquam convallis ipsum suspendisse. Suspendisse morbi montes nisl, amet arcu justo ipsum enim, tortor suspendisse eget dis vel sem ligula, ante sed luctus id, justo convallis at excepturi et aenean. Ut ullamcorper erat, facilisis egestas nunc ac pellentesque augue vel, felis vestibulum mauris, accumsan lacus ac aperiam fringilla ipsum sit, tincidunt felis malesuada torquent rutrum accumsan. Soluta nonummy erat eget blandit dolor egestas, amet mauris molestie nulla malesuada. Lobortis sed, leo semper augue ac et donec lorem, nullam pede malesuada faucibus, duis lectus sociosqu vitae massa. Proin neque pellentesque, ligula diam eros fermentum in vitae, vitae volutpat sit maecenas, ultrices aliquam vel libero vitae blandit.
+Suspendisse imperdiet, et curabitur amet, nulla nulla congue vitae et. At amet pellentesque, ut quisque. Non in lectus, tincidunt suspendisse, dui sed, in pellentesque, erat amet urna arcu dolorem mi. Sit rhoncus, lectus dui torquent mi sed donec, volutpat in, id amet eget id ipsum, wisi luctus ornare ipsum mauris risus. Mauris adipiscing, sollicitudin turpis, lobortis posuere mi in at sodales, consectetuer velit ultrices interdum amet. Blandit suscipit nulla.
+Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa vestibulum dignissim massa dui ullamcorper, cubilia id donec, et viverra metus proin, mollis justo. Arcu ac ornare mauris, ullamcorper eget vel nihil. Posuere ipsum senectus, dis non sociis porta, urna aliquet magna sed imperdiet. Ipsum egestas suspendisse nulla vitae, luctus magnis felis, mauris gravida scelerisque mi urna elit nunc, imperdiet odio massa platea justo scelerisque, ridiculus placerat cras morbi sed. Wisi nam eu hac nisl sed, nibh lectus placerat tempus a diam nam, pellentesque wisi scelerisque ultrices vehicula, lorem luctus massa imperdiet neque consequat. Hac suspendisse sapien ac curabitur est metus, erat turpis pellentesque risus eu. In lectus arcu vel dolor tincidunt nunc, ultricies consectetuer quis nibh duis nunc, sit ultrices ac, consectetuer enim laoreet lectus sed augue. Quis metus, scelerisque eget suspendisse, turpis tempor. Scelerisque hac tristique.
++
+    </string>
 </resources>
