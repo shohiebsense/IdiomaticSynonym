@@ -90,20 +90,26 @@ class MainActivity : AppCompatActivity(), FetchCallback {
         if(fetchedTextMessage == null) {
             AppUtil.makeErrorLog("error : fetchedtextnull or empty")
             ///error
-            return
+           // return
 
         }
 
+        AppUtil.makeDebugLog(intentMessage+" apa sih hasilnya")
+       // var clazz : Class<*> = Class.forName(intentMessage)
+        //var ctor : Constructor<*> =  clazz.getConstructor(String::class.java)
 
-        var clazz : Class<*> = Class.forName(intentMessage)
-        var ctor : Constructor<*> =  clazz.getConstructor(String::class.java)
-        fragment = ctor.newInstance() as Fragment
+
+
+        fragment = Class.forName(intentMessage).getConstructor().newInstance() as Fragment
         if(intentMessage.equals(FetchedTextFragment::class.java.name)){
             fragment = FetchedTextFragment.newInstance(fetchedTextMessage)
         }
-        else{
+       /* else{
+            AppUtil.makeDebugLog("fragment is not null")
             fragment = ctor.newInstance() as Fragment
-        }
+        }*/
+
+
 //        when(intentMessage){
 //            0 -> fragment = MainFragment()
 //            1 -> fragment = FetchFragment()
