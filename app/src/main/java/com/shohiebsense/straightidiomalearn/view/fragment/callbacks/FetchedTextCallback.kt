@@ -1,7 +1,6 @@
 package com.shohiebsense.straightidiomalearn.view.fragment.callbacks
 
 import android.text.SpannableString
-import android.text.style.ClickableSpan
 import com.shohiebsense.straightidiomalearn.model.TranslatedIdiom
 import com.shohiebsense.straightidiomalearn.model.UntranslatedIdiom
 
@@ -19,9 +18,12 @@ interface FetchedTextCallback {
     fun onErrorUnderliningText(decoratedSpan: SpannableString)
     fun onFinishedUnderliningText(decoratedSpan: SpannableString)
     fun onFindingTranslatedIdiom()
-    fun onFinishedFindingTranslatedIdiom(anuu: String, decoratedSpan: SpannableString, clickableSpan: ClickableSpan)
+    fun onFinishedFindingTranslatedIdiom(anuu: String, decoratedSpan: SpannableString)
     fun onFindingUntranslatedIdiom()
     fun onFinishedUntranslatedIdiom()
     fun onClickedIdiomText(idiomText : String)
     fun onErrorClickedIdiomText()
+    fun onTranslatingIdiomOneByOne()
+    fun onFinishedTranslatingIdiomOneByOne(combineStringMeaning: MutableList<String>)
+    fun onErrorTranslatingIdiomOneByOne()
 }

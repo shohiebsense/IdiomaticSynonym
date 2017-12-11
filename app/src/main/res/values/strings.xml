@@ -15,6 +15,7 @@
     <string name="text_button_statistics">Statistics</string>
     <string name="text_button_booksTranslated">Books Translated</string>
     <string name="text_button_timeElapsed">Time Elapsed</string>
+    <string name="text_button_collect_idiom">Collect</string>
 
     <!-- errors -->
     <string name="error_not_pdf">Not pdf</string>
@@ -33,4 +34,8 @@ Suspendisse imperdiet, et curabitur amet, nulla nulla congue vitae et. At amet p
 Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa vestibulum dignissim massa dui ullamcorper, cubilia id donec, et viverra metus proin, mollis justo. Arcu ac ornare mauris, ullamcorper eget vel nihil. Posuere ipsum senectus, dis non sociis porta, urna aliquet magna sed imperdiet. Ipsum egestas suspendisse nulla vitae, luctus magnis felis, mauris gravida scelerisque mi urna elit nunc, imperdiet odio massa platea justo scelerisque, ridiculus placerat cras morbi sed. Wisi nam eu hac nisl sed, nibh lectus placerat tempus a diam nam, pellentesque wisi scelerisque ultrices vehicula, lorem luctus massa imperdiet neque consequat. Hac suspendisse sapien ac curabitur est metus, erat turpis pellentesque risus eu. In lectus arcu vel dolor tincidunt nunc, ultricies consectetuer quis nibh duis nunc, sit ultrices ac, consectetuer enim laoreet lectus sed augue. Quis metus, scelerisque eget suspendisse, turpis tempor. Scelerisque hac tristique.
 +
     </string>
+    <string name="dialog_message_input_page">Number of pages</string>
+    <string name="ok">Ok</string>
+
+    <string name="story"></string>
 </resources>

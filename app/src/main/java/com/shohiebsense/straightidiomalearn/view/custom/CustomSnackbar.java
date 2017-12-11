@@ -1,4 +1,4 @@
-package com.shohiebsense.straightidiomalearn.view;
+package com.shohiebsense.straightidiomalearn.view.custom;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,12 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.shohiebsense.straightidiomalearn.R;
-
-import org.w3c.dom.Text;
 
 
 /**
@@ -27,8 +24,8 @@ public class CustomSnackbar extends BaseTransientBottomBar {
     /**
      * Constructor for the transient bottom bar.
      *  @param parent              The parent for this transient bottom bar.
-     * @param content             The content view for this transient bottom bar.
-     * @param contentViewCallback The content view callback for this transient bottom bar.
+     * @param content             The content factCardView for this transient bottom bar.
+     * @param contentViewCallback The content factCardView callback for this transient bottom bar.
      *
      */
     protected CustomSnackbar(@NonNull ViewGroup parent, @NonNull View content, @NonNull ContentViewCallback contentViewCallback) {
@@ -43,7 +40,7 @@ public class CustomSnackbar extends BaseTransientBottomBar {
 
         //content.setBackgroundColor(ContextCompat.getColor(parent.getContext(), R.color.accent));
 
-        // create snackbar with custom view
+        // create snackbar with custom factCardView
         ContentViewCallback callback= new ContentViewCallback(content);
         CustomSnackbar customSnackbar = new CustomSnackbar(parent, content, callback);
 
@@ -54,18 +51,24 @@ public class CustomSnackbar extends BaseTransientBottomBar {
 
     // set text in custom layout
     public CustomSnackbar setText(CharSequence text) {
-        TextView textView = (TextView) getView().findViewById(R.id.loadingTextView);
+        TextView textView = getView().findViewById(R.id.loadingTextView);
         textView.setText(text);
         return this;
     }
 
+    public CustomSnackbar hidePermissionAction(){
+        TextView textView = getView().findViewById(R.id.requestPermissionTextView);
+        textView.setVisibility(View.GONE);
+        return this;
+    }
+
     /*public void setProgress(int progress){
-        ProgressBar loadingProgressBar = (ProgressBar) getView().findViewById(R.id.loadingProgressBar);
+        ProgressBar loadingProgressBar = (ProgressBar) getFactCardView().findViewById(R.id.loadingProgressBar);
         loadingProgressBar.setProgress(progress);
     }
 
     public CustomSnackbar setHideProgressBar(){
-        ProgressBar loadingProgressBar = (ProgressBar) getView().findViewById(R.id.loadingProgressBar);
+        ProgressBar loadingProgressBar = (ProgressBar) getFactCardView().findViewById(R.id.loadingProgressBar);
         loadingProgressBar.setVisibility(View.GONE);
         return this;
     }*/
@@ -93,7 +96,6 @@ public class CustomSnackbar extends BaseTransientBottomBar {
 
         @Override
         public void animateContentIn(int delay, int duration) {
-            ViewCompat.setScaleY(content, 0f);
             ViewCompat.animate(content)
                     .scaleY(1f).setDuration(duration)
                     .setStartDelay(delay);
@@ -102,7 +104,6 @@ public class CustomSnackbar extends BaseTransientBottomBar {
         @Override
         public void animateContentOut(int delay, int duration) {
             // e.g. original snackbar uses alpha animation, from 1 to 0
-            ViewCompat.setScaleY(content, 1f);
             ViewCompat.animate(content)
                     .scaleY(0f)
                     .setDuration(duration)

@@ -10,9 +10,9 @@ import android.view.View;
 
 public class ConstantsUtil {
 
-    public final static String ERROR_TAG = "shohiebsense_err";
-    public final static String DEBUG_TAG = "shohiebsense_deb";
-
+        public final static String ERROR_TAG = "shohiebsense_err";
+        public final static String DEBUG_TAG = "shohiebsense_deb";
+        public final static String CLOUD_URL = "http://res.cloudinary.com/shohiebsense/image/upload/v1511640503/";
 
     public void anuu (){
         ClickableSpan span = new ClickableSpan() {

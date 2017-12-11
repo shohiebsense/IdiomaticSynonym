@@ -4,22 +4,16 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.text.SpannableString
-import android.text.style.ClickableSpan
-import com.shohiebsense.straightidiomalearn.model.TranslatedIdiom
-import com.shohiebsense.straightidiomalearn.model.UntranslatedIdiom
 import com.shohiebsense.straightidiomalearn.services.emitter.DatabaseDataEmitter
-import com.shohiebsense.straightidiomalearn.view.fragment.callbacks.FetchedTextCallback
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.os.Build
-import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import android.view.View
 import com.shohiebsense.straightidiomalearn.db.IdiomDbHelper
 import com.shohiebsense.straightidiomalearn.utils.AppUtil
-import com.shohiebsense.straightidiomalearn.view.CustomSnackbar
+import com.shohiebsense.straightidiomalearn.view.custom.CustomSnackbar
+import com.shohiebsense.straightidiomalearn.view.fragment.callbacks.DatabaseCallback
 import kotlinx.android.synthetic.main.activity_splash.*
 
 
@@ -28,61 +22,27 @@ import kotlinx.android.synthetic.main.activity_splash.*
  *
  *
  */
-class SplashActivity : AppCompatActivity(), FetchedTextCallback {
-    override fun onClickedIdiomText(idiomText: String) {
-    }
-
-    override fun onErrorClickedIdiomText() {
-    }
-
-    lateinit var dbHelper : IdiomDbHelper
-    override fun onTranslatingText() {
-    }
-
-    override fun onErrorTranslatingText() {
-        loadingDescTextView.text = getString(R.string.text_error_loading_queries)
-    }
-
-    override fun onFinishedTranslatingText() {
-        loadingDescTextView.text = getString(R.string.text_action_loading_finished)
-    }
-
-    override fun onFetchingDatabase() {
+class SplashActivity : AppCompatActivity(), DatabaseCallback {
+    override fun onFetchingData(idiomMode: Int) {
         loadingDescTextView.text = getString(R.string.text_action_loading_queries)
     }
 
-    override fun onFinishedFetchingTranslatedDatabase(translatedIdiomList: MutableList<TranslatedIdiom>) {
-        //loading
-      /*  startActivity(Intent(this, MainActivity::class.java))
-        finish()*/
+    override fun onErrorFetchingData() {
+        loadingDescTextView.text = getString(R.string.text_error_loading_queries)
     }
 
-    override fun onFinishedFetchingUntranslatedDatabase(untranslatedIdiomList: MutableList<UntranslatedIdiom>) {
+    override fun onFetchedTranslatedData() {
+    }
+
+    override fun onFetchedUntranslatedData() {
         AppUtil.makeDebugLog("beres translasi")
         startActivity(Intent(this, MainActivity::class.java))
-        finish()
-    }
+        finish()    }
 
-    override fun onErrorFetchingDatabase() {
-    }
 
-    override fun onErrorUnderliningText(decoratedSpan: SpannableString) {
-    }
 
-    override fun onFinishedUnderliningText(decoratedSpan: SpannableString) {
-    }
+    lateinit var dbHelper : IdiomDbHelper
 
-    override fun onFindingTranslatedIdiom() {
-    }
-
-    override fun onFinishedFindingTranslatedIdiom(anuu: String, decoratedSpan: SpannableString, clickableSpan: ClickableSpan) {
-    }
-
-    override fun onFindingUntranslatedIdiom() {
-    }
-
-    override fun onFinishedUntranslatedIdiom() {
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +63,10 @@ class SplashActivity : AppCompatActivity(), FetchedTextCallback {
                         //resume tasks needing this permission
                         dbHelper = IdiomDbHelper.getInstance(applicationContext)
                         dbHelper.setupDb()
+
+                        //FOR DEVELOPMENT, UNCOMMENT IT
                         DatabaseDataEmitter(this,this).getAll()
+
 
                     }
                     else{
@@ -111,7 +74,7 @@ class SplashActivity : AppCompatActivity(), FetchedTextCallback {
                                 CustomSnackbar.LENGTH_INDEFINITE)
 
                         snackbar.setAction(getString(R.string.text_action_requestPermission), {
-                            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION),
+                            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET),
                                     ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
                         })
 
@@ -167,6 +130,8 @@ class SplashActivity : AppCompatActivity(), FetchedTextCallback {
                     checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
                 IdiomDbHelper.getInstance(applicationContext).setupDb()
+
+                //FOR DEVELOPMENT PURPOSES UNCOMMENTED IT
                 DatabaseDataEmitter(this,this).getAll()
                 Log.e("shohiebsense ", "truee")
 

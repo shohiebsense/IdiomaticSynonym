@@ -6,28 +6,42 @@ import android.content.res.AssetManager
 import android.os.Bundle
 import android.util.Log
 import com.shohiebsense.straightidiomalearn.R
-import kotlinx.android.synthetic.main.fragment_fetch.*
+import kotlinx.android.synthetic.main.fragment_pdfdisplay.*
 import android.content.Intent
 import android.app.Activity.RESULT_OK
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewPager
 import android.view.*
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.cloudinary.android.MediaManager
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
+import com.nostra13.universalimageloader.core.DisplayImageOptions
+import com.nostra13.universalimageloader.core.ImageLoader
+import com.nostra13.universalimageloader.core.assist.ImageScaleType
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer
 import com.shohiebsense.straightidiomalearn.MainActivity
 import com.shohiebsense.straightidiomalearn.services.emitter.DatabaseDataEmitter
-import com.shohiebsense.straightidiomalearn.services.pdfFetchers.PdfFetcher
+import com.shohiebsense.straightidiomalearn.services.pdfdisplay.PdfDisplayerService
+import com.shohiebsense.straightidiomalearn.services.underline.UnderliningService
 import com.shohiebsense.straightidiomalearn.utils.AppUtil
+import com.shohiebsense.straightidiomalearn.view.fragment.InputDocumentPageDialogFragment
+import com.shohiebsense.straightidiomalearn.view.fragment.callbacks.DatabaseCallback
 import com.shohiebsense.straightidiomalearn.view.fragment.callbacks.FetchCallback
-import com.shohiebsense.straightidiomalearn.view.fragment.fetchedtextdisplay.FetchedTextFragment
+import com.shohiebsense.straightidiomalearn.view.fragment.fetchedtextdisplay.UnderliningFragment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.io.*
-import java.util.*
 import kotlin.collections.ArrayList
 
 //WARNINGGGGGG 5 NOVEMBER EXCEPTION USER RATE TRANSLATION EXCEEDED
@@ -57,10 +71,26 @@ import kotlin.collections.ArrayList
  * 2. Langsung query db, cocokin
  */
 
-class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, FetchCallback {
+class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, FetchCallback, DatabaseCallback, InputDocumentPageDialogFragment.InputDialogListener {
+
+
 
     lateinit var fetchedText : ArrayList<String>
 
+    lateinit var imageLoader : ImageLoader
+    lateinit var imageLoaderOptions : DisplayImageOptions
+
+    init {
+        imageLoaderOptions = DisplayImageOptions.Builder()
+                .resetViewBeforeLoading(true)
+                .cacheOnDisk(true)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .considerExifParams(true)
+                .displayer(FadeInBitmapDisplayer(300))
+                .cacheInMemory(true)
+                .build()
+    }
     //REACTIVEXKAN
     override fun loadComplete(nbPages: Int) {
         var TAG = "shohiebsense"
@@ -84,7 +114,7 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
 
     lateinit var assetManager: AssetManager
     lateinit var rootDir: File
-    lateinit var pdfFetcher : PdfFetcher
+    lateinit var pdfDisplayerService: PdfDisplayerService
     val READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE"
     val PERMISSION_CODE = 42042
 
@@ -101,12 +131,12 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
         //AppUtil.makeErrorLog("sizee sampe fetched UNTRANSLATED "+ DatabaseDataEmitter.untranslatedIdiomList.size )
 
         setHasOptionsMenu(true)
-        pdfFetcher = PdfFetcher(activity, this).init()
+        pdfDisplayerService = PdfDisplayerService(activity, this).init()
 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_fetch, container, false)
+        val view = inflater.inflate(R.layout.fragment_pdfdisplay, container, false)
         return view
     }
 
@@ -116,16 +146,68 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
 
         showPhoneStatePermission()
 
-        uploadButton.setOnClickListener{
-            //AppUtil.navigateToFragment(context, LoadFragment::class.java.name)
+         uploadButton.setOnClickListener{
+             //AppUtil.navigateToFragment(context, LoadFragment::class.java.name)
 
-            pdfFetcher.promptLoadPdf()
+             pdfDisplayerService.promptLoadPdf()
+         }
+
+
+        var listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
+            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                AppUtil.makeErrorLog(e.toString() + " failed")
+                avLoadingIndicatorView.visibility = View.GONE
+                return false
+            }
+
+            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                AppUtil.makeDebugLog(resource.toString() + " resource ready "+uploadButton.visibility)
+                avLoadingIndicatorView.visibility = View.GONE
+                return true
+            }
+
         }
+
+        AppUtil.isExists(activity, "4.png")
         onTouchTextViewFunctionality()
+        AppUtil.makeDebugLog("my Url "+ MediaManager.get().url().generate("2.png"))
+
+        AppUtil.makeDebugLog("loaded")
+
+
+
+        //var bitmap = BitmapFactory.decodeFile(AppUtil.getImageString(activity, "1.png").absolutePath)
+
+        var imageInSD = ""
+
+       /* try {
+            imageInSD = AppUtil.getImageString(activity, "1.png").canonicalPath
+            AppUtil.makeDebugLog("lolosss")
+            val options = BitmapFactory.Options()
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888
+            var bitmap = BitmapFactory.decodeFile(imageInSD)
+            uploadButton.visibility = View.VISIBLE
+            uploadButton.setImageBitmap(bitmap)
+            } catch(e: Exception) {
+                AppUtil.makeDebugLog (e.toString());
+        }*/
+
+        //.setImageDrawable(AppUtil.getFileFromAssets(activity))
+
+
+
+        var adapter = CardPagerAdapter(activity)
+        fragmentFetchCardViewPager.adapter = adapter
+        fragmentFetchViewPagerIndicator.setupWithViewPager(fragmentFetchCardViewPager)
+        fragmentFetchViewPagerIndicator.addOnPageChangeListener(mOnPageChangeListener)
+        adapter.notifyDataSetChanged()
     }
 
     override fun onStart() {
         super.onStart()
+        if(DatabaseDataEmitter.isIdiomsEmpty()){
+            DatabaseDataEmitter(activity,this).getAll()
+        }
     }
 
 
@@ -144,7 +226,7 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
 
 
     fun onTouchTextViewFunctionality(){
-        textFetchedTextView.setOnTouchListener{ view: View, motionEvent: MotionEvent ->
+        textLoadedTextView.setOnTouchListener{ view: View, motionEvent: MotionEvent ->
 
             scrollAfterTouched()
             true
@@ -173,20 +255,24 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
     fun toggleErrorViews(ERROR_NO : Int){
         avLoadingIndicatorView.visibility = View.GONE
         when(ERROR_NO){
-            PdfFetcher.ERROR_LOAD -> {
+            UnderliningService.ERROR_LOAD -> {
                 uploadButton.visibility = View.VISIBLE
                 uploadPdfView.visibility = View.GONE
+                fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
+                fragmentFetchCardViewPager.visibility = View.VISIBLE
                 return;
             }
-            PdfFetcher.ERROR_FETCH,
-                    PdfFetcher.ERROR_TRANSLATE -> {
+            UnderliningService.ERROR_FETCH,
+            UnderliningService.ERROR_TRANSLATE -> {
                 uploadButton.visibility = View.GONE
+                fragmentFetchViewPagerIndicator.visibility = View.GONE
+                fragmentFetchCardViewPager.visibility = View.GONE
                 uploadPdfView.visibility = View.VISIBLE
                 return
             }
 
         }
-        //bikin error view
+        //bikin error factCardView
 
     }
 
@@ -194,31 +280,40 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
     fun toggleViews(STATUS : Int){
 
         uploadButton.visibility = View.GONE
-        AppUtil.makeDebugLog("view toggled ")
+        AppUtil.makeDebugLog("factCardView toggled ")
 
         when(STATUS){
-            PdfFetcher.STATUS_LOADING -> {
+            UnderliningService.STATUS_LOADING -> {
                 AppUtil.makeDebugLog("status loadinggg ")
                 textFetchedScrollView.visibility = View.GONE
-                uploadPdfView.visibility = View.GONE
+                uploadPdfView.visibility = View.VISIBLE
+                fragmentFetchCardViewPager.visibility = View.GONE
+                fragmentFetchViewPagerIndicator.visibility = View.GONE
                 avLoadingIndicatorView.visibility = View.VISIBLE
             }
-            PdfFetcher.STATUS_LOADED -> {
+            UnderliningService.STATUS_LOADED -> {
                 textFetchedScrollView.visibility = View.GONE
                 uploadPdfView.visibility = View.VISIBLE
             }
-            PdfFetcher.STATUS_FETCHED -> {
+            UnderliningService.STATUS_FETCHED -> {
                 uploadPdfView.visibility = View.GONE
                 textFetchedScrollView.visibility = View.VISIBLE
             }
+            UnderliningService.STATUS_INIT -> {
+                textFetchedScrollView.visibility = View.GONE
+                uploadPdfView.visibility = View.VISIBLE
+                fragmentFetchCardViewPager.visibility = View.VISIBLE
+                fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
+                avLoadingIndicatorView.visibility = View.GONE
+            }
 
-            PdfFetcher.STATUS_FETCHED_DB -> {
+            UnderliningService.STATUS_FETCHED_DB -> {
 
             }
-            PdfFetcher.STATUS_TRANSLATED -> {
+            UnderliningService.STATUS_TRANSLATED -> {
 
             }
-            PdfFetcher.STATUS_COMPLETED -> {
+            UnderliningService.STATUS_COMPLETED -> {
 
             }
         }
@@ -230,7 +325,7 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe {textFetchedScrollView ->
-                    textFetchedScrollView.scrollTo(textFetchedScrollView.scrollX,textFetchedTextView.bottom + AppUtil.getHeightOfWindow(activity))
+                    textFetchedScrollView.scrollTo(textFetchedScrollView.scrollX, textLoadedTextView.bottom + AppUtil.getHeightOfWindow(activity))
                 }
 
     }
@@ -298,23 +393,23 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
                 //toggleViews(false,true,true)
             }
             R.id.translateTextMenuOptions -> {
-
-                pdfFetcher.fetchText()
+                showInputDialog()
             }
 
         }
         return true
     }
 
+
     private fun showPhoneStatePermission() {
         val permissionCheck = ContextCompat.checkSelfPermission(
                 activity, Manifest.permission.READ_PHONE_STATE)
-        AppUtil.makeDebugLog("apakah "+permissionCheck)
+        AppUtil.makeDebugLog("is Permission number "+permissionCheck)
 
     }
 
     override fun onLoadingPdf() {
-        toggleViews(PdfFetcher.STATUS_LOADING)
+        toggleViews(UnderliningService.STATUS_LOADING)
     }
 
     override fun onFinishedLoadingPdf(file : File) {
@@ -329,35 +424,79 @@ class FetchFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, 
                 .scrollHandle(DefaultScrollHandle(activity))
                 .spacing(10) // in dp
                 .load()
-        toggleViews(PdfFetcher.STATUS_LOADED)
+        toggleViews(UnderliningService.STATUS_LOADED)
 
     }
 
     override fun onFetchingPdf() {
-        toggleViews(PdfFetcher.STATUS_LOADING)
+        toggleViews(UnderliningService.STATUS_LOADING)
 
     }
 
 
 
     override fun onErrorLoadingPdf() {
-        toggleErrorViews(PdfFetcher.ERROR_LOAD)
+        toggleErrorViews(UnderliningService.ERROR_LOAD)
     }
 
 
     override fun onFinishedFetchingPdf(fetchedText : MutableList<String>) {
         this.fetchedText = fetchedText as ArrayList<String>
-        AppUtil.makeDebugLog("casting mutable to arraylist succeed")
-       // textFetchedTextView.setText(fetchedText)
-        toggleViews(PdfFetcher.STATUS_FETCHED)
+        AppUtil.makeDebugLog("casting mutable to arraylist succeed with size "+this.fetchedText.size)
+        // textFetchedTextView.setText(fetchedText)
+        toggleViews(UnderliningService.STATUS_FETCHED)
         var intent = Intent(activity, MainActivity::class.java)
-        intent.putExtra(MainActivity.intentMessage, FetchedTextFragment::class.java.name)
+        intent.putExtra(MainActivity.intentMessage, UnderliningFragment::class.java.name)
         var fetchedTextAsList = ArrayList<String>()
         fetchedTextAsList.addAll(this.fetchedText)
         intent.putExtra(MainActivity.fetchedTextMessage, fetchedTextAsList)
         startActivity(intent)
     }
 
+    fun showInputDialog(){
+        var dialog = InputDocumentPageDialogFragment()
+        dialog.setTargetFragment(this, 1)
+        dialog.show(fragmentManager, InputDocumentPageDialogFragment::class.java.simpleName)
+
+    }
+
+    override fun onDialogPositiveClick(number: Int) {
+        AppUtil.makeDebugLog("dialog clickedd ")
+        //pdffetcher
+
+        //var numberOfPages = dialog.inputNumberOfPagesEditText.text.toString().toInt()
+        pdfDisplayerService.fetchText(number)
 
 
+    }
+
+
+    private val mOnPageChangeListener = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+        }
+
+        override fun onPageSelected(position: Int) {
+
+        }
+
+        override fun onPageScrollStateChanged(state: Int) {
+
+        }
+    }
+
+
+    override fun onFetchingData(idiomMode: Int) {
+        toggleViews(UnderliningService.STATUS_LOADING)
+    }
+
+    override fun onErrorFetchingData() {
+    }
+
+    override fun onFetchedTranslatedData() {
+    }
+
+    override fun onFetchedUntranslatedData() {
+        toggleViews(UnderliningService.STATUS_INIT)
+    }
 }

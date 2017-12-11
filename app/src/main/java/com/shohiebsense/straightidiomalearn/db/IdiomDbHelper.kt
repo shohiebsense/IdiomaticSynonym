@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteQueryBuilder
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.shohiebsense.straightidiomalearn.utils.AppUtil
-import org.codehaus.jackson.annotate.JsonTypeInfo
 import org.jetbrains.anko.db.ManagedSQLiteOpenHelper
 import org.jetbrains.anko.doAsync
 import java.io.File

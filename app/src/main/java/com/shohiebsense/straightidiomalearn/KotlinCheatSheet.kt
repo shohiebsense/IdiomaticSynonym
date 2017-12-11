@@ -127,10 +127,10 @@ class KotlinCheatSheet {
 
         // ----- ARRAYS -----
         // You can store multiple types in arrays
-        var myArray = arrayOf(1, 1.23, "Doug")
+      //  var myArray = arrayOf(1, 1.23, "Doug")
 
         // You can access values using indexes starting at 0
-        println(myArray[2])
+     /*   println(myArray[2])
 
         // Change the value
         myArray[1] = 3.14
@@ -143,7 +143,7 @@ class KotlinCheatSheet {
         println("Doug in Array : ${myArray.contains("Doug")}")
 
         // Get first 2 elements in array as an array
-        var partArray = myArray.copyOfRange(0,1)
+        var partArray = myArray.copyOfRange(0,1)*/
 
         // Get the first element
         println("First : ${str1.first()}")
@@ -419,7 +419,7 @@ class KotlinCheatSheet {
         val map = mutableMapOf<Int, Any?>()
 
         // Create a Map and add values
-        val map2 = mutableMapOf(1 to "Doug", 2 to 25)
+      //  val map2 = mutableMapOf(1 to "Doug", 2 to 25)
 
         // Add values
         map[1] = "Derek"
@@ -542,7 +542,7 @@ class KotlinCheatSheet {
 
     open class Animal (val name: String, var height: Double, var weight: Double){
 
-        // Objects are initialized in init
+        // Objects are initialized in translate
         init {
 
             // Regex that matches for a number any place

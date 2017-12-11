@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextPaint
-import android.text.method.LinkMovementMethod
 import android.text.style.CharacterStyle
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
@@ -24,15 +23,13 @@ import com.shohiebsense.straightidiomalearn.model.TranslatedIdiom
 import com.shohiebsense.straightidiomalearn.utils.AppUtil
 import com.shohiebsense.straightidiomalearn.view.fragment.callbacks.MainCallback
 import com.shohiebsense.straightidiomalearn.services.emitter.DatabaseDataEmitter
-import com.shohiebsense.straightidiomalearn.view.fragment.pdfdisplay.FetchFragment
+import com.shohiebsense.straightidiomalearn.view.fragment.pdfdisplay.PdfDisplayFragment
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_experiment.*
 import kotlinx.android.synthetic.main.fragment_main.*
 
 
@@ -56,72 +53,16 @@ class MainFragment : Fragment(), MainCallback {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startButton.setOnClickListener{
-            AppUtil.navigateToFragment(activity, FetchFragment::class.java.name)
+            AppUtil.navigateToFragment(activity, PdfDisplayFragment::class.java.name)
         }
         AppUtil.makeErrorLog("sizee sampesini translatedIdiom "+DatabaseDataEmitter.translatedIdiomList.size )
         AppUtil.makeErrorLog("sizee sampesini UNTRANSLATED IDIOM "+DatabaseDataEmitter.untranslatedIdiomList.size )
 
         getAllTranslatedWord()
-        //getTerm()
-
-       // getAllTranslatedWord()
-
-
-       /* AppUtil.makeErrorLog("berapaa "+ query.select(TranslatedIdiom::class).distinct().get().toList().size
-        )*/
-       /* var translatedIdiom  = arrayListOf<TranslatedIdiom>()
-        query.select(TranslatedIdiom::class).get().observable().subscribe{
-            e->
-            AppUtil.makeDebugLog("hiefjwaihaiewhi : "+e.idiom)
-        }
-
-        query.count(TranslatedIdiom::class).get().single().subscribe{
-            e->
-            AppUtil.makeDebugLog("asaefwewa "+e)
-        }
-
-*/
-        //AppUtil.findText2()
-
-        /*statisticsTextView.setOnClickListener {
-            AppUtil.navigateToFragment(context, StatisticsFragment::class.java.name)
-        }
-
-
-
-*/
     }
 
     fun getAllTranslatedWord(){
     }
-
-
-    fun getTerm(){
-        fetchedText = AppUtil.newSpaceInString(getString(R.string.lipsum))
-
-        val myObserver = object : Observer<SpannableString> {
-
-            override fun onComplete() {
-                AppUtil.makeDebugLog("im finishedd ")
-            }
-
-            override fun onError(e: Throwable) {
-
-            }
-
-            override fun onSubscribe(@NonNull d: Disposable) {
-
-            }
-
-            override fun onNext(text: SpannableString) {
-                textFetchedTextView.movementMethod = LinkMovementMethod.getInstance()
-                textFetchedTextView.setText(text)
-            }
-        }
-        findText(activity, myObserver)
-    }
-
-
 
     fun findText(context : Context, myObserver : Observer<SpannableString>){
         var dolor ="dolor"

@@ -21,7 +21,7 @@ class TranslatedPresenter {
 
 
 
-    init {
+    translate {
         translatedPhraseObserver = object : SingleObserver<List<TranslatedIdiom>>{
             override fun onSuccess(t: List<TranslatedIdiom>) {
                 AppUtil.makeDebugLog("suksess "+t.size)

@@ -1,4 +1,4 @@
-package com.shohiebsense.straightidiomalearn.view.fragment.pdfdisplay
+package com.shohiebsense.straightidiomalearn.obsoletes
 
 import android.app.Fragment
 import android.content.Context
@@ -19,6 +19,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlinx.android.synthetic.main.fragment_read.*
+import java.io.FileInputStream
 
 /**
  * Created by Shohiebsense on 06/09/2017.
@@ -64,6 +65,40 @@ class LoadFragment : Fragment() {
         }
         document = PDDocument.load(file)
         AppUtil.makeDebugLog(document.numberOfPages.toString() + " ")
+    }
+
+    fun copy(file : File) {
+        try {
+            val rootDirectory = ""
+            val directory = File(rootDirectory)
+            if(!directory.exists()){
+                directory.mkdir();
+            }
+
+
+            var destinationFile = File(directory, "namee.pdf")
+            var inputStream = FileInputStream(file)
+            val os = FileOutputStream(destinationFile)
+            var byteRead = 0
+            val buf = ByteArray(1024)
+            while ( inputStream.read(buf).let { byteRead = inputStream.read(buf) ; byteRead != -1}) {
+                os.write(buf, 0, byteRead)
+            }
+
+            /*  do{
+                  byteRead = inputStream.read(buf)
+                  os.write(buf, 0, byteRead)
+              }while (inputStream.read(buf) > 0)*/
+
+            inputStream.close()
+            os.flush()
+            os.close()
+            AppUtil.makeDebugLog("sizzee "+destinationFile.length()+ "  "+destinationFile.absolutePath)
+
+        } catch (e: IOException) {
+            AppUtil.makeErrorLog("io error " +e.toString())
+        }
+
     }
 
 
