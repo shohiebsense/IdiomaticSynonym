@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/goToTranslatedDisplayOption"
+        android:title="@string/text_button_collect_idiom"
+        android:icon="@android:drawable/ic_media_next"
+        app:showAsAction="always" />
+
+</menu>

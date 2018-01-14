@@ -1,0 +1,40 @@
+package com.shohiebsense.idiomaticsynonym.db
+
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import org.jetbrains.anko.db.*
+
+/**
+ * Created by Shohiebsense on 13/01/2018.
+ */
+class BookmarkDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context, Bookmark.NAME, null, Bookmark.VERSION) {
+
+
+
+    override fun onCreate(db: SQLiteDatabase) {
+        db.createTable(Bookmark.TABLE_BOOKMARK_ENGLISH, true,
+                Bookmark.COLUMN_ID to INTEGER + PRIMARY_KEY + UNIQUE + AUTOINCREMENT,
+                Bookmark.COLUMN_PDFFILENAME to TEXT,
+                Bookmark.COLUMN_ENGLISH to TEXT
+                )
+
+        db.createTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES, true,
+                Bookmark.COLUMN_ID to INTEGER + PRIMARY_KEY + UNIQUE + AUTOINCREMENT,
+                Bookmark.COLUMN_BOOKMARK_ENGLISH_ID to INTEGER,
+                Bookmark.COLUMN_SENTENCE to TEXT,
+                Bookmark.COLUMN_SENTENCE_INDEX to INTEGER,
+                FOREIGN_KEY(Bookmark.COLUMN_BOOKMARK_ENGLISH_ID, Bookmark.TABLE_BOOKMARK_ENGLISH, Bookmark.COLUMN_ID)
+        )
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
+       // db.dropTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,true)
+        //db.dropTable(Bookmark.TABLE_BOOKMARK_ENGLISH, true)
+    }
+
+
+
+}
+
+val Context.bookmarkDatabase : BookmarkDbHelper
+    get() = BookmarkDbHelper(this)

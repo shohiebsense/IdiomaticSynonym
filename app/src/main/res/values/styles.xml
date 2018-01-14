@@ -1,12 +1,35 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
+    <!-- Base Theme -->
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Attributes for all APIs -->
+        <item name="dialogTheme">@style/AppTheme.Dialog</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert</item>
+    </style>
+
+    <!-- Default Dialog Theme -->
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog">
+    </style>
+
+    <!-- Default Alert Dialog Theme -->
+    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
+    </style>
+
+
+    <!-- Default App Theme -->
+    <style name="AppTheme" parent="BaseTheme">
+        <!-- API specific attributes 14+ -->
+
+    </style>
+
+
+  <!--  &lt;!&ndash; Base application theme. &ndash;&gt;
+    <style name="AppTheme" parent="Theme.AppCompat">
+        &lt;!&ndash; Customize your theme here. &ndash;&gt;
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
-    </style>
+    </style>-->
 
     <style name="AppTheme2" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
@@ -14,12 +37,34 @@
         <item name="colorPrimaryDark">@color/secondaryDarkColor</item>
         <item name="colorAccent">@color/secondaryLightColor</item>
         <item name="colorButtonNormal">@color/secondaryColor</item>
-        <item name="android:textColor">@color/md_white_1000</item>
         <item name="titleTextColor">@color/md_white_1000</item>
         <item name="android:itemBackground">@color/secondaryColor</item>
 
     </style>
+    <!-- Red Dialog Theme -->
+    <style name="AppTheme.Dialog.Red">
+        <item name="colorPrimary">@color/material_red_500</item>
+        <item name="colorPrimaryDark">@color/material_red_700</item>
+        <item name="colorAccent">@color/material_red_a700</item>
+    </style>
 
+
+    <!-- Red App Theme -->
+    <style name="BaseTheme.Red" parent="AppTheme">
+        <!-- Attributes for all APIs -->
+        <item name="colorPrimary">@color/secondaryColor</item>
+        <item name="colorPrimaryDark">@color/secondaryDarkColor</item>
+        <item name="colorAccent">@color/material_red_a700</item>
+        <item name="dialogTheme">@style/AppTheme.Dialog.Red</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert.Red</item>
+    </style>
+
+    <!-- Red Alert Dialog Theme -->
+    <style name="AppTheme.Dialog.Alert.Red">
+        <item name="colorPrimary">@color/material_red_500</item>
+        <item name="colorPrimaryDark">@color/material_red_700</item>
+        <item name="colorAccent">@color/material_red_a700</item>
+    </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
@@ -33,10 +78,10 @@
     <!-- not working -->
     <style name="matchParentWidthView">
         <item name="android:layout_width">0dp</item>
-        <item name="layout_constraintLeft_toLeftOf">parent</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-        <item name="layout_constraintRight_toRightOf">parent</item>
+       <!-- <item name="app:layout_constraintLeft_toLeftOf">parent</item>
+        <item name="app:layout_constraintStart_toStartOf">parent</item>
+        <item name="app:layout_constraintEnd_toEndOf">parent</item>
+        <item name="app:layout_constraintRight_toRightOf">parent</item>-->
     </style>
 
     <style name="topAndFullWidthView" parent="matchParentWidthView">
@@ -44,5 +89,14 @@
         <item name="android:layout_height">0dp</item>
     </style>
     <!-- end not working -->
+    <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!--buttons color-->
+        <item name="colorAccent">@color/md_white_1000</item>
+        <!--title and message color-->
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <!--dialog background-->
+        <item name="android:windowBackground">@drawable/custom_dialog</item>
+    </style>
+
 
 </resources>

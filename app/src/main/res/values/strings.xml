@@ -8,7 +8,7 @@
     <!-- menus -->
     <string name="menuOptions_fetch">Fetch pdf</string>
     <string name="menuOptions_translate">Translate</string>
-
+    <string name="menuOptions_save">Save</string>
     <!-- buttons -->
     <string name="text_button_upload">Upload pdf</string>
     <string name="text_button_start">Start The Game</string>
@@ -16,6 +16,7 @@
     <string name="text_button_booksTranslated">Books Translated</string>
     <string name="text_button_timeElapsed">Time Elapsed</string>
     <string name="text_button_collect_idiom">Collect</string>
+    <string name="text_button_choose">Choose</string>
 
     <!-- errors -->
     <string name="error_not_pdf">Not pdf</string>
@@ -38,4 +39,15 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="ok">Ok</string>
 
     <string name="story"></string>
+
+
+    <string name="text_title_translation">Translation</string>
+    <string name="text_title_sentence_index">Sentence Index</string>
+    <string name="dialog_title_find_idioms">Find idioms</string>
+    <string name="dialog_message_find_idioms">Now you could click idiom and it\'s meaning in indonesian is appears, After that, click the top right button to see the translation</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="text_finished_saving">Saved!</string>
 </resources>

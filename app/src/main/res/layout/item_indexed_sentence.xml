@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:id="@+id/indexedSentenceItemTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/sentenceNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="sentences . sentences"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBaseline_toBaselineOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/sentenceNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/indexedSentenceItemTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="number : 21"
+        />
+
+</android.support.constraint.ConstraintLayout>

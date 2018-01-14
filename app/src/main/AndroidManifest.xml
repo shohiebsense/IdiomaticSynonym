@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.shohiebsense.straightidiomalearn">
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET" />
+    package="com.shohiebsense.idiomaticsynonym">
 
     <application
+        android:name=".IdiomApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme2"
-        android:name=".IdiomApplication">
+        android:theme="@style/BaseTheme.Red">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/API_TRANSLATE_KEY"/>
+            android:value="@string/API_TRANSLATE_KEY" />
         <meta-data
             android:name="CLOUDINARY_URL"
-            android:value="cloudinary://@shohiebsense"/>
+            android:value="cloudinary://@shohiebsense" />
+
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-    </activity>
-        <activity android:name=".MainActivity">
-
         </activity>
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".TranslatedDisplayActivity"></activity>
     </application>
 
 </manifest>

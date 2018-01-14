@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/design_snackbar_padding_vertical"
+        android:paddingBottom="@dimen/design_snackbar_padding_vertical"
         android:textColor="@color/primaryLightColor"
         android:layout_gravity="center"
         android:text="Aplikasi memerlukan database yang disimpan pada ponsel anda"

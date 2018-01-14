@@ -29,5 +29,6 @@
 
     <dimen name="height_button_big">48dp</dimen>
     <dimen name="height_button_smaller">36dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 
 </resources>

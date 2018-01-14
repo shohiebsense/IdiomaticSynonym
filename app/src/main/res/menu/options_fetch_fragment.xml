@@ -4,10 +4,12 @@
     <item
         android:id="@+id/fetchMenuOptions"
         android:title="@string/menuOptions_fetch"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_subject_white_18dp"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/translateTextMenuOptions"
         android:title="@string/menuOptions_translate"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_g_translate_white_18dp"
+        app:showAsAction="always"/>
 </menu>
