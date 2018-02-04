@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.pdfdisplay
+package com.shohiebsense.idiomaticsynonym.view.adapter
 
 import android.app.Activity
 import android.content.Context

@@ -1,11 +1,10 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.pdfdisplay
+package com.shohiebsense.idiomaticsynonym.view.fragment.home
 
 import android.Manifest
 import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
@@ -13,7 +12,6 @@ import android.provider.OpenableColumns
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.*
@@ -26,14 +24,14 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
-import com.shohiebsense.idiomaticsynonym.MainActivity
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.services.PdfDisplayerService
 import com.shohiebsense.idiomaticsynonym.services.UnderliningService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
+import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.custom.InputDocumentPageDialogFragment
+import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
 import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.PdfDisplayCallback
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_pdfdisplay.*
@@ -226,7 +224,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 handler.post(slideRunnable)
             }
 
-        }, 100, 4000)
+        }, 100, 5000)
     }
 
     fun onTouchTextViewFunctionality(){

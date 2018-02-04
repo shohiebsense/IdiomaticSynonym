@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment
+package com.shohiebsense.idiomaticsynonym.view.fragment.home
 
 import android.media.audiofx.BassBoost
 import android.os.Bundle

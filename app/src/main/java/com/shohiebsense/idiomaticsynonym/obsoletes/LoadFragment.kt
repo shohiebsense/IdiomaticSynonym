@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.MainFragment
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import kotlinx.android.synthetic.main.obsolete_fragment_read.*
 import java.io.File

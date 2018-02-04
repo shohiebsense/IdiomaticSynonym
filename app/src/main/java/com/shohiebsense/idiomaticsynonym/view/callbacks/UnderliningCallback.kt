@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.callbacks
+package com.shohiebsense.idiomaticsynonym.view.callbacks
 
 import android.text.SpannableStringBuilder
 import com.shohiebsense.idiomaticsynonym.model.TempIndexedSentence

@@ -1,22 +1,17 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment
+package com.shohiebsense.idiomaticsynonym.obsoletes
 
 
 import android.app.Fragment
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.shohiebsense.idiomaticsynonym.BookmarkedActivity
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.MainCallback
-import com.shohiebsense.idiomaticsynonym.view.fragment.pdfdisplay.PdfDisplayFragment
+import com.shohiebsense.idiomaticsynonym.view.callbacks.MainCallback
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_main.*
-import org.jetbrains.anko.act
 
 
 /**

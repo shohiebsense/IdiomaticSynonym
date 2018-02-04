@@ -7,19 +7,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
-import android.text.Html
 import android.view.View
-import android.view.WindowManager
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.*
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.DatabaseCallback
+import com.shohiebsense.idiomaticsynonym.view.adapter.MainPagerFragmentStatePagerAdapter
+import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_dialog_input_document_page.*
 
 class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback, DatabaseCallback {
 

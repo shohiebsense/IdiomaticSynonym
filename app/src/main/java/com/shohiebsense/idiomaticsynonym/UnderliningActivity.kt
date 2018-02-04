@@ -5,12 +5,7 @@ import android.app.FragmentManager
 import android.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.MainFragment
 import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.DatabaseCallback
-import io.reactivex.Observable
-import io.reactivex.Observer
 
 class UnderliningActivity : AppCompatActivity() {
 

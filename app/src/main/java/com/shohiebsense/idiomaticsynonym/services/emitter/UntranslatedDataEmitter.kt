@@ -4,7 +4,7 @@ import android.content.Context
 import com.shohiebsense.idiomaticsynonym.db.database
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.services.dbs.QueryService
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.UntranslatedCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.UntranslatedCallback
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 

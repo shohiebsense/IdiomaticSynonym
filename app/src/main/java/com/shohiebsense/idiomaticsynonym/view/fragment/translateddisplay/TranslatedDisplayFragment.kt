@@ -20,7 +20,7 @@ import com.shohiebsense.idiomaticsynonym.services.TranslatedDisplayService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloServiceNe
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.TranslatedDisplayCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.TranslatedDisplayCallback
 import com.shohiebsense.idiomaticsynonym.view.items.KategloItem
 import com.shohiebsense.idiomaticsynonym.view.items.KategloViewHolder
 import com.spyhunter99.supertooltips.ToolTip

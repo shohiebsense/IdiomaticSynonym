@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.services
+package com.shohiebsense.idiomaticsynonym.obsoletes
 
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition

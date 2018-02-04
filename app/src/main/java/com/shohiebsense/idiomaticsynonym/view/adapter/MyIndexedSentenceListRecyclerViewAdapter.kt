@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment
+package com.shohiebsense.idiomaticsynonym.view.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater

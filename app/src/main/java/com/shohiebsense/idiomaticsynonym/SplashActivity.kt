@@ -10,10 +10,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
-import com.shohiebsense.idiomaticsynonym.MainActivity
 import com.shohiebsense.idiomaticsynonym.db.IdiomDbHelper
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.DatabaseCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import kotlinx.android.synthetic.main.activity_splash.*
 
 

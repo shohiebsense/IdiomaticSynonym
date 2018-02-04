@@ -7,7 +7,7 @@ import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.services.dbs.QueryService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.DatabaseCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 

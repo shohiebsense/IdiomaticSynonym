@@ -5,8 +5,7 @@ import com.github.angads25.filepicker.model.DialogConfigs
 import com.github.angads25.filepicker.model.DialogProperties
 import com.github.angads25.filepicker.view.FilePickerDialog
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.PdfDisplayCallback
-import com.tom_roush.pdfbox.pdfparser.PDFParser
+import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.util.PDFBoxResourceLoader
@@ -16,10 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
-import java.io.OutputStreamWriter
 
 /**
  * Created by Shohiebsense on 05/12/2017.
@@ -112,20 +108,14 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
 
 
     fun getTextFromPdf(myObserver: Observer<String>, destinationFile: File, numberOfPages: Int) {
-
         Observable.create<String> { subscriber ->
             AppUtil.makeDebugLog("jalann "+destinationFile.absolutePath)
             var document = PDDocument.load(destinationFile)
-
             var pdfStripper = PDFTextStripper()
-
             //FOR DEVELOPMENT ONLY
             var numberOfPages2 = 2
-
             //document = PDDocument.load(context.assets.open("samplepdf.pdf"))
             //document =
-            pdfStripper.lineSeparator = "\n"
-
             // var endPage = if(numberOfPages > document.numberOfPages) document.numberOfPages else numberOfPages
 
             //FOR DEVELOPMENT , UNCOMMENT ABOVE

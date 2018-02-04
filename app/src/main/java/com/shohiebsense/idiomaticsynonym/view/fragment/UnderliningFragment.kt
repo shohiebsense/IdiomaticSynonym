@@ -34,18 +34,15 @@ import com.shohiebsense.idiomaticsynonym.services.UnderliningService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.DatabaseCallback
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.UnderliningCallback
-import com.shohiebsense.idiomaticsynonym.view.fragment.pdfdisplay.CardPagerAdapter
+import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
+import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
 import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceItem
 import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
-import io.square1.richtextlib.spans.ClickableSpan
-import io.square1.richtextlib.ui.RichContentView
-import io.square1.richtextlib.ui.RichContentViewDisplay
 import kotlinx.android.synthetic.main.fragment_underlining.*
 import org.jetbrains.anko.act
 

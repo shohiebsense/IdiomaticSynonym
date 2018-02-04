@@ -14,7 +14,7 @@ import android.view.View
 import com.eaio.stringsearch.BNDMCI
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.TranslatedDisplayCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.TranslatedDisplayCallback
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

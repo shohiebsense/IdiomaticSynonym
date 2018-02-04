@@ -11,7 +11,7 @@ import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.services.dbs.BookmarkQueryService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.TranslatedDisplayPagerAdapter
+import com.shohiebsense.idiomaticsynonym.view.adapter.TranslatedDisplayPagerAdapter
 import kotlinx.android.synthetic.main.activity_translated_display.*
 import org.jetbrains.anko.contentView
 
@@ -47,7 +47,7 @@ class TranslatedDisplayActivity : FragmentActivity(), BookmarkQueryService.Compl
             lastId = intent.getIntExtra(INTENT_LAST_ID,0)
             //bookmarkDataEmitter.getAllIndexedSentenceBasedOnLastId(lastId,this)
         }
-        val adapter = TranslatedDisplayPagerAdapter(this, supportFragmentManager,  lastId)
+        val adapter = TranslatedDisplayPagerAdapter(this, supportFragmentManager, lastId)
         translatedDisplayViewPager.adapter = adapter
         translatedDisplayTabLayout.setupWithViewPager(translatedDisplayViewPager)
     }

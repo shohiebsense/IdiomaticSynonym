@@ -1,10 +1,13 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
+package com.shohiebsense.idiomaticsynonym.view.adapter
 
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import com.shohiebsense.idiomaticsynonym.R
+import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment
+import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IndexedSentenceFragment
+import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.TranslatedDisplayFragment
 
 /**
  * Created by Shohiebsense on 10/01/2018.

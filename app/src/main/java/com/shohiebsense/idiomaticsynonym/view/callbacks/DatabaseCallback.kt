@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.callbacks
+package com.shohiebsense.idiomaticsynonym.view.callbacks
 
 /**
  * Created by Shohiebsense on 01/12/2017.
