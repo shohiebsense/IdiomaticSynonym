@@ -1,6 +1,7 @@
 package com.shohiebsense.idiomaticsynonym
 
 import android.content.Context
+import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.utils.TestUtil
 import org.junit.Assert
 import org.junit.Test
@@ -40,15 +41,10 @@ class IdiomUnitTest {
 
     @Test
     fun matchTheSentenceNumber(){
-        val sentence = "shohieb ahmad nasruddin. Ia pandai dan rajin menabung. Minimal sholat daripada enggak sholat"
-        val getSentence = getSentence(sentence, "pandai")
+       /* val sentence = "shohieb ahmad nasruddin. Ia pandai dan rajin menabung. Minimal sholat daripada enggak sholat"
+        val getSentence = AppUtil.splitParagraphsIntoSentences(sentence, "pandai")
 
-
-        Assert.assertEquals("Ia pandai dan rajin menabung", getSentence)
-
-
-
-
+        Assert.assertEquals("Ia pandai dan rajin menabung", getSentence)*/
 
     }
 
@@ -57,13 +53,5 @@ class IdiomUnitTest {
 
     }
 
-    fun getSentence(text: String, word: String): String {
-        val END_OF_SENTENCE = Pattern.compile("\\.\\s+")
 
-        val lcword = word.toLowerCase()
-        return END_OF_SENTENCE.splitAsStream(text)
-                .filter({ s -> s.toLowerCase().contains(lcword) })
-                .findAny()
-                .orElse(null)
-    }
 }

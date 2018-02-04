@@ -5,24 +5,22 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 
 /**
  * Created by Shohiebsense on 10/01/2018.
  */
-class TranslatedDisplayPagerAdapter(val context :Context, fm : FragmentManager) : FragmentStatePagerAdapter(fm) {
-    lateinit var translatedTexts : ArrayList<String>
-    lateinit var indexedSentenceList : ArrayList<IndexedSentence>
-    lateinit var indices : ArrayList<Int>
+class TranslatedDisplayPagerAdapter(val context: Context, fm: FragmentManager, val lastId : Int) : FragmentStatePagerAdapter(fm) {
     lateinit var name : String
     lateinit var texts : String
 
     override fun getCount(): Int = 3
 
     override fun getItem(position: Int): Fragment {
-        return if(position == 1) EnglishResultFragment.newInstance(name, texts)
-        else if(position == 1) TranslatedDisplayFragment.newInstance(translatedTexts,indices)
-        else IndexedSentenceListFragment.newInstance(indexedSentenceList)
+        return when (position) {
+            0 -> EnglishResultFragment.newInstance(lastId)
+            1 -> TranslatedDisplayFragment.newInstance(lastId)
+            else -> IndexedSentenceFragment.newInstance(lastId)
+        }
     }
 
     override fun getItemPosition(`object`: Any): Int {

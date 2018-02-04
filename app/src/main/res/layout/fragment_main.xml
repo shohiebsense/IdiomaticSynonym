@@ -2,102 +2,57 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/dailyIdiomTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/text_button_statistics"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/idiomsViewPager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/idiomsViewPager"
+        android:padding="@dimen/margin_item_standard"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/dailyIdiomTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintVertical_weight="2"
+        />
+
+<!--
 
     <Button
         android:id="@+id/startButton"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:theme="@style/ColoredButtonRedTheme"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/statisticsTextView"
-        android:gravity="center"
-        app:layout_constraintVertical_weight="1"
-        android:text="@string/text_button_start"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toStartOf="@+id/bookmarkButton"
+        app:layout_constraintTop_toBottomOf="@+id/idiomsViewPager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/text_button_start" />
 
-    <TextView
-        android:id="@+id/statisticsTextView"
+    <Button
+        android:id="@+id/bookmarkButton"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_action_bookmarks"
+        android:theme="@style/ColoredButtonWhiteRedColorTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startButton"
-        app:layout_constraintBottom_toTopOf="@+id/statisticsContentConstraintLayout"
-        android:gravity="center"
-        app:layout_constraintVertical_weight="1"
-        android:text="@string/text_button_statistics"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/statisticsContentConstraintLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_weight="1"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintTop_toBottomOf="@+id/statisticsTextView"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:id="@+id/booksTranslatedTextView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/booksTranslatedValueTextView"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/timeElapsedTextView"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintVertical_weight="1"
-            android:gravity="center"
-            android:text="@string/text_button_booksTranslated" />
-        <TextView
-            android:id="@+id/booksTranslatedValueTextView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/timeElapsedValueTextView"
-            app:layout_constraintStart_toEndOf="@+id/booksTranslatedTextView"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintVertical_weight="1"
-            android:gravity="center"
-            android:text="100" />
-
-
-             <TextView
-            android:id="@+id/timeElapsedTextView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/booksTranslatedTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/timeElapsedValueTextView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_weight="1"
-            app:layout_constraintHorizontal_weight="1"
-            android:gravity="center"
-            android:text="@string/text_button_timeElapsed"
-            tools:layout_editor_absoluteX="-74dp" />
-
-          <TextView
-              android:id="@+id/timeElapsedValueTextView"
-              android:layout_width="0dp"
-              android:layout_height="0dp"
-              app:layout_constraintStart_toEndOf="@+id/timeElapsedTextView"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintTop_toBottomOf="@+id/booksTranslatedValueTextView"
-              app:layout_constraintBottom_toBottomOf="parent"
-              app:layout_constraintVertical_weight="1"
-              app:layout_constraintHorizontal_weight="1"
-              android:text="1455 minutes"
-              android:gravity="center" />
-
-
-    </android.support.constraint.ConstraintLayout>
+        app:layout_constraintBaseline_toBaselineOf="@+id/startButton"
+        app:layout_constraintTop_toBottomOf="@+id/idiomsViewPager"
+        app:layout_constraintStart_toEndOf="@+id/startButton"/>
+-->
 
 
 </android.support.constraint.ConstraintLayout>

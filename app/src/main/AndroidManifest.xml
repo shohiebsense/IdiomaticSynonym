@@ -4,9 +4,9 @@
 
     <application
         android:name=".IdiomApplication"
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/BaseTheme.Red">
@@ -16,7 +16,6 @@
         <meta-data
             android:name="CLOUDINARY_URL"
             android:value="cloudinary://@shohiebsense" />
-
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,8 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".MainActivity"></activity>
-        <activity android:name=".TranslatedDisplayActivity"></activity>
+        <activity android:name=".TranslatedDisplayActivity" />
+        <activity android:name=".BookmarkedActivity" />
+        <activity android:name=".UnderliningActivity" />
+
     </application>
 
 </manifest>

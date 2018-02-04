@@ -2,10 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/loadPdfMenuOptions"
+        android:title="@string/menuOptions_save"
+        android:icon="@drawable/ic_find_in_page_white_24dp"
+        app:showAsAction="always" />
+    <!--<item
         android:id="@+id/fetchMenuOptions"
         android:title="@string/menuOptions_fetch"
         android:icon="@drawable/ic_subject_white_18dp"
-        app:showAsAction="always" />
+        app:showAsAction="always" />-->
 
     <item
         android:id="@+id/translateTextMenuOptions"

@@ -2,9 +2,9 @@ package com.shohiebsense.idiomaticsynonym.view.custom
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.DialogFragment
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.DialogFragment
 import com.shohiebsense.idiomaticsynonym.R
 import kotlinx.android.synthetic.main.fragment_dialog_input_document_page.view.*
 
@@ -22,11 +22,16 @@ class InputDocumentPageDialogFragment : DialogFragment() {
     lateinit var listener : InputDialogListener
     var numberOfPage = Int
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.SherifDialogTheme)
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.dialog_title_find_idioms)
         listener = targetFragment as InputDialogListener
-        var view = activity.layoutInflater.inflate(R.layout.fragment_dialog_input_document_page, null)
+        var view = activity!!.layoutInflater.inflate(R.layout.fragment_dialog_input_document_page, null)
 
         view.okButton.setOnClickListener({
             if(!view.inputNumberOfPagesEditText.text.isEmpty() && !view.inputNumberOfPagesEditText.text.isNullOrBlank()) {

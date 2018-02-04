@@ -9,11 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.MainActivity
+import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.fragment.MainFragment
 import com.tom_roush.pdfbox.pdmodel.PDDocument
-import kotlinx.android.synthetic.main.fragment_read.*
+import kotlinx.android.synthetic.main.obsolete_fragment_read.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -32,15 +32,15 @@ class LoadFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
-        return inflater.inflate(R.layout.fragment_read, container, false)
+        return inflater.inflate(R.layout.obsolete_fragment_read, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         nextButton.setOnClickListener{
-            var intent = Intent(activity, MainActivity::class.java)
-            intent.putExtra(MainActivity.INTENT_MESSAGE, MainFragment::class.java.name)
+            var intent = Intent(activity, UnderliningActivity::class.java)
+            intent.putExtra(UnderliningActivity.INTENT_MESSAGE, MainFragment::class.java.name)
             startActivity(intent)
         }
     }

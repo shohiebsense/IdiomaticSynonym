@@ -12,10 +12,10 @@ package com.shohiebsense.idiomaticsynonym.services.libs;
  *
  * What does it DO:
  * This object converts the content of a PDF file into a String.
- * The layout of the texts is translatedIdiom as near as the one in the PDF given at the input.
+ * The layout of the english is translatedIdiom as near as the one in the PDF given at the input.
  *
  * What does it NOT DO:
- * Vertical texts in the PDF file are not handled for the moment.
+ * Vertical english in the PDF file are not handled for the moment.
  *
  * I would appreciate any feedback you could offer. (see my email address above)
  *

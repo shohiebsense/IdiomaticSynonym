@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Fragment
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.text.Html
@@ -13,11 +14,17 @@ import android.widget.Toast
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.ConstantsUtil
 import com.shohiebsense.idiomaticsynonym.MainActivity
+import com.shohiebsense.idiomaticsynonym.UnderliningActivity
+import edu.stanford.nlp.ling.Sentence
 import org.jetbrains.anko.bundleOf
 import java.io.*
+import java.util.*
 import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import edu.stanford.nlp.tagger.maxent.MaxentTagger
+import org.jetbrains.anko.defaultSharedPreferences
+import kotlin.collections.ArrayList
 
 
 /**
@@ -29,12 +36,13 @@ class AppUtil {
     companion object {
 
         private val SDPath = "idiomalearn"
+        val PREF_TEXTS = "english"
        // private val destinationFolder = SDPath
 
         fun navigateToFragment(context: Context, fragmentName: String) {
-            var intent = Intent(context, MainActivity::class.java)
+            var intent = Intent(context, UnderliningActivity::class.java)
 
-            intent.putExtra(MainActivity.INTENT_MESSAGE, fragmentName)
+            intent.putExtra(UnderliningActivity.INTENT_MESSAGE, fragmentName)
             context.startActivity(intent)
         }
 
@@ -76,18 +84,34 @@ class AppUtil {
             return stringBuilder.toString()
         }
 
-        fun splitParagraphsIntoSentences(words: String): MutableList<String> {
-
+      /*  fun splitParagraphsIntoSentences(words: String): List<String> {
             val re = Pattern.compile("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$)", Pattern.MULTILINE or Pattern.COMMENTS)
             var reMatcher = re.matcher(words)
-            val sentences = words.split("(?<=[.!?])\\s* ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            var stringBuilder = mutableListOf<String>()
-            for (words in sentences) {
-                stringBuilder.add(words)
+            val sentences = words.split("[^.!?\\s][^.!?]*(?:[.!?](?!['\"]?\\s|$)[^.!?]*)*[.!?]?['\"]?(?=\\s|$) ".toRegex()).dropLastWhile { it.isEmpty() }
+            return sentences
+        }
+*/
+        fun putStringToPreferences(context: Context, words: String){
+            AppUtil.makeDebugLog("has been put "+words)
+            context.defaultSharedPreferences.edit().putString(PREF_TEXTS, words).apply()
+        }
+
+        fun getTextPreferences(context: Context) : String{
+            val word =  context.defaultSharedPreferences.getString(PREF_TEXTS,"")
+            AppUtil.makeDebugLog("worddss "+word)
+            return word
+        }
+
+        fun splitParagraphsIntoSentences(words: String): MutableList<String> {
+            val tokenizedSentences = MaxentTagger.tokenizeText(StringReader(words))
+            val sentences = arrayListOf<String>()
+            for (act in tokenizedSentences)
+            //Travel trough sentences
+            {
+                 //This is your sentence
+                sentences.add(Sentence.listToString(act))
             }
-
-
-            return stringBuilder
+            return sentences
         }
 
         fun fromHtml(word: String): Spanned {
@@ -98,6 +122,13 @@ class AppUtil {
                 result = Html.fromHtml(word)
             }
             return result
+        }
+
+        fun toHtml(charSequence: Spanned) : String{
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                return Html.toHtml(charSequence, Html.FROM_HTML_MODE_LEGACY)
+            }
+            return Html.toHtml(charSequence)
         }
 
 
@@ -338,6 +369,17 @@ class AppUtil {
 
         val translatedIdioms = "karena,jika saya di posisi kamu, masak, sedikit, agak, mengisi, mengejar, bangga atas, maaf atas, menyesal," +
                 "seperti itu, berwenang, keluar dari, muncul, terbit, tahu tentang, dengar tentang, mampu"
+
+
+        /*fun getSentence(text: String, word: String): String {
+            val END_OF_SENTENCE = Pattern.compile("\\.\\s+")
+
+            val lcword = word.toLowerCase()
+            return END_OF_SENTENCE.splitAsStream(text)
+                    .filter({ s -> s.toLowerCase().contains(lcword) })
+                    .findAny()
+                    .orElse(null)
+        }*/
     }
 
 

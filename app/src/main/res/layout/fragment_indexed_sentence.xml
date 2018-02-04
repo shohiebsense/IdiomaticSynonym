@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/RootPadding"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -12,6 +13,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/sentenceIndexRecyclerView"
+        android:layout_marginBottom="@dimen/margin_item_standard"
+        style="@style/EmptyText"
         android:text="List"
         />
 

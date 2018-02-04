@@ -47,6 +47,39 @@ public class ChangeLog {
      * - MAKE VIEWPAGER SWIPE - 2 FRAGMENTS
      * - ONE FRAGMENT HOLDS THE TRANSLATION RESULT
      * - THE OTHER ONE HOLDS THE INDEXED SENTENCE.
+     *
+     *
+     * Anecdote
+     * - Collapse when scrolling bottombar
+     * - Eerror uncaught out of memory idk solution: Untranslated dismissed
+     * - Error bookmarks querying : the ID i guess.
+     *
+     */
+
+
+    /**
+     * Passed For Release!!!
+     * - MainActivity
+     * - Laoad Pdf
+     *   - Menu Switching in Load pdf
+     * - Loaded UnderliningActivity
+     */
+
+
+    /**
+     * Handles :
+     * After translate
+     * Page Dialog
+     *
+     */
+
+    /**
+     * "NotoSerif-Regular.ttf"
+     */
+
+    /**
+     * 30 Jan
+     * Make sure db inserted in bookmarkedenglish and show it
      */
 
 }

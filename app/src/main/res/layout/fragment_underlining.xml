@@ -55,8 +55,8 @@
                 android:id="@+id/textFetchedTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lineSpacingExtra="@dimen/margin_item_standard"
-                android:text="afeaewfewa" />
+                style="@style/ContentText"
+                android:lineSpacingExtra="@dimen/margin_item_standard" />
 
         </ScrollView>
 
@@ -77,31 +77,25 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/secondaryColor"
-            app:layout_constraintBottom_toTopOf="@+id/idiomOrSentenceRecyclerView"
+            app:layout_constraintBottom_toTopOf="@+id/idiomRecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/idiomOrSentenceRecyclerView"
+            android:id="@+id/idiomRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/collectIdiomButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dividerView">
 
         </android.support.v7.widget.RecyclerView>
 
-        <Button
-            android:id="@+id/collectIdiomButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_button_collect_idiom"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/idiomOrSentenceRecyclerView" />
+
+
 
     </android.support.constraint.ConstraintLayout>
 

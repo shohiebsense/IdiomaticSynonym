@@ -31,4 +31,6 @@
     <dimen name="height_button_smaller">36dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
+    <dimen name="widget_container_margin">8dp</dimen>
+    <dimen name="widget_container_padding">8dp</dimen>
 </resources>

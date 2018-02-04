@@ -3,6 +3,7 @@
     android:id="@+id/rootConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/widget_container_margin"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -42,23 +43,20 @@
         app:layout_constraintBottom_toTopOf="@+id/okButton"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        style="@style/RootLayoutWithVerticalMargin"
         android:background="?android:attr/dividerVertical"
         />
 
-        <Button
-            android:id="@+id/okButton"
-            app:layout_constraintTop_toBottomOf="@+id/dividerHeader"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
-            android:measureWithLargestChild="true"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="1.0"
-            android:text="@string/ok"
-            />
+    <Button
+        android:id="@+id/okButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        style="@style/ColoredButton"
+        android:text="@string/ok"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerHeader" />
 
 </android.support.constraint.ConstraintLayout>

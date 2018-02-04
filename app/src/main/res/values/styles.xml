@@ -8,34 +8,23 @@
     </style>
 
     <!-- Default Dialog Theme -->
-    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog">
-    </style>
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog"></style>
 
     <!-- Default Alert Dialog Theme -->
-    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
-    </style>
+    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert"></style>
 
 
     <!-- Default App Theme -->
     <style name="AppTheme" parent="BaseTheme">
         <!-- API specific attributes 14+ -->
-
+        <item name="android:fontFamily">serif</item>
     </style>
-
-
-  <!--  &lt;!&ndash; Base application theme. &ndash;&gt;
-    <style name="AppTheme" parent="Theme.AppCompat">
-        &lt;!&ndash; Customize your theme here. &ndash;&gt;
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorAccent">@color/secondaryColor</item>
-    </style>-->
 
     <style name="AppTheme2" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/secondaryColor</item>
         <item name="colorPrimaryDark">@color/secondaryDarkColor</item>
-        <item name="colorAccent">@color/secondaryLightColor</item>
+        <item name="colorAccent">@color/for_elder_mexican_red</item>
         <item name="colorButtonNormal">@color/secondaryColor</item>
         <item name="titleTextColor">@color/md_white_1000</item>
         <item name="android:itemBackground">@color/secondaryColor</item>
@@ -52,8 +41,8 @@
     <!-- Red App Theme -->
     <style name="BaseTheme.Red" parent="AppTheme">
         <!-- Attributes for all APIs -->
-        <item name="colorPrimary">@color/secondaryColor</item>
-        <item name="colorPrimaryDark">@color/secondaryDarkColor</item>
+        <item name="colorPrimary">@color/other_red</item>
+        <item name="colorPrimaryDark">@color/other_red</item>
         <item name="colorAccent">@color/material_red_a700</item>
         <item name="dialogTheme">@style/AppTheme.Dialog.Red</item>
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Alert.Red</item>
@@ -61,7 +50,7 @@
 
     <!-- Red Alert Dialog Theme -->
     <style name="AppTheme.Dialog.Alert.Red">
-        <item name="colorPrimary">@color/material_red_500</item>
+        <item name="colorPrimary">@color/for_elder_mexican_red</item>
         <item name="colorPrimaryDark">@color/material_red_700</item>
         <item name="colorAccent">@color/material_red_a700</item>
     </style>
@@ -78,7 +67,7 @@
     <!-- not working -->
     <style name="matchParentWidthView">
         <item name="android:layout_width">0dp</item>
-       <!-- <item name="app:layout_constraintLeft_toLeftOf">parent</item>
+        <!-- <item name="app:layout_constraintLeft_toLeftOf">parent</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
         <item name="app:layout_constraintEnd_toEndOf">parent</item>
         <item name="app:layout_constraintRight_toRightOf">parent</item>-->
@@ -98,5 +87,92 @@
         <item name="android:windowBackground">@drawable/custom_dialog</item>
     </style>
 
+    <style name="SherifDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!--buttons color-->
+        <item name="android:fontFamily">serif</item>
+    </style>
 
+
+    <style name="ColoredButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:background">@drawable/long_round_button</item>
+        <item name="android:textColor">@color/soft_white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:padding">@dimen/widget_container_padding</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="ColoredSquareRedButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:background">@color/other_red</item>
+        <item name="android:textColor">@color/soft_white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">@dimen/widget_container_padding</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="RootLayoutWithMargin">
+        <item name="android:layout_marginLeft">@dimen/margin_layout_standard</item>
+        <item name="android:layout_marginTop">@dimen/margin_layout_standard</item>
+        <item name="android:layout_marginRight">@dimen/margin_layout_standard</item>
+        <item name="android:layout_marginBottom">@dimen/margin_layout_standard</item>
+    </style>
+
+    <style name="RootLayoutWithVerticalMargin">
+        <item name="android:layout_marginTop">@dimen/margin_layout_standard</item>
+        <item name="android:layout_marginBottom">@dimen/margin_layout_standard</item>
+    </style>
+
+    <style name="WidgetContainerPadding">
+        <item name="android:paddingLeft">@dimen/margin_item_standard</item>
+        <item name="android:paddingTop">@dimen/margin_layout_standard</item>
+        <item name="android:paddingRight">@dimen/margin_item_standard</item>
+        <item name="android:paddingBottom">@dimen/margin_layout_standard</item>
+    </style>
+
+    <style name="RootPadding">
+        <item name="android:paddingLeft">@dimen/margin_layout_standard</item>
+        <item name="android:paddingTop">@dimen/margin_layout_standard</item>
+        <item name="android:paddingRight">@dimen/margin_layout_standard</item>
+        <item name="android:paddingBottom">@dimen/margin_layout_standard</item>
+    </style>
+
+    <!--text -->
+    <style name="TitleText" parent="TextAppearance.AppCompat.Title">
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="TitleTextLight" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/md_white_1000</item>
+
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="SubTitleSizeText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="ContentText" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/soft_black</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="ContentTextLight" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/md_white_1000</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="CaptionText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="EmptyText" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+
+
+    <!-- endText -->
 </resources>

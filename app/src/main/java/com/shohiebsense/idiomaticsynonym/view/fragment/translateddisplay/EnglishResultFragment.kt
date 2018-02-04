@@ -3,11 +3,14 @@ package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
+import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import kotlinx.android.synthetic.main.fragment_english_result.*
 
 
@@ -16,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_english_result.*
  * Use the [EnglishResultFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EnglishResultFragment : Fragment() {
+class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCallback {
 
     companion object {
         // TODO: Rename parameter arguments, choose names that match
@@ -28,11 +31,10 @@ class EnglishResultFragment : Fragment() {
          * @return A new instance of fragment EnglishResultFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(fileName: String, texts: String): EnglishResultFragment {
+        fun newInstance(lastId: Int): EnglishResultFragment {
             val fragment = EnglishResultFragment()
             val args = Bundle()
-            args.putString(TranslatedDisplayActivity.INTENT_FILENAME, fileName)
-            args.putString(TranslatedDisplayActivity.INTENT_FETCHED_TEXT, texts)
+            args.putInt(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
             fragment.arguments = args
             return fragment
         }
@@ -42,13 +44,11 @@ class EnglishResultFragment : Fragment() {
 
     // TODO: Rename and change types of parameters
     private var fileName: String? = null
-    private var englishTexts: String? = null
-
+    var lastId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            fileName = arguments!!.getString(TranslatedDisplayActivity.INTENT_FILENAME)
-            englishTexts = arguments!!.getString(TranslatedDisplayActivity.INTENT_FETCHED_TEXT)
+            lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
         }
     }
 
@@ -61,7 +61,17 @@ class EnglishResultFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        englishTextsTextView.text = englishTexts
+        englishTextsTextView.movementMethod = LinkMovementMethod()
+        val bookmarkDataEmitter = BookmarkDataEmitter(activity!!)
+        bookmarkDataEmitter.getEnglishBookmark(lastId,this)
+
+
 
     }
+
+    override fun onFetched(bookmark: BookmarkedEnglish) {
+        englishTextsTextView.text = bookmark.english
+    }
+
+
 }// Required empty public constructor

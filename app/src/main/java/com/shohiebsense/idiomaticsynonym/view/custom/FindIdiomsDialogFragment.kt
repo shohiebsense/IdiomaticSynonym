@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.app.DialogFragment
 import android.os.Bundle
 import com.shohiebsense.idiomaticsynonym.R
-import kotlinx.android.synthetic.main.fragment_dialog_input_find_idioms.view.*
+import kotlinx.android.synthetic.main.obsolete_fragment_dialog_input_find_idioms.view.*
 
 /**
  * Created by Shohiebsense on 23/12/2017.
@@ -22,7 +22,7 @@ class FindIdiomsDialogFragment : DialogFragment() {
         var builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.dialog_message_input_page)
         listener = targetFragment as InputDialogListener
-        var view = activity.layoutInflater.inflate(R.layout.fragment_dialog_input_find_idioms, null)
+        var view = activity.layoutInflater.inflate(R.layout.obsolete_fragment_dialog_input_find_idioms, null)
 
         view.okButton.setOnClickListener({
             dismiss()

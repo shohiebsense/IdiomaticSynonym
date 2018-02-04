@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.view.fragment.dummy.DummyContent.DummyItem
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IndexedSentenceListFragment.OnListFragmentInteractionListener
+import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IndexedSentenceFragment.OnListFragmentInteractionListener
 import kotlinx.android.synthetic.main.item_indexed_sentence.view.*
 
 /**
@@ -25,7 +25,7 @@ class MyIndexedSentenceListRecyclerViewAdapter(private val mValues: ArrayList<In
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.mItem = mValues[position]
-        holder.itemView.indexedSentenceItemTextView.text = mValues[position].sentence
+        holder.itemView.indexedSentenceItemTextView.setText(mValues[position].sentence)
         holder.itemView.sentenceNumber.text = mValues[position].index.toString()
 
         holder.mView.setOnClickListener {

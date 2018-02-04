@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.text.SpannableString
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,10 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.api.ChosenSynonymWord
 import com.shohiebsense.idiomaticsynonym.services.TranslatedDisplayService
+import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloServiceNe
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.TranslatedDisplayCallback
@@ -36,7 +37,8 @@ import kotlinx.android.synthetic.main.fragment_translated_display.*
  *
  * cek kata idiom yang diterjemahin, kok karena. harusny abukan karena
  */
-class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListener, TranslatedDisplayCallback, KategloServiceNe.KategloListener {
+class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListener, TranslatedDisplayCallback, KategloServiceNe.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback {
+
 
 
     lateinit var translatedTextList: ArrayList<String>
@@ -51,12 +53,12 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     lateinit var indices : ArrayList<Int>
     lateinit var translatedSpannable : SpannableString
     var tooltips: ToolTipManager? = null
+    var lastId = 0
 
     companion object {
-        fun newInstance(name: ArrayList<String>, indices: ArrayList<Int>) : TranslatedDisplayFragment {
+        fun newInstance(lastId: Int) : TranslatedDisplayFragment {
             val args = Bundle()
-            args.putStringArrayList(TranslatedDisplayActivity.INTENT_TRANSLATED_TEXT, name)
-            args.putIntegerArrayList(TranslatedDisplayActivity.INTENT_INDICES, indices)
+            args.putInt(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
             val fragment = TranslatedDisplayFragment()
             fragment.arguments = args
             return fragment
@@ -69,11 +71,12 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
        // AppUtil.makeDebugLog("translatedTextList SIZEE "+translatedTextList.size)
         //idiomsList = arguments.getSerializable(MainActivity.INTENT_IDIOM_LIST) as HashMap<Int, String>
        // translatedSpannable = SpannableString("")
+        lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
 
         //DEVELOPMENT ONLY
-        translatedTextList = arrayListOf<String>()
-        translatedTextList.add(AppUtil.translateExample)
-        idiomsList = AppUtil.translatedIdioms.split(",").toMutableList()
+        //translatedTextList = arrayListOf<String>()
+        //translatedTextList.add(AppUtil.translateExample)
+        //idiomsList = AppUtil.translatedIdioms.split(",").toMutableList()
         setHasOptionsMenu(true)
     }
 
@@ -82,6 +85,8 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bookmarkDataEmitter = BookmarkDataEmitter(activity!!)
+        bookmarkDataEmitter.getEnglishBookmark(lastId,this)
         itemAdapter = ItemAdapter.items()
         fastAdapter = FastAdapter.with(itemAdapter)
         tooltips = ToolTipManager(activity)
@@ -92,8 +97,8 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
         //development only
         //  translatedDisplayService = TranslatedDisplayService(context, translatedTextList, idiomsList, this)
-        translatedDisplayService = TranslatedDisplayService(context!!, translatedTextList, idiomsList,indices, this)
-        translatedDisplayService.extract()
+        translatedDisplayService = TranslatedDisplayService(context!!, this)
+        //translatedDisplayService.extract()
 
         var spannable :CharSequence="adf aew"
         var threetimes = 0
@@ -173,17 +178,15 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     }
 
     override fun onFinishExtractText(decoratedSpan: CharSequence) {
-        translatedTextView.movementMethod = LinkMovementMethod.getInstance()
 
-        decoratedSpan.forEachIndexed{
+       /* decoratedSpan.forEachIndexed{
             index, sentence ->
             if(indices.contains(index)){
                 //styling
             }
             translatedTextView.append(decoratedSpan)
-        }
-        AppUtil.makeDebugLog("finished extract, in TranslatedDisplay "+translatedTextView.text)
-
+        }*/
+        translatedTextView.setText(decoratedSpan)
     }
 
     override fun onGetSyonyms(syonyms: MutableList<String>) {
@@ -197,6 +200,11 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         }
         itemAdapter.add(items)
         fastAdapter.notifyAdapterDataSetChanged()
+    }
+
+    override fun onFetched(bookmark: BookmarkedEnglish) {
+        translatedTextView.setText(bookmark.indonesian)
+
     }
 
 

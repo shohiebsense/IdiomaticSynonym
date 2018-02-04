@@ -53,7 +53,7 @@ class SplashActivity : AppCompatActivity(), DatabaseCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        TranslatedAndUntranslatedDataEmitter(this,this).getAll()
+        //TranslatedAndUntranslatedDataEmitter(this,this).getAll()
 
         isReadAndWritePermissionGranted()
 
@@ -75,6 +75,7 @@ class SplashActivity : AppCompatActivity(), DatabaseCallback {
 
 
                         //FOR DEVELOPMENT, UNCOMMENT IT
+                        TranslatedAndUntranslatedDataEmitter(this,this).getAll()
 
 
                     }
@@ -152,7 +153,9 @@ class SplashActivity : AppCompatActivity(), DatabaseCallback {
                         ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
                 return false
             }
-        } else { //permission is automatically granted on sdk<23 upon installation
+        } else {
+            TranslatedAndUntranslatedDataEmitter(this,this).getAll()
+            //permission is automatically granted on sdk<23 upon installation
             return true
         }
     }

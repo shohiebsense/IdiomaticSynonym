@@ -30,14 +30,14 @@ class QueryService(val db : SQLiteDatabase)  {
         val idioms = arrayListOf<CombinedIdiom>()
         Observable.create<ArrayList<CombinedIdiom>> {
             e->
-            db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM)
+            /*db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM)
                     .exec {
                         val parser = getCombinedIdiomParser()
                         asSequence().forEach {
                             row -> idioms.add(parser.parseRow(row))
                         }
 
-                    }
+                    }*/
 
             db.select(Idioms.TABLE_TRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM,Idioms.COLUMN_MEANING)
                     .exec {

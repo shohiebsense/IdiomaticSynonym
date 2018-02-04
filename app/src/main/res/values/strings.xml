@@ -17,6 +17,8 @@
     <string name="text_button_timeElapsed">Time Elapsed</string>
     <string name="text_button_collect_idiom">Collect</string>
     <string name="text_button_choose">Choose</string>
+    <string name="text_button_replace">Replace</string>
+
 
     <!-- errors -->
     <string name="error_not_pdf">Not pdf</string>
@@ -45,9 +47,23 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="text_title_sentence_index">Sentence Index</string>
     <string name="dialog_title_find_idioms">Find idioms</string>
     <string name="dialog_message_find_idioms">Now you could click idiom and it\'s meaning in indonesian is appears, After that, click the top right button to see the translation</string>
+    <string name="dialog_find_idioms_and_replaced_it">Please wait until translation process is finished, While processing, now find idioms, and replaced it with using your senses and ability in english</string>
+    <string name="text_info_sentence_old">Old Sentence: </string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="text_action_bookmarks">Bookmarks</string>
     <string name="text_finished_saving">Saved!</string>
+
+
+    <string name="text_navigation_do_translation">Translate</string>
+    <string name="text_navigation_bookmarks">Bookmarks</string>
+    <string name="text_navigation_statistics">Statistics</string>
+
+    <string name="text_statistic_books_translated">Books Translated</string>
+    <string name="text_statistic_idioms_found">Idioms Found</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

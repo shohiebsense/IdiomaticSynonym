@@ -21,4 +21,5 @@ class AntiSwipeViewPager : android.support.v4.view.ViewPager{
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         return false
     }
+
 }

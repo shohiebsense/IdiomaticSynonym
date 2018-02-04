@@ -14,6 +14,7 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.transition.TransitionManager
 import android.view.*
@@ -23,9 +24,10 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.CircleAnimationUtil
 import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
-import com.shohiebsense.idiomaticsynonym.MainActivity
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
+import com.shohiebsense.idiomaticsynonym.model.TempIndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.services.UnderliningService
@@ -41,6 +43,9 @@ import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceItem
 import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
+import io.square1.richtextlib.spans.ClickableSpan
+import io.square1.richtextlib.ui.RichContentView
+import io.square1.richtextlib.ui.RichContentViewDisplay
 import kotlinx.android.synthetic.main.fragment_underlining.*
 import org.jetbrains.anko.act
 
@@ -60,6 +65,7 @@ import org.jetbrains.anko.act
 class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter.IndexedSentenceCallback, IndexedSentenceViewHolder.IndexedSentenceClickListener {
 
 
+    val KEY_PROCESSEDTEXT = "processed_text"
     lateinit var extractedPdfTexts: ArrayList<String>
     lateinit var underliningService: UnderliningService
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
@@ -68,6 +74,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     lateinit var indexedSentenceItemAdapter : ItemAdapter<IndexedSentenceItem>
     lateinit var behaviour : BottomSheetBehavior<View>
     lateinit var snackbar : CustomSnackbar
+    var translated = false
+    var underlined = false
 
     //var isShowingIdiom = true
 
@@ -79,12 +87,13 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     var selectedIndex = 0
     var tooltips: ToolTipManager? = null
     var fileName = ""
+    val sentences = SpannableStringBuilder("")
 
     companion object {
         fun newInstance(name: ArrayList<String>?, fileName: String) : UnderliningFragment {
             val args = Bundle()
-            args.putStringArrayList(MainActivity.INTENT_FETCHED_TEXT, name)
-            args.putString(MainActivity.INTENT_FILENAME, fileName)
+            args.putStringArrayList(UnderliningActivity.INTENT_FETCHED_TEXT, name)
+            args.putString(UnderliningActivity.INTENT_FILENAME, fileName)
             val fragment = UnderliningFragment()
             fragment.arguments = args
             return fragment
@@ -96,14 +105,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         super.onCreate(savedInstanceState)
 
         //This is for development
-        if(savedInstanceState == null){
-            var arrayList = ArrayList<String>()
-            arrayList.add(AppUtil.storyExample)
-            extractedPdfTexts = arrayList
-        } else{
-        extractedPdfTexts = arguments.getStringArrayList(MainActivity.INTENT_FETCHED_TEXT)
-            fileName = arguments.getString(MainActivity.INTENT_FILENAME)
-        }
+
+        extractedPdfTexts = arguments.getStringArrayList(UnderliningActivity.INTENT_FETCHED_TEXT)
+        fileName = arguments.getString(UnderliningActivity.INTENT_FILENAME)
         setHasOptionsMenu(true)
     }
 
@@ -126,16 +130,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.goToTranslatedDisplayOption -> {
-                val translatedList = ArrayList<String>()
-                translatedList.addAll(underliningService.translatedFetchedPdfText)
-
-
                 val intent = Intent(activity, TranslatedDisplayActivity::class.java)
+                AppUtil.makeDebugLog("filenamee is ? "+fileName)
+                intent.putExtra(TranslatedDisplayActivity.INTENT_LAST_ID, underliningService.bookmarkDataEmitter.getLastInsertedIdFromBookmarkedEnglish())
                 intent.putExtra(TranslatedDisplayActivity.INTENT_FILENAME, fileName)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_FETCHED_TEXT, textFetchedTextView.text)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_TRANSLATED_TEXT, translatedList)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_INDICES, underliningService.indices)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_IDIOM_LIST, underliningService.indexedSentences)
 
                 startActivity(intent)
             }
@@ -149,19 +147,21 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         snackbar = CustomSnackbar.make(rootCoordinatorLayout,
                 CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
         snackbar.show()
+
+
         tooltips = ToolTipManager(act)
 
-
+        textFetchedTextView.movementMethod = LinkMovementMethod()
         var snackbarView = snackbar.view
         snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryLightColor))
       //  TranslatedAndUntranslatedDataEmitter(context, this).getAll()
 
-        underliningService = UnderliningService(activity, extractedPdfTexts, this,fileName)
+        underliningService = UnderliningService(activity, AppUtil.getTextPreferences(activity), this,fileName)
 
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
-        idiomOrSentenceRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
-        idiomOrSentenceRecyclerView.adapter = idiomMeaningFastAdapter
+        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
+        idiomRecyclerView.adapter = idiomMeaningFastAdapter
         onShowingBottomSheet()
 
         //commented for development
@@ -238,17 +238,15 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
     override fun onFinishedTranslatingText() {
 
-/*        cardViewPager.visibility = View.GONE
-        viewPagerIndicator.visibility = View.GONE
-        textFetchedScrollView.visibility = View.VISIBLE*/
-        // pdfDisplayerService.getUnderlineTheFetchedText()
-
         object : Thread(){
             override fun start() {
                 Handler(Looper.getMainLooper()).post {
-                    goToTranslatedDisplayMenuItem.setVisible(true)
                     activity.title = "Complete"
                     showMessageDialog()
+                    translated = true
+                    if(translated && underlined){
+                        goToTranslatedDisplayMenuItem.isVisible = true
+                    }
                 }
             }
         }.start()
@@ -262,7 +260,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onErrorUnderliningText() {
     }
 
-    override fun onFinishedUnderliningText(decoratedSpan: ArrayList<CharSequence>) {
+    override fun onFinishedUnderliningText(decoratedSpan: ArrayList<TempIndexedSentence>) {
 
         object : Thread(){
             override fun start() {
@@ -272,12 +270,19 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     cardViewPager.visibility = View.GONE
                     viewPagerIndicator.visibility = View.GONE
                     textFetchedTextView.visibility = View.VISIBLE
-                    textFetchedTextView.movementMethod = LinkMovementMethod.getInstance()
+                    activity.title = fileName
 
-                    decoratedSpan.forEach {
-                        textFetchedTextView.append(it)
+
+                     decoratedSpan.forEach {
+                      textFetchedTextView.append(it.sentence)
                     }
+                    underliningService.bookmarkDataEmitter.updateEnglishText(textFetchedTextView.text)
                     snackbar.dismiss()
+                    addToToolTipView(getString(R.string.dialog_find_idioms_and_replaced_it))
+                    underlined = true
+                    if(underlined && translated){
+                        goToTranslatedDisplayMenuItem.isVisible = true
+                    }
                 }
             }
         }.start()
@@ -322,12 +327,12 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onFindingTranslatedIdiom() {
     }
 
-    override fun onFinishedFindingTranslatedIdiom(decoratedSpan: java.util.ArrayList<CharSequence>) {
+    override fun onFinishedFindingTranslatedIdiom(decoratedSpan: java.util.ArrayList<SpannableStringBuilder>) {
 
         //the old way, just uncomment
         //pdfDisplayerService.getUnderlineTheFetchedWithUntranslatedText(anuu, decoratedSpan, clickableSpan)
 
-        onFinishedUnderliningText(decoratedSpan)
+        //onFinishedUnderliningText(decoratedSpan)
     }
 
     override fun onFindingUntranslatedIdiom() {
@@ -365,10 +370,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 items.add(idiomMeaningItem)
             }
 
-            idiomOrSentenceRecyclerView.layoutManager = GridLayoutManager(activity,2)
+            idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
             idiomMeaningItemAdapter.clear()
             idiomMeaningItemAdapter.add(items)
-            idiomOrSentenceRecyclerView.adapter = idiomMeaningFastAdapter
+            idiomRecyclerView.adapter = idiomMeaningFastAdapter
         //}
       /*  else{
             getIndexedSentence()
@@ -413,7 +418,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 Handler(Looper.getMainLooper()).post {
                     idiomMeaningItemAdapter.clear()
                     idiomMeaningItemAdapter.add(items)
-                    idiomOrSentenceRecyclerView.adapter = idiomMeaningFastAdapter
+                    idiomRecyclerView.adapter = idiomMeaningFastAdapter
 
                    toggleBottomSheet()
                 }
@@ -432,8 +437,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             ++idiomCounter
             TransitionManager.beginDelayedTransition(transitionsContainer)
             AppUtil.makeDebugLog("selectedIndex = "+index)
-            makeFlyAnimation(view)
-            addToToolTipView(underliningService.indexedSentences[index].sentence)
+
+
+            //makeFlyAnimation(view)
+           //addToToolTipView(underliningService.indexedSentences[index].sentence)
 
         }
 
@@ -456,7 +463,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
             override fun onAnimationEnd(animation: Animator) {
                 //addItem()
-                collectIdiomButton.text =  idiomCounter.toString()
+               /// replaceSentenceButton.text =  idiomCounter.toString()
                 targetView.setVisibility(View.VISIBLE)
 
             }
@@ -493,11 +500,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 .show()
     }
 
-    fun getIndexedSentence(){
-        BookmarkDataEmitter(activity).getAllIndexedSentenceBasedOnPdfFileName("",this)
-    }
-
-    override fun onFetched(indexedSentences: List<IndexedSentence>) {
+    override fun onFetched(indexedSentences: ArrayList<IndexedSentence>) {
         AppUtil.makeDebugLog("indexed sentences size "+indexedSentences.size)
         var items = mutableListOf<IndexedSentenceItem>()
 
@@ -506,10 +509,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             items.add(indexedSentenceItem)
         }
 
-        idiomOrSentenceRecyclerView.layoutManager = LinearLayoutManager(act)
+        idiomRecyclerView.layoutManager = LinearLayoutManager(act)
         indexedSentenceItemAdapter.clear()
         indexedSentenceItemAdapter.add(items)
-        idiomOrSentenceRecyclerView.adapter = idiomMeaningFastAdapter
+        idiomRecyclerView.adapter = idiomMeaningFastAdapter
 
     }
 
@@ -518,4 +521,22 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        if(outState != null){
+            outState.putCharSequence(KEY_PROCESSEDTEXT, sentences)
+        }
+    }
+
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if(savedInstanceState != null){
+            textFetchedTextView.setText(savedInstanceState.getString(KEY_PROCESSEDTEXT))
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+    }
 }

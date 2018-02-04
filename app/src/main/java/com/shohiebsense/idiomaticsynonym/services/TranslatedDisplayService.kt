@@ -24,11 +24,12 @@ import io.reactivex.rxkotlin.toObservable
  * Created by Shohiebsense on 11/12/2017.
  */
 //class TranslatedDisplayService(val context: Context, val translatedTextList: ArrayList<String>, val idiomList: HashMap<Int, String>, val callback: TranslatedDisplayCallback)  {
-class TranslatedDisplayService(val context: Context, val translatedTextList: ArrayList<String>, val idiomList: MutableList<String>,
-                               val indices : ArrayList<Int>,val callback: TranslatedDisplayCallback)  {
+class TranslatedDisplayService(val context: Context , val callback: TranslatedDisplayCallback)  {
 
-
-
+    lateinit var translatedText : CharSequence
+    lateinit var indices: ArrayList<Int>
+    lateinit var translatedTextList: ArrayList<String>
+    lateinit var idiomList: ArrayList<String>
 
     fun extract(){
 

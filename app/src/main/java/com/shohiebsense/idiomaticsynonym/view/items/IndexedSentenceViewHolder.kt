@@ -15,7 +15,7 @@ class IndexedSentenceViewHolder(itemView: View) : FastAdapter.ViewHolder<Indexed
     }
 
     override fun bindView(item: IndexedSentenceItem, payloads: MutableList<Any>?) {
-        itemView.indexedSentenceItemTextView.text = item.indexedSentence.sentence
+        itemView.indexedSentenceItemTextView.setText(item.indexedSentence.sentence)
         itemView.sentenceNumber.text = item.indexedSentence.index.toString()
 
         itemView.setOnClickListener {

@@ -11,15 +11,16 @@ class KategloViewHolder(itemView : View): FastAdapter.ViewHolder<KategloItem>(it
 
 
     override fun bindView(item: KategloItem?, payloads: MutableList<Any>?) {
+        itemView.itemTextView.text = item!!.text
+        itemView.setOnClickListener {
+            item.itemClickListener.onKategloItemClick(item!!.text, item.chosenSynonymWord.index)
 
+        }
 
     }
 
     override fun unbindView(item: KategloItem?) {
-        itemView.itemTextView.text = item!!.text
-        itemView.setOnClickListener {
-            item.itemClickListener.onKategloItemClick(item!!.text, item.chosenSynonymWord.index)
-        }
+
     }
 
     interface KategloItemListener {

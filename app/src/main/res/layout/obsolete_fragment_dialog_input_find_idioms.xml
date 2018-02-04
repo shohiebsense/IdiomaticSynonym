@@ -42,7 +42,7 @@
         android:layout_marginStart="@dimen/activity_margin"
         android:layout_marginEnd="@dimen/activity_margin"
         android:measureWithLargestChild="true"
-        style="?android:attr/buttonBarButtonStyle"
+        style="@style/ColoredButton"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1.0"

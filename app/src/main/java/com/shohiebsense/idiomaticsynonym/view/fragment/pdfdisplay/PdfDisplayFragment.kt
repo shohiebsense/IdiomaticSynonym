@@ -1,8 +1,6 @@
 package com.shohiebsense.idiomaticsynonym.view.fragment.pdfdisplay
 
 import android.Manifest
-import android.app.Activity.RESULT_OK
-import android.app.Fragment
 import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.drawable.Drawable
@@ -12,8 +10,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.*
@@ -27,13 +27,12 @@ import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
 import com.shohiebsense.idiomaticsynonym.MainActivity
+import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.services.PdfDisplayerService
 import com.shohiebsense.idiomaticsynonym.services.UnderliningService
-import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.custom.InputDocumentPageDialogFragment
 import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
-import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.DatabaseCallback
 import com.shohiebsense.idiomaticsynonym.view.fragment.callbacks.PdfDisplayCallback
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,13 +68,16 @@ import kotlin.collections.ArrayList
  * 2. Langsung query db, cocokin
  */
 
-class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, PdfDisplayCallback, DatabaseCallback, InputDocumentPageDialogFragment.InputDialogListener {
+class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, PdfDisplayCallback,  InputDocumentPageDialogFragment.InputDialogListener {
 
 
 
     lateinit var fetchedText : ArrayList<String>
-
     lateinit var transitionsContainer : ViewGroup
+    var fileName = ""
+    var VIEW_STATE = -1
+
+
 
 
 
@@ -110,40 +112,38 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     lateinit var uri : Uri
     var requestPermissions = 999
 
-    lateinit var menuItem : MenuItem
     lateinit var translateMenuItemn : MenuItem
-    lateinit var rootView : ViewGroup
+    lateinit var pdfLoadMenuItem: MenuItem
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //AppUtil.makeErrorLog("sizee sampe fetched translatedIdiom "+ TranslatedAndUntranslatedDataEmitter.translatedIdiomList.size )
         //AppUtil.makeErrorLog("sizee sampe fetched UNTRANSLATED "+ TranslatedAndUntranslatedDataEmitter.untranslatedIdiomList.size )
-
+        AppUtil.makeDebugLog("hiii ")
         setHasOptionsMenu(true)
-        pdfDisplayerService = PdfDisplayerService(activity, this).init()
+        pdfDisplayerService = PdfDisplayerService(context!!, this).init()
+
+
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = container!!
-        val view = inflater.inflate(R.layout.fragment_pdfdisplay, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_pdfdisplay, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Set up the user interaction to manually show or hide the system UI.
         //logic goes here
+        AppUtil.makeDebugLog("hiii ")
+        // showPhoneStatePermission()
+        transitionsContainer = rootConstraintLayout as ViewGroup
 
-       // showPhoneStatePermission()
-         transitionsContainer = rootConstraintLayout as ViewGroup
-
-
-         uploadButton.setOnClickListener{
-             //AppUtil.navigateToFragment(context, LoadFragment::class.java.name)
-
-             pdfDisplayerService.promptLoadPdf()
-         }
 
 
         var listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
@@ -162,47 +162,44 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
         //AppUtil.isExists(activity, "4.png")
         onTouchTextViewFunctionality()
-      /*  AppUtil.makeDebugLog("my Url "+ MediaManager.get().url().generate("2.png"))
+        /*  AppUtil.makeDebugLog("my Url "+ MediaManager.get().url().generate("2.png"))
 
-        AppUtil.makeDebugLog("loaded")
-*/
+          AppUtil.makeDebugLog("loaded")
+  */
 
 
         //var bitmap = BitmapFactory.decodeFile(AppUtil.getImageString(context, "1.png").absolutePath)
 
         var imageInSD = ""
 
-       /* try {
-            imageInSD = AppUtil.getImageString(context, "1.png").canonicalPath
-            AppUtil.makeDebugLog("lolosss")
-            val options = BitmapFactory.Options()
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888
-            var bitmap = BitmapFactory.decodeFile(imageInSD)
-            uploadButton.visibility = View.VISIBLE
-            uploadButton.setImageBitmap(bitmap)
-            } catch(e: Exception) {
-                AppUtil.makeDebugLog (e.toString());
-        }*/
+        /* try {
+             imageInSD = AppUtil.getImageString(context, "1.png").canonicalPath
+             AppUtil.makeDebugLog("lolosss")
+             val options = BitmapFactory.Options()
+             options.inPreferredConfig = Bitmap.Config.ARGB_8888
+             var bitmap = BitmapFactory.decodeFile(imageInSD)
+             uploadButton.visibility = View.VISIBLE
+             uploadButton.setImageBitmap(bitmap)
+             } catch(e: Exception) {
+                 AppUtil.makeDebugLog (e.toString());
+         }*/
 
         //.setImageDrawable(AppUtil.getFileFromAssets(context))
 
 
 
-        var adapter = CardPagerAdapter(activity)
+        var adapter = CardPagerAdapter(activity!!)
         fragmentFetchCardViewPager.adapter = adapter
-        fragmentFetchViewPagerIndicator.setupWithViewPager(fragmentFetchCardViewPager)
-        fragmentFetchViewPagerIndicator.addOnPageChangeListener(mOnPageChangeListener)
+        //fragmentFetchViewPagerIndicator.setupWithViewPager(fragmentFetchCardViewPager)
+        //fragmentFetchViewPagerIndicator.addOnPageChangeListener(mOnPageChangeListener)
         adapter.notifyDataSetChanged()
         performAutomaticSlide()
         AppUtil.makeDebugLog("lhoo ke sini kan?")
-
     }
 
     override fun onStart() {
         super.onStart()
-        if(TranslatedAndUntranslatedDataEmitter.isIdiomsEmpty()){
-            TranslatedAndUntranslatedDataEmitter(activity,this).getAll()
-        }
+
     }
 
     var currentPage = 0
@@ -217,6 +214,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
             if (currentPage == 15 -1){
                 currentPage = 0
             }
+            if(fragmentFetchCardViewPager != null)
             fragmentFetchCardViewPager.setCurrentItem(currentPage++,true)
         }
 
@@ -231,21 +229,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         }, 100, 4000)
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            7 -> if (resultCode == RESULT_OK) {
-
-            }
-        }
-    }
-
-
-
-
-
     fun onTouchTextViewFunctionality(){
         textLoadedTextView.setOnTouchListener{ view: View, motionEvent: MotionEvent ->
 
@@ -254,40 +237,22 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         }
     }
 
-
     //reactivies it
-
-
-    fun fadeViewsAfterFetched(){
-        uploadButton.visibility = View.GONE
-        uploadPdfView.visibility = View.GONE
-    }
-
-    fun toggleUploadButtonView(show : Boolean){
-        if(show){
-            uploadButton.visibility = View.VISIBLE
-
-        }
-        else{
-
-        }
-    }
-
     fun toggleErrorViews(ERROR_NO : Int){
         TransitionManager.beginDelayedTransition(transitionsContainer)
         avLoadingIndicatorView.visibility = View.GONE
         when(ERROR_NO){
             UnderliningService.ERROR_LOAD -> {
-                uploadButton.visibility = View.VISIBLE
+                pdfLoadMenuItem.setVisible(true)
                 uploadPdfView.visibility = View.GONE
-                fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
+                //fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
                 fragmentFetchCardViewPager.visibility = View.VISIBLE
                 return;
             }
             UnderliningService.ERROR_FETCH,
             UnderliningService.ERROR_TRANSLATE -> {
-                uploadButton.visibility = View.GONE
-                fragmentFetchViewPagerIndicator.visibility = View.GONE
+                pdfLoadMenuItem.setVisible(false)
+                //fragmentFetchViewPagerIndicator.visibility = View.GONE
                 fragmentFetchCardViewPager.visibility = View.GONE
                 uploadPdfView.visibility = View.VISIBLE
                 return
@@ -301,7 +266,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     fun toggleViews(STATUS : Int){
         TransitionManager.beginDelayedTransition(transitionsContainer)
-        uploadButton.visibility = View.GONE
+        pdfLoadMenuItem.isVisible = false
         //AppUtil.makeDebugLog("factCardView toggled ")
 
         when(STATUS){
@@ -310,8 +275,9 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 textFetchedScrollView.visibility = View.GONE
                 uploadPdfView.visibility = View.VISIBLE
                 fragmentFetchCardViewPager.visibility = View.GONE
-                fragmentFetchViewPagerIndicator.visibility = View.GONE
+                //fragmentFetchViewPagerIndicator.visibility = View.GONE
                 avLoadingIndicatorView.visibility = View.VISIBLE
+
             }
             UnderliningService.STATUS_LOADED -> {
                 textFetchedScrollView.visibility = View.GONE
@@ -325,7 +291,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 textFetchedScrollView.visibility = View.GONE
                 uploadPdfView.visibility = View.VISIBLE
                 fragmentFetchCardViewPager.visibility = View.VISIBLE
-                fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
+                //fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
                 avLoadingIndicatorView.visibility = View.GONE
             }
 
@@ -347,7 +313,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe {textFetchedScrollView ->
-                    textFetchedScrollView.scrollTo(textFetchedScrollView.scrollX, textLoadedTextView.bottom + AppUtil.getHeightOfWindow(activity))
+                    textFetchedScrollView.scrollTo(textFetchedScrollView.scrollX, textLoadedTextView.bottom + AppUtil.getHeightOfWindow(activity!!))
                 }
 
     }
@@ -358,7 +324,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     fun getFileName(uri: Uri): String {
         var result: String = ""
         if (uri.scheme == "content") {
-            val cursor = activity.getContentResolver().query(uri, null, null, null, null)
+            val cursor = context!!.getContentResolver().query(uri, null, null, null, null)
             try {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
@@ -380,7 +346,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
         var path: String? = null
         val projection = arrayOf(MediaStore.Files.FileColumns.DATA)
-        val cursor = activity.contentResolver.query(uri, projection, null, null, null)
+        val cursor = context!!.contentResolver.query(uri, projection, null, null, null)
 
         if (cursor == null) {
             path = uri.path
@@ -400,24 +366,31 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         inflater?.inflate(R.menu.options_fetch_fragment, menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        menuItem = menu?.findItem(R.id.fetchMenuOptions)!!.setVisible(false)
-        translateMenuItemn = menu?.findItem(R.id.translateTextMenuOptions)!!.setVisible(false)
-
+    override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
+        pdfLoadMenuItem = menu.findItem(R.id.loadPdfMenuOptions)!!
+        translateMenuItemn = menu.findItem(R.id.translateTextMenuOptions)!!
+
+        when(VIEW_STATE){
+            -1 -> {
+                pdfLoadMenuItem.setVisible(true)
+                translateMenuItemn.setVisible(false)
+            }
+            UnderliningService.STATUS_LOADED -> {
+                pdfLoadMenuItem.setVisible(false)
+                translateMenuItemn.setVisible(true)
+            }
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId){
-            R.id.fetchMenuOptions ->{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    AppUtil.makeDebugLog("ewww")
-
-                }
-                //toggleViews(false,true,true)
-            }
             R.id.translateTextMenuOptions -> {
                 showInputDialog()
+            }
+            R.id.loadPdfMenuOptions -> {
+                pdfDisplayerService.promptLoadPdf()
             }
 
         }
@@ -427,7 +400,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     private fun showPhoneStatePermission() {
         val permissionCheck = ContextCompat.checkSelfPermission(
-                activity, Manifest.permission.READ_PHONE_STATE)
+                context!!, Manifest.permission.READ_PHONE_STATE)
         //AppUtil.makeDebugLog("is Permission number "+permissionCheck)
 
     }
@@ -436,11 +409,10 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         toggleViews(UnderliningService.STATUS_LOADING)
     }
 
-    override fun onFinishedLoadingPdf(file : File) {
-        uploadButton.visibility = View.GONE
-
-        AppUtil.makeDebugLog("pdfFileNamee "+file.name)
-        uploadPdfView.fromFile(file)
+    override fun onFinishedLoadingPdf(fileString : String) {
+        pdfDisplayerService.pdfFile = File(fileString)
+        pdfLoadMenuItem.setVisible(false)
+        uploadPdfView.fromFile(pdfDisplayerService.pdfFile)
                 .defaultPage(pageNumber)
                 .onPageChange(this)
                 .enableAnnotationRendering(true)
@@ -448,8 +420,16 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 .scrollHandle(DefaultScrollHandle(activity))
                 .spacing(10) // in dp
                 .load()
-        toggleViews(UnderliningService.STATUS_LOADED)
+        VIEW_STATE = UnderliningService.STATUS_LOADED
+        toggleViews(VIEW_STATE)
         translateMenuItemn.setVisible(true)
+        this.fileName = fileString
+        activity!!.invalidateOptionsMenu()
+    }
+
+    fun saveStateFileName(fileString: String) : Bundle {
+        val bundle = Bundle()
+        return bundle
     }
 
     override fun onFetchingPdf() {
@@ -464,19 +444,31 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
 
-    override fun onFinishedFetchingPdf(fetchedText: MutableList<String>, name: String) {
+    override fun onFinishedFetchingPdfAsList(fetchedText: MutableList<String>, name: String) {
         this.fetchedText = fetchedText as ArrayList<String>
         //AppUtil.makeDebugLog("casting mutable to arraylist succeed with size "+this.fetchedText.size)
         // textFetchedTextView.setText(extractedPdfTexts)
         toggleViews(UnderliningService.STATUS_FETCHED)
-        var intent = Intent(activity, MainActivity::class.java)
+        var intent = Intent(activity, UnderliningActivity::class.java)
         var fetchedTextAsList = ArrayList<String>()
-        intent.putExtra(MainActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
-        intent.putExtra(MainActivity.INTENT_FILENAME, name)
+        intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
+        intent.putExtra(UnderliningActivity.INTENT_FILENAME, name)
         fetchedTextAsList.addAll(this.fetchedText)
-        intent.putExtra(MainActivity.INTENT_FETCHED_TEXT, fetchedTextAsList)
+        intent.putExtra(UnderliningActivity.INTENT_FETCHED_TEXT, fetchedTextAsList)
+        AppUtil.makeDebugLog("FINISHED FETCHING PDF WITH SIZE "+fetchedText.size)
         startActivity(intent)
     }
+
+    override fun onFinishedFetchingPdf(fetchedText: String, name: String) {
+        toggleViews(UnderliningService.STATUS_FETCHED)
+        var intent = Intent(activity, UnderliningActivity::class.java)
+        intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
+        intent.putExtra(UnderliningActivity.INTENT_FILENAME, name)
+        AppUtil.putStringToPreferences(activity!!, fetchedText)
+        startActivity(intent)
+    }
+
+
 
     fun showInputDialog(){
         var dialog = InputDocumentPageDialogFragment()
@@ -486,15 +478,10 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onDialogPositiveClick(number: Int) {
-       // AppUtil.makeDebugLog("dialog clickedd ")
-        //pdffetcher
-
-        //var numberOfPages = dialog.inputNumberOfPagesEditText.text.toString().toInt()
-        CustomSnackbar.make(rootView,
-                CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction().show()
+        activity!!.setTitle("Loading ...")
+        avLoadingIndicatorView.visibility = View.VISIBLE
+        CustomSnackbar.make(view!!.parent as ViewGroup, CustomSnackbar.LENGTH_INDEFINITE).setText("Please Wait ").hidePermissionAction().show()
         pdfDisplayerService.fetchText(number)
-
-
     }
 
 
@@ -513,22 +500,8 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
 
-    override fun onFetchingData(idiomMode: Int) {
-       // toggleViews(UnderliningService.STATUS_LOADING)
-    }
 
-    override fun onErrorFetchingData() {
 
-    }
 
-    override fun onFetchedTranslatedData() {
-    }
 
-    override fun onFetchedUntranslatedData() {
-        toggleViews(UnderliningService.STATUS_INIT)
-    }
-
-    override fun onFetchedBoth() {
-        //toggleViews(UnderliningService.STATUS_INIT)
-    }
 }
