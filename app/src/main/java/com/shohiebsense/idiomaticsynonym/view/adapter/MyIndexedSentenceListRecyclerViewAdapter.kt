@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
-import com.shohiebsense.idiomaticsynonym.view.fragment.dummy.DummyContent.DummyItem
 import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IndexedSentenceFragment.OnListFragmentInteractionListener
 import kotlinx.android.synthetic.main.item_indexed_sentence.view.*
 
