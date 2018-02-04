@@ -38,6 +38,8 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
 +
     </string>
     <string name="dialog_message_input_page">Number of pages</string>
+    <string name="dialog_message_result_empty">The result is empty, find another document</string>
+
     <string name="ok">Ok</string>
 
     <string name="story"></string>

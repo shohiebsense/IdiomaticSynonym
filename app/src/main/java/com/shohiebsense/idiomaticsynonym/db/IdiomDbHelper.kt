@@ -34,7 +34,6 @@ class IdiomDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context, Id
             AppUtil.makeErrorLog("db not exists")
             copy()
         }
-        AppUtil.makeErrorLog("db exists")
     }
 
     fun check() : Boolean {

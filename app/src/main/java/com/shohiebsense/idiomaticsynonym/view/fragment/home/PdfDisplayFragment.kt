@@ -72,6 +72,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     lateinit var fetchedText : ArrayList<String>
     lateinit var transitionsContainer : ViewGroup
+    var pdfFilePath : String = ""
     var fileName = ""
     var VIEW_STATE = -1
 
@@ -118,11 +119,8 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         super.onCreate(savedInstanceState)
         //AppUtil.makeErrorLog("sizee sampe fetched translatedIdiom "+ TranslatedAndUntranslatedDataEmitter.translatedIdiomList.size )
         //AppUtil.makeErrorLog("sizee sampe fetched UNTRANSLATED "+ TranslatedAndUntranslatedDataEmitter.untranslatedIdiomList.size )
-        AppUtil.makeDebugLog("hiii ")
         setHasOptionsMenu(true)
         pdfDisplayerService = PdfDisplayerService(context!!, this).init()
-
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -138,7 +136,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         super.onViewCreated(view, savedInstanceState)
         // Set up the user interaction to manually show or hide the system UI.
         //logic goes here
-        AppUtil.makeDebugLog("hiii ")
         // showPhoneStatePermission()
         transitionsContainer = rootConstraintLayout as ViewGroup
 
@@ -197,7 +194,8 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     override fun onStart() {
         super.onStart()
-
+        AppUtil.makeDebugLog("isFileNameEmpty "+fileName)
+        resumeLoadedPdf()
     }
 
     var currentPage = 0
@@ -280,6 +278,13 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
             UnderliningService.STATUS_LOADED -> {
                 textFetchedScrollView.visibility = View.GONE
                 uploadPdfView.visibility = View.VISIBLE
+            }
+            UnderliningService.STATUS_RESUMED -> {
+                textFetchedScrollView.visibility = View.GONE
+                uploadPdfView.visibility = View.VISIBLE
+                pdfLoadMenuItem.isVisible = true
+                activity!!.title = getString(R.string.app_name)
+                activity!!.invalidateOptionsMenu()
             }
             UnderliningService.STATUS_FETCHED -> {
                 uploadPdfView.visibility = View.GONE
@@ -405,6 +410,14 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     override fun onLoadingPdf() {
         toggleViews(UnderliningService.STATUS_LOADING)
+    }
+
+    fun resumeLoadedPdf(){
+        if(!fileName.isBlank()){
+            //onFinishedLoadingPdf(pdfFilePath)
+            VIEW_STATE= UnderliningService.STATUS_RESUMED
+            toggleViews(VIEW_STATE)
+        }
     }
 
     override fun onFinishedLoadingPdf(fileString : String) {

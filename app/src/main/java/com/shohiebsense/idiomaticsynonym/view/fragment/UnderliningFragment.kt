@@ -37,6 +37,7 @@ import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
 import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
+import com.shohiebsense.idiomaticsynonym.view.custom.EmptyResultDialogFragment
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
 import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceItem
@@ -63,6 +64,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
 
     val KEY_PROCESSEDTEXT = "processed_text"
+    var KEY_STATE = 0
     lateinit var extractedPdfTexts: ArrayList<String>
     lateinit var underliningService: UnderliningService
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
@@ -170,11 +172,23 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             //underliningService.getUnderLineZipping()
             initAdapter()
         }*/
-        if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
-            underliningService.underLine()
+        if(KEY_STATE == 0){
+            if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
+                underliningService.underLine()
+            }
+            else{
+                TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
+            }
         }
-        else{
-            TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if(KEY_STATE == 1 || KEY_STATE == 2 && !fileName.isBlank()){
+            cardViewPager.visibility = View.GONE
+            textFetchedTextView.visibility = View.VISIBLE
+            activity.title = fileName
         }
     }
 
@@ -258,24 +272,29 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
     override fun onFinishedUnderliningText(decoratedSpan: ArrayList<TempIndexedSentence>) {
 
+
         object : Thread(){
             override fun start() {
                 Handler(Looper.getMainLooper()).post {
-                    AppUtil.makeDebugLog("finished, not repeatable kan? "+decoratedSpan.size)
+
+                    AppUtil.makeDebugLog("underlining process finished "+decoratedSpan.size)
 
                     cardViewPager.visibility = View.GONE
                     textFetchedTextView.visibility = View.VISIBLE
                     activity.title = fileName
-
-
                      decoratedSpan.forEach {
                       textFetchedTextView.append(it.sentence)
                     }
                     underliningService.bookmarkDataEmitter.updateEnglishText(textFetchedTextView.text)
                     snackbar.dismiss()
+               /*     if(decoratedSpan.isEmpty()){
+                        showEmptyResultDialog()
+                    }*/
                     addToToolTipView(getString(R.string.dialog_find_idioms_and_replaced_it))
                     underlined = true
+                    KEY_STATE = 1
                     if(underlined && translated){
+                        KEY_STATE = 2
                         goToTranslatedDisplayMenuItem.isVisible = true
                     }
                 }
@@ -534,4 +553,13 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
     }
+
+
+    fun showEmptyResultDialog(){
+        var dialog = EmptyResultDialogFragment()
+        dialog.setTargetFragment(this, 1)
+        dialog.show(fragmentManager, EmptyResultDialogFragment::class.java.simpleName)
+
+    }
+
 }

@@ -36,6 +36,8 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
     }
 
 
+
+
     fun promptLoadPdf() {
         var properties = DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;

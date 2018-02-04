@@ -59,7 +59,7 @@ class UnderliningService constructor (val context: Context) {
     var translatedFetchedPdfText = arrayListOf<SpannableStringBuilder>()
     //var fetchedUntranslatedIdiomTexts = mutableListOf<String>()
     //var fetchedTranslatedIdiomTexts = mutableListOf<String>()
-    private var translateService : TranslateService = TranslateService(context)
+    lateinit var translateService : TranslateService
     var indexedSentences = arrayListOf<TempIndexedSentence>()
     var indices = arrayListOf<Int>()
     val bookmarkDataEmitter = BookmarkDataEmitter(context)
@@ -105,6 +105,7 @@ class UnderliningService constructor (val context: Context) {
         val ERROR_FETCH = 1
         val ERROR_TRANSLATE = 2
         val STATUS_LOADED = 10
+        val STATUS_RESUMED = 11
         val STATUS_FETCHED = 9
         val STATUS_TRANSLATED = 8
         val STATUS_FETCHED_DB = 7
@@ -120,7 +121,7 @@ class UnderliningService constructor (val context: Context) {
     private fun getObserver(): Observer<ArrayList<TempIndexedSentence>> {
         return object : Observer<ArrayList<TempIndexedSentence>> {
             override fun onSubscribe(d: Disposable) {
-                AppUtil.makeDebugLog("SUBSCRIBEEEE MY GAY")
+                AppUtil.makeDebugLog("Underlining Bergins ")
             }
 
 
@@ -152,6 +153,7 @@ class UnderliningService constructor (val context: Context) {
 
                }
            }*/
+        translateService = TranslateService(context)
         MaxentTagger.tokenizeText(StringReader(extractedPdfString)).forEachIndexed { sentenceIndex, sentenceChar ->
             var sentence = Sentence.listToString(sentenceChar)
             var spannableStringBuilder = SpannableStringBuilder(sentence)
