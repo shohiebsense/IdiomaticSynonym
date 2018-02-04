@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.api;
+package com.shohiebsense.idiomaticsynonym.model;
 
 /**
  * Created by shohiebsense on 14/06/17.

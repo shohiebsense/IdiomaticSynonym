@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.interactor;
+package com.shohiebsense.idiomaticsynonym.obsoletes.interactor;
 
 
 /**

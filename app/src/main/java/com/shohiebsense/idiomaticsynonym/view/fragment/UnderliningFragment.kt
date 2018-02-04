@@ -181,7 +181,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     fun initAdapter(){
         var adapter = CardPagerAdapter(activity)
         cardViewPager.adapter = adapter
-        viewPagerIndicator.setupWithViewPager(cardViewPager)
         // fragmentFetchViewPagerIndicator.addOnPageChangeListener(mOnPageChangeListener)
         adapter.notifyDataSetChanged()
 
@@ -265,7 +264,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     AppUtil.makeDebugLog("finished, not repeatable kan? "+decoratedSpan.size)
 
                     cardViewPager.visibility = View.GONE
-                    viewPagerIndicator.visibility = View.GONE
                     textFetchedTextView.visibility = View.VISIBLE
                     activity.title = fileName
 
