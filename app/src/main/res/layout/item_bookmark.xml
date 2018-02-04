@@ -29,9 +29,20 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="serif"
                 android:text="texts"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/navigationImageView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/navigationImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/nameTextView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="@dimen/widget_container_padding"
+                android:src="@drawable/ic_next_page"
+                />
 
             <io.square1.richtextlib.ui.RichContentView
                 android:id="@+id/textsTextView"

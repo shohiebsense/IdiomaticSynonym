@@ -31,7 +31,10 @@ class TranslatedDisplayPagerAdapter(val context: Context, fm: FragmentManager, v
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return if(position == 0) context.getString(R.string.text_title_translation)
-        else context.getString(R.string.text_title_sentence_index)
+        return when(position){
+            0 -> context.getString(R.string.text_title_english)
+            1 -> context.getString(R.string.text_title_translation)
+            else -> context.getString(R.string.text_title_indexed_sentence)
+        }
     }
 }

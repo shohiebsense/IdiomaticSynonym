@@ -40,7 +40,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
     }
 
     fun updateIndonesianSentence(wholeSentence: String){
-        AppUtil.makeDebugLog("indonesian exists right ??? " + wholeSentence)
+        AppUtil.makeDebugLog("indonesian translation exists right ??? " + wholeSentence)
         db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
                 Bookmark.COLUMN_INDONESIAN to wholeSentence)
                 .whereArgs(Bookmark.COLUMN_ID + " = " + lastInsertedId)

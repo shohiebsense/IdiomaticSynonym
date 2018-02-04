@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.item_bookmark.view.*
 /**
  * Created by Shohiebsense on 16/01/2018.
  */
-class BookmarkViewHolder(val v : View) : FastAdapter.ViewHolder<BookmarkItem>(v), View.OnClickListener {
+class BookmarkViewHolder(val v : View) : FastAdapter.ViewHolder<BookmarkItem>(v) {
 
 
     override fun bindView(item: BookmarkItem, payloads: MutableList<Any>?) {
@@ -25,14 +25,13 @@ class BookmarkViewHolder(val v : View) : FastAdapter.ViewHolder<BookmarkItem>(v)
             }
 
         })
-        itemView.setOnClickListener(this)
+        itemView.navigationImageView.setOnClickListener{
+            val intent = Intent(Intent(v.context, TranslatedDisplayActivity::class.java))
+            intent.putExtra(TranslatedDisplayActivity.INTENT_LAST_ID, item.bookmark.id)
+            intent.putExtra(TranslatedDisplayActivity.INTENT_FILENAME, item.bookmark.fileName)
+            v.context.startActivity(intent)
+        }
     }
-
-    override fun onClick(p0: View?) {
-        val intent = Intent(Intent(v.context, TranslatedDisplayActivity::class.java))
-        v.context.startActivity(intent)
-    }
-
 
     override fun unbindView(item: BookmarkItem?) {
     }

@@ -48,6 +48,7 @@ class TranslatedDisplayActivity : FragmentActivity(), BookmarkQueryService.Compl
             //bookmarkDataEmitter.getAllIndexedSentenceBasedOnLastId(lastId,this)
         }
         val adapter = TranslatedDisplayPagerAdapter(this, supportFragmentManager, lastId)
+        translatedDisplayViewPager.offscreenPageLimit = 3
         translatedDisplayViewPager.adapter = adapter
         translatedDisplayTabLayout.setupWithViewPager(translatedDisplayViewPager)
     }

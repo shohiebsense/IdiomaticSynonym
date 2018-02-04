@@ -98,11 +98,11 @@ class TranslateService(val context : Context) {
          }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(observer)
      }*/
 
-    fun translate(it : String, flagged : Boolean) : SpannableStringBuilder? {
+    fun translate(it: SpannableStringBuilder, flagged: Boolean) : SpannableStringBuilder? {
         //commented due to development, uncomment again.
 
-        val language = translateService.detect(it).language.toLowerCase()
-        val detections = translateService.detect(ImmutableList.of(it))
+        val language = translateService.detect(it.toString()).language.toLowerCase()
+        val detections = translateService.detect(ImmutableList.of(it.toString()))
         AppUtil.makeDebugLog("Language(s) detected:")
         for (detection in detections) {
             AppUtil.makeDebugLog(detection.toString())
@@ -111,7 +111,7 @@ class TranslateService(val context : Context) {
         var spannableStringBuilder = SpannableStringBuilder()
         if (language.equals("en")) {
             AppUtil.makeDebugLog("before translation " + it)
-            var translation = translateService.translate(it,
+            var translation = translateService.translate(it.toString(),
                     Translate.TranslateOption.targetLanguage("id"), model)
 
             if(translation != null){
@@ -120,7 +120,6 @@ class TranslateService(val context : Context) {
                 if(flagged){
                     spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), 0, translation.translatedText.lastIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 }
-
                 return spannableStringBuilder
 
             }

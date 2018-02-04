@@ -4,11 +4,20 @@
     android:layout_height="match_parent"
     tools:context="com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment">
 
+    <ScrollView
+        android:id="@+id/englishScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/englishTextsTextView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/RootPadding"
         android:text="@string/hello_blank_fragment" />
+
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

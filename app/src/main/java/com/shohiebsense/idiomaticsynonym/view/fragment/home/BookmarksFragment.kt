@@ -51,7 +51,7 @@ class BookmarksFragment : Fragment() {
         emptyTextView.visibility = if(bookmarks.isEmpty()) View.VISIBLE else View.GONE
         bookmarks.forEach {
             it->
-            var idiomMeaningItem = BookmarkItem().withSentence(it)
+            var idiomMeaningItem = BookmarkItem().withSentence(it).withSelectable(true)
             items.add(idiomMeaningItem)
         }
         bookmarkItemAdapter.add(items)

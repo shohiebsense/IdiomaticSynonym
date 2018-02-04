@@ -117,6 +117,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
 
+
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.options_goto_translateddisplay, menu)
     }
@@ -189,6 +191,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             cardViewPager.visibility = View.GONE
             textFetchedTextView.visibility = View.VISIBLE
             activity.title = fileName
+            goToTranslatedDisplayMenuItem.isVisible = true
         }
     }
 
@@ -251,7 +254,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         object : Thread(){
             override fun start() {
                 Handler(Looper.getMainLooper()).post {
-                    activity.title = "Complete"
+                    activity.title = fileName
                     showMessageDialog()
                     translated = true
                     if(translated && underlined){

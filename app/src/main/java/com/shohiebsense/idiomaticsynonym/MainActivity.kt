@@ -170,7 +170,6 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
     }
 
 
-
     /**
      * database callbacks
      */

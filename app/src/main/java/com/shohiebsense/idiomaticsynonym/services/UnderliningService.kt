@@ -198,11 +198,7 @@ class UnderliningService constructor (val context: Context) {
     }
 
     fun extractTranslation(indexedSentence: TempIndexedSentence){
-        var spannableStringBuilder = SpannableStringBuilder(indexedSentence.sentence)
-        if(indexedSentence.flagged){
-            spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD),0,indexedSentence.sentence.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-        }
-        translatedFetchedPdfText.add(spannableStringBuilder)
+        translatedFetchedPdfText.add(translateService.translate(indexedSentence.sentence,indexedSentence.flagged)!!)
     }
 
     fun getError(e: Unit){
@@ -219,7 +215,6 @@ class UnderliningService constructor (val context: Context) {
             spannableStringBuilder.append(it)
         }
         bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder)
-
     }
 
     fun translate(){
