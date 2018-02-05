@@ -93,6 +93,7 @@ dependencies {
     //implementation 'edu.stanford.nlp:stanford-parser:2.0.2'
     implementation 'edu.stanford.nlp:stanford-corenlp:1.3.0'
     implementation 'org.ahocorasick:ahocorasick:0.4.0'
+    implementation 'org.apache.commons:commons-lang3:3.7'
 
 
     implementation 'io.square1:richtext:6.0.18'

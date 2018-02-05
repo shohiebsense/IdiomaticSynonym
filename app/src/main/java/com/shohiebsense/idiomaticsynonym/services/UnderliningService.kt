@@ -11,6 +11,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
+import com.google.api.client.repackaged.org.apache.commons.codec.binary.StringUtils
 import com.klinker.android.link_builder.Link
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.*
@@ -153,13 +154,19 @@ class UnderliningService constructor (val context: Context) {
 
                }
            }*/
+
         translateService = TranslateService(context)
+
+
+
         MaxentTagger.tokenizeText(StringReader(extractedPdfString)).forEachIndexed { sentenceIndex, sentenceChar ->
             var sentence = Sentence.listToString(sentenceChar)
             var spannableStringBuilder = SpannableStringBuilder(sentence)
             var flagged = false
             for(combinedIdiom in list){
-                var index = sentence.indexOf(combinedIdiom.idiom+"\\b",0,true)
+
+
+                var index = sentence.toLowerCase().indexOf(combinedIdiom.idiom+"\\b",0,true)
 
                 //  val matcher =Pattern.compile( combinedIdiom.idiom+"\\b",Pattern.CASE_INSENSITIVE).matcher(sentence)
                 // if(matcher.find()){
