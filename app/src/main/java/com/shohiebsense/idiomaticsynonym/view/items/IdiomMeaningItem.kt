@@ -15,13 +15,10 @@ class IdiomMeaningItem : AbstractItem<IdiomMeaningItem, IdiomMeaningViewHolder>(
     lateinit var idiomMeaning : String
     lateinit var activity : Activity
     lateinit var idiomItemClickListener : IdiomMeaningViewHolder.IdiomItemClickListener
-    var index : Int = 0
 
-    fun withIdiomMeaning(meaning : String, idiomItemClickListener: IdiomMeaningViewHolder.IdiomItemClickListener, index : Int) : IdiomMeaningItem {
+    fun withIdiomMeaning(meaning : String, idiomItemClickListener: IdiomMeaningViewHolder.IdiomItemClickListener) : IdiomMeaningItem {
         this.idiomMeaning = meaning
         this.idiomItemClickListener = idiomItemClickListener
-        AppUtil.makeDebugLog("with indexx "+index)
-        this.index = index
         return this
     }
 

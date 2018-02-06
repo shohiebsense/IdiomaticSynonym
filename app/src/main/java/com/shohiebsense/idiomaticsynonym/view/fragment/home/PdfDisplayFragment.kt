@@ -27,6 +27,7 @@ import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.services.PdfDisplayerService
 import com.shohiebsense.idiomaticsynonym.services.UnderliningService
+import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.custom.InputDocumentPageDialogFragment
@@ -465,6 +466,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
         intent.putExtra(UnderliningActivity.INTENT_FILENAME, name)
         fetchedTextAsList.addAll(this.fetchedText)
+
         intent.putExtra(UnderliningActivity.INTENT_FETCHED_TEXT, fetchedTextAsList)
         AppUtil.makeDebugLog("FINISHED FETCHING PDF WITH SIZE "+fetchedText.size)
         startActivity(intent)
@@ -475,6 +477,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         var intent = Intent(activity, UnderliningActivity::class.java)
         intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
         intent.putExtra(UnderliningActivity.INTENT_FILENAME, name)
+        BookmarkDataEmitter(context!!).insertBookmarkEnglish(fileName, "","")
         AppUtil.putStringToPreferences(activity!!, fetchedText)
         startActivity(intent)
     }

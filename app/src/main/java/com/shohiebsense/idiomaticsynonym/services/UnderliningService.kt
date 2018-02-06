@@ -33,6 +33,7 @@ import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.io.StringReader
+import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
 /**
@@ -143,6 +144,17 @@ class UnderliningService constructor (val context: Context) {
         }
     }
 
+    fun getSentence(text: String, word: String): String? {
+        val END_OF_SENTENCE = Pattern.compile("\\s+[^.!?]*[.!?]")
+        val lcword = word.toLowerCase()
+        for (sentence in END_OF_SENTENCE.split(text)) {
+            if (sentence.toLowerCase().contains(lcword)) {
+                return sentence
+            }
+        }
+        return null
+    }
+
     fun convertToCharSequence(list : ArrayList<CombinedIdiom>): ArrayList<TempIndexedSentence> {
         val idiomSet = HashSet<String>()
         val links = arrayListOf<Link>()
@@ -155,11 +167,44 @@ class UnderliningService constructor (val context: Context) {
                }
            }*/
 
+
         translateService = TranslateService(context)
+        val spannableStringBuilder = SpannableStringBuilder(extractedPdfString)
+        var flagged = false
+        val END_OF_SENTENCE = Pattern.compile("\\s+[^.!?]*[.!?]")
+
+        for(combinedIdiom in list) {
+
+            val matcher = Pattern.compile("[^.]*" + Pattern.quote(combinedIdiom.idiom) + "[^.]*\\.?", Pattern.CASE_INSENSITIVE).matcher(extractedPdfString)
+
+            while (matcher.find()) {
+                spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                spannableStringBuilder.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.secondaryDarkColor)), matcher.start(), matcher.end(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View?) {
+                        if (combinedIdiom.meaning.isBlank()) {
+                            getSingleTranslate(combinedIdiom.idiom)
+                            return
+                        }
+                        underliningCallback.onClickedIdiomText(combinedIdiom.meaning)
+                        //
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = false
+                    }
+                }
+                spannableStringBuilder.setSpan(clickableSpan, matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                //bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence, combinedIdiom.idiom)
+                flagged = true
+            }
+            indexedSentences.add(TempIndexedSentence(spannableStringBuilder,flagged))
+        }
 
 
 
-        MaxentTagger.tokenizeText(StringReader(extractedPdfString)).forEachIndexed { sentenceIndex, sentenceChar ->
+       /* MaxentTagger.tokenizeText(StringReader(extractedPdfString)).forEachIndexed { sentenceIndex, sentenceChar ->
             var sentence = Sentence.listToString(sentenceChar)
             var spannableStringBuilder = SpannableStringBuilder(sentence)
             var flagged = false
@@ -183,7 +228,7 @@ class UnderliningService constructor (val context: Context) {
                                 getSingleTranslate(combinedIdiom.idiom,sentenceIndex, sentence)
                                 return
                             }
-                            underliningCallback.onClickedIdiomText(combinedIdiom.meaning, sentenceIndex, sentence)
+                            underliningCallback.onClickedIdiomText(combinedIdiom.meaning)
                             //
                         }
                         override fun updateDrawState(ds: TextPaint) {
@@ -200,7 +245,7 @@ class UnderliningService constructor (val context: Context) {
                 }
             }
             indexedSentences.add(TempIndexedSentence(spannableStringBuilder,flagged))
-        }
+        }*/
         return indexedSentences
     }
 
@@ -263,81 +308,6 @@ class UnderliningService constructor (val context: Context) {
     }
 
 
-    //COBA LANGSUNG DI ONNEXT
-
-
-
-/*private fun getObserver2(): Observer<String> {
-
-    var sentenceIndex = 0
-    var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
-
-    return object : Observer<String> {
-        override fun onSubscribe(d: Disposable) {
-            AppUtil.makeDebugLog("SUBSCRIBEEEE MY GAY")
-        }
-
-
-        override fun onNext(sentence : String) {
-            TranslatedAndUntranslatedDataEmitter.idiomsList.forEach{index ->
-                AppUtil.makeDebugLog("iterate no. $sentenceIndex, and the idiom is $index")
-                if( sentence.contains(index.idiom)){
-                    decoratedSpans.add(underliningCombinedIdiomProcess(sentence.indexOf(index.idiom),SpannableStringBuilder(sentence),index,sentenceIndex,sentence  ))
-                }
-            }
-            sentenceIndex++
-        }
-
-        override fun onError(e: Throwable) {
-            AppUtil.makeDebugLog("error underlining :  "+e.toString())
-
-        }
-
-        override fun onComplete() {
-            AppUtil.makeDebugLog("completed !!! "+decoratedSpans.size)
-            underliningCallback.onFinishedUnderliningText(decoratedSpans)
-        }
-    }
-}*/
-
-
-
-/*fun findingTranslatedIdiom(translatedIdiomList: List<TranslatedIdiom>, sentence: String, decoratedSpan: SpannableStringBuilder, sentenceIndex: Int) : CharSequence{
-    var idiomSpannableBuilder =  decoratedSpan
-    for(i in 0 .. translatedIdiomList.size - 1){
-
-        val translatedIdiom = translatedIdiomList[i]
-        val index = BNDMCI().searchString(sentence, translatedIdiom.idiom)
-
-        val spaceIndex = BNDMCI().searchString(sentence, " ")
-        if(index != -1 && spaceIndex != -1){
-            //fetchedPdfText.get(index)
-            fetchedTranslatedIdiomTexts.add(translatedIdiom.meaning)
-            idiomSpannableBuilder = underliningIdiomProcess(index, decoratedSpan, translatedIdiom,sentenceIndex,sentence)
-            indexedSentences.add(IndexedSentence(sentence, sentenceIndex))
-        }
-    }
-    return idiomSpannableBuilder
-}
-
-fun findingUntranslatedIdiom(untranslatedIdiomList : List<UntranslatedIdiom>, sentence : String, decoratedSpan: SpannableStringBuilder, sentenceIndex: Int) : CharSequence{
-    var idiomSpannableBuilder  =  decoratedSpan
-    for(i in 0 .. untranslatedIdiomList.size -1){
-        val untranslatedIdiom = untranslatedIdiomList[i]
-        val index = BNDMCI().searchString(sentence,untranslatedIdiom.idiom)
-        val spaceIndex = BNDMCI().searchString(sentence, " ")
-
-        if(index != -1 && spaceIndex != -1){
-            AppUtil.makeDebugLog( "nomorr untranslated "+index)
-
-            fetchedUntranslatedIdiomTexts.add(untranslatedIdiom.idiom)
-            idiomSpannableBuilder = underliningIdiomProcess(index, decoratedSpan, untranslatedIdiom,sentenceIndex,sentence)
-            indexedSentences.add(IndexedSentence(untranslatedIdiom.idiom, sentenceIndex))
-        }
-
-    }
-    return idiomSpannableBuilder
-}*/
 
     fun underLine(){
         if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
@@ -355,100 +325,11 @@ fun findingUntranslatedIdiom(untranslatedIdiomList : List<UntranslatedIdiom>, se
         }.observeOn(Schedulers.newThread()).subscribeOn(Schedulers.computation())
                 .map(object : Function<ArrayList<CombinedIdiom>, ArrayList<TempIndexedSentence>>{
                     override fun apply(t: ArrayList<CombinedIdiom>): ArrayList<TempIndexedSentence> {
-                        bookmarkDataEmitter.insertBookmarkEnglish(fileName, "","")
                         return convertToCharSequence(t)
                     }
                 }).subscribe(getObserver())
 
     }
-
-
-
-
-/*fun getUnderlineZippingV2(){
-    if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
-        AppUtil.makeErrorLog("error size list 0")
-        underliningCallback.onErrorUnderliningText()
-        return
-    }
-    var sentenceIndex = 0
-    var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
-
-
-    Completable.create{
-        subscriber ->
-        englishSentences.forEachIndexed{index, sentence ->
-            TranslatedAndUntranslatedDataEmitter.idiomsList.forEachIndexed { idiomIndex, idioms ->
-                var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
-
-                if(sentence.contains(idioms,true)){
-                    val index = sentence.indexOf(idioms)
-                    val singleSpan = underliningIdiomProcess(index, decoratedSpan, translatedIdiom,sentenceIndex,sentence)
-
-
-                }
-                val index = BNDMCI().searchString(value, s)
-
-                val spaceIndex = BNDMCI().searchString(sentence, " ")
-                if(index != -1 && spaceIndex != -1){
-                    //fetchedPdfText.get(index)
-                    fetchedTranslatedIdiomTexts.add(translatedIdiom.meaning)
-                    indexedSentences.add(IndexedSentence(sentence, sentenceIndex))
-                }
-            }
-        }
-    }
-
-
-
-
-}
-*/
-
-/*fun getUnderLineZipping(){
-    AppUtil.makeDebugLog("extracted pdf size " +extractedPdfTexts.size )
-    idiomList = HashMap()
-    if(TranslatedAndUntranslatedDataEmitter.untranslatedIdiomList.isEmpty() || TranslatedAndUntranslatedDataEmitter.translatedIdiomList.isEmpty() ){
-        AppUtil.makeErrorLog("error size list 0")
-        underliningCallback.onErrorUnderliningText()
-    }
-
-
-    var sentenceIndex = 0
-    var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
-
-    Observable.zip(getTranslatedIdiomListObservable(),
-            getUntranslatedIdiomListObservable(), BiFunction<ArrayList<TranslatedIdiom>, ArrayList<UntranslatedIdiom>, ArrayList<CharSequence>> {
-        translatedIdiomList, untranslatedIdiomList ->
-
-        englishSentences.forEach {
-            sentence ->
-            AppUtil.makeDebugLog("hiii "+sentenceIndex)
-            val sentenceStringBuilder = SpannableStringBuilder("")
-            val sentence = AppUtil.newSpaceBetweenSentences(sentence)
-            val decoratedSpan =  SpannableStringBuilder(TextUtils.concat(sentenceStringBuilder, findingTranslatedIdiom(translatedIdiomList, sentence, SpannableStringBuilder(sentence) ,sentenceIndex)))
-            val decoratedSpan2 = findingUntranslatedIdiom(untranslatedIdiomList, sentence, decoratedSpan, sentenceIndex)
-            decoratedSpans.add(decoratedSpan2)
-            sentenceIndex++
-        }
-
-
-
-        *//* englishSentences.forEach { singleString ->
-                 val sentence = AppUtil.newSpaceBetweenSentences(singleString)
-                 var decoratedSpan =  SpannableStringBuilder(TextUtils.concat(decoratedSpans, findingTranslatedIdiom(translatedIdiomList, sentence, SpannableStringBuilder(sentence) ,sentenceIndex)))
-                 decoratedSpans = findingUntranslatedIdiom(untranslatedIdiomList, sentence, decoratedSpan, sentenceIndex)
-                 sentenceIndex++
-             }*//*
-
-            sentenceIndex++
-            decoratedSpans
-            //FIND
-        }) *//* .filter { it.isNotEmpty() }*//*.subscribeOn(Schedulers.computation()) // Be notified on the main thread
-                .observeOn(Schedulers.io())
-                .subscribe(getObserver())
-
-    }*/
 
     //Untranslated
     fun underliningIdiomProcess(index : Int, decoratedSpan: SpannableStringBuilder, untranslatedIdiom: UntranslatedIdiom, sentenceIndex: Int, sentence : String) : SpannableStringBuilder {
@@ -480,7 +361,7 @@ fun findingUntranslatedIdiom(untranslatedIdiomList : List<UntranslatedIdiom>, se
                     return
                 }
 
-                underliningCallback.onClickedIdiomText(meaning,sentenceIndex, sentence)
+                underliningCallback.onClickedIdiomText(meaning)
                 //
             }
 
@@ -497,7 +378,36 @@ fun findingUntranslatedIdiom(untranslatedIdiomList : List<UntranslatedIdiom>, se
 
 
     fun getSingleTranslate(idiom: String){
+        val observer = object : Observer<String> {
+            var combineStringMeaning = mutableListOf<String>()
+            override fun onSubscribe(d: Disposable) {
+                //process startup
+                underliningCallback.onTranslatingIdiomOneByOne()
+            }
 
+            override fun onComplete() {
+                translatedIdiomText
+                underliningCallback.onFinishedTranslatingIdiomOneByOne(combineStringMeaning)
+            }
+
+            override fun onError(e: Throwable) {
+                AppUtil.makeErrorLog("e singleTranslating "+ e.toString())
+                underliningCallback.onErrorTranslatingIdiomOneByOne()
+            }
+
+            override fun onNext(t: String) {
+                combineStringMeaning.add(t)
+
+            }
+        }
+        val combineStrings = mutableListOf<String>()
+        if(idiom.contains(",")){
+            combineStrings.addAll(idiom.split("\\s*,\\s*") )
+        }
+        else{
+            combineStrings.add(idiom)
+        }
+        translateService.singleTranslate(observer, combineStrings)
     }
 
 
@@ -513,7 +423,7 @@ fun findingUntranslatedIdiom(untranslatedIdiomList : List<UntranslatedIdiom>, se
 
             override fun onComplete() {
                 translatedIdiomText
-                underliningCallback.onFinishedTranslatingIdiomOneByOne(combineStringMeaning,sentenceIndex)
+                underliningCallback.onFinishedTranslatingIdiomOneByOne(combineStringMeaning)
             }
 
             override fun onError(e: Throwable) {

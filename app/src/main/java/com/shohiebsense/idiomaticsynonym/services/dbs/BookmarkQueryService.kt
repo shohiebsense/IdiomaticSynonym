@@ -19,7 +19,6 @@ import kotlin.collections.ArrayList
  * Created by Shohiebsense on 13/01/2018.
  */
 class BookmarkQueryService(val db : SQLiteDatabase) {
-    var lastInsertedId = 0
 
     fun insertIntoBookmarkEnglish(fileName: String, wholeSentence: String, indonesian : String){
         AppUtil.makeDebugLog("englishhh "+wholeSentence)
@@ -34,7 +33,6 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                     Bookmark.COLUMN_INDONESIAN to indonesian
             )
 
-            lastInsertedId = selectLastInsertedId()
         }.subscribeOn(Schedulers.io()).subscribe())
 
     }
@@ -43,19 +41,20 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
         AppUtil.makeDebugLog("indonesian translation exists right ??? " + wholeSentence)
         db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
                 Bookmark.COLUMN_INDONESIAN to wholeSentence)
-                .whereArgs(Bookmark.COLUMN_ID + " = " + lastInsertedId)
+                .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
                 .exec()
     }
 
     fun updateEnglishSentence(englishSentences: String) {
         db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
                 Bookmark.COLUMN_ENGLISH to englishSentences)
-                .whereArgs(Bookmark.COLUMN_ID + " = " + lastInsertedId)
+                .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
                 .exec()
     }
 
 
     fun selectLastInsertedId() : Int{
+        var lastInsertedId = -1
         db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).column(Bookmark.COLUMN_ID).orderBy(Bookmark.COLUMN_ID, SqlOrderDirection.DESC).limit(1).exec {
             lastInsertedId = parseSingle(IntParser)
         }
@@ -96,7 +95,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
         mCompositeDisposable.add(Single
                 .fromCallable {
                     indexedSentences.forEach {
-                        it.bookId = lastInsertedId
+                        it.bookId = selectLastInsertedId()
                         db.insert(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,
                                 Bookmark.COLUMN_ID to TimeUnit.MILLISECONDS.toMillis(System.currentTimeMillis()),
                                 Bookmark.COLUMN_SENTENCE to it.sentence,
@@ -124,7 +123,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                             Bookmark.COLUMN_SENTENCE to sentence,
                             Bookmark.COLUMN_SENTENCE_INDEX to index,
                             Bookmark.COLUMN_IDIOM to idiom,
-                            Bookmark.COLUMN_BOOKMARK_ENGLISH_ID to lastInsertedId
+                            Bookmark.COLUMN_BOOKMARK_ENGLISH_ID to selectLastInsertedId()
                             )
                 }
                 .subscribeOn(Schedulers.io())

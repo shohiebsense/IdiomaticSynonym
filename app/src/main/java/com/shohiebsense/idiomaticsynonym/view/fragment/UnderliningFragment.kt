@@ -358,7 +358,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onFinishedUntranslatedIdiom() {
     }
 
-    override fun onClickedIdiomText(idiomText: String, index: Int, sentence: String) {
+    override fun onClickedIdiomText(idiomText: String) {
         //error,
         //pdfDisplayerService
         // .getSingleTranslate(idiomText)
@@ -368,7 +368,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             if(idiomText.isBlank()){
                 return;
             }
-            selectedIndex = index
             var items = mutableListOf<IdiomMeaningItem>()
             if(idiomText.contains(",")){
                 val regex = ","
@@ -376,14 +375,14 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
                 for(meanings in idiomList){
                     AppUtil.makeDebugLog("many choices : "+meanings)
-                    var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(meanings,idiomItemClickedListener,index)
+                    var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(meanings,idiomItemClickedListener)
                     items.add(idiomMeaningItem)
                 }
                 // selectedIdiomList!!.put(index,idiomList.first())
             }
             else{
 
-                var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(idiomText,idiomItemClickedListener,index)
+                var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(idiomText,idiomItemClickedListener)
                 items.add(idiomMeaningItem)
             }
 
@@ -420,14 +419,14 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
     }
 
-    override fun onFinishedTranslatingIdiomOneByOne(combineStringMeaning: MutableList<String>, sentenceIndex: Int) {
+    override fun onFinishedTranslatingIdiomOneByOne(combineStringMeaning: MutableList<String>) {
         // Snackbar.make(factCardView, idiomText, Snackbar.LENGTH_INDEFINITE).show()
         var items = mutableListOf<IdiomMeaningItem>()
 
 
         combineStringMeaning.forEach {
             it->
-            var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(it,idiomItemClickedListener,sentenceIndex)
+            var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(it,idiomItemClickedListener)
             items.add(idiomMeaningItem)
         }
         object : Thread(){
@@ -450,10 +449,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
-        override fun onIdiomItemClick(view: TextView, index: Int) {
+        override fun onIdiomItemClick(view: TextView) {
             ++idiomCounter
             TransitionManager.beginDelayedTransition(transitionsContainer)
-            AppUtil.makeDebugLog("selectedIndex = "+index)
 
 
             //makeFlyAnimation(view)

@@ -258,4 +258,204 @@ class UnderlineService(var fetchedText: String, var translatedIdiom: MutableList
 
       }*/
 
+
+
+    //beginning zip option
+
+    //COBA LANGSUNG DI ONNEXT
+
+
+
+/*private fun getObserver2(): Observer<String> {
+
+    var sentenceIndex = 0
+    var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
+
+    return object : Observer<String> {
+        override fun onSubscribe(d: Disposable) {
+            AppUtil.makeDebugLog("SUBSCRIBEEEE MY GAY")
+        }
+
+
+        override fun onNext(sentence : String) {
+            TranslatedAndUntranslatedDataEmitter.idiomsList.forEach{index ->
+                AppUtil.makeDebugLog("iterate no. $sentenceIndex, and the idiom is $index")
+                if( sentence.contains(index.idiom)){
+                    decoratedSpans.add(underliningCombinedIdiomProcess(sentence.indexOf(index.idiom),SpannableStringBuilder(sentence),index,sentenceIndex,sentence  ))
+                }
+            }
+            sentenceIndex++
+        }
+
+        override fun onError(e: Throwable) {
+            AppUtil.makeDebugLog("error underlining :  "+e.toString())
+
+        }
+
+        override fun onComplete() {
+            AppUtil.makeDebugLog("completed !!! "+decoratedSpans.size)
+            underliningCallback.onFinishedUnderliningText(decoratedSpans)
+        }
+    }
+}*/
+
+
+
+/*fun findingTranslatedIdiom(translatedIdiomList: List<TranslatedIdiom>, sentence: String, decoratedSpan: SpannableStringBuilder, sentenceIndex: Int) : CharSequence{
+    var idiomSpannableBuilder =  decoratedSpan
+    for(i in 0 .. translatedIdiomList.size - 1){
+
+        val translatedIdiom = translatedIdiomList[i]
+        val index = BNDMCI().searchString(sentence, translatedIdiom.idiom)
+
+        val spaceIndex = BNDMCI().searchString(sentence, " ")
+        if(index != -1 && spaceIndex != -1){
+            //fetchedPdfText.get(index)
+            fetchedTranslatedIdiomTexts.add(translatedIdiom.meaning)
+            idiomSpannableBuilder = underliningIdiomProcess(index, decoratedSpan, translatedIdiom,sentenceIndex,sentence)
+            indexedSentences.add(IndexedSentence(sentence, sentenceIndex))
+        }
+    }
+    return idiomSpannableBuilder
+}
+
+fun findingUntranslatedIdiom(untranslatedIdiomList : List<UntranslatedIdiom>, sentence : String, decoratedSpan: SpannableStringBuilder, sentenceIndex: Int) : CharSequence{
+    var idiomSpannableBuilder  =  decoratedSpan
+    for(i in 0 .. untranslatedIdiomList.size -1){
+        val untranslatedIdiom = untranslatedIdiomList[i]
+        val index = BNDMCI().searchString(sentence,untranslatedIdiom.idiom)
+        val spaceIndex = BNDMCI().searchString(sentence, " ")
+
+        if(index != -1 && spaceIndex != -1){
+            AppUtil.makeDebugLog( "nomorr untranslated "+index)
+
+            fetchedUntranslatedIdiomTexts.add(untranslatedIdiom.idiom)
+            idiomSpannableBuilder = underliningIdiomProcess(index, decoratedSpan, untranslatedIdiom,sentenceIndex,sentence)
+            indexedSentences.add(IndexedSentence(untranslatedIdiom.idiom, sentenceIndex))
+        }
+
+    }
+    return idiomSpannableBuilder
+}*/
+
+
+    //end
+
+
+/*fun getUnderlineZippingV2(){
+    if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
+        AppUtil.makeErrorLog("error size list 0")
+        underliningCallback.onErrorUnderliningText()
+        return
+    }
+    var sentenceIndex = 0
+    var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
+
+
+    Completable.create{
+        subscriber ->
+        englishSentences.forEachIndexed{index, sentence ->
+            TranslatedAndUntranslatedDataEmitter.idiomsList.forEachIndexed { idiomIndex, idioms ->
+                var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
+
+                if(sentence.contains(idioms,true)){
+                    val index = sentence.indexOf(idioms)
+                    val singleSpan = underliningIdiomProcess(index, decoratedSpan, translatedIdiom,sentenceIndex,sentence)
+
+
+                }
+                val index = BNDMCI().searchString(value, s)
+
+                val spaceIndex = BNDMCI().searchString(sentence, " ")
+                if(index != -1 && spaceIndex != -1){
+                    //fetchedPdfText.get(index)
+                    fetchedTranslatedIdiomTexts.add(translatedIdiom.meaning)
+                    indexedSentences.add(IndexedSentence(sentence, sentenceIndex))
+                }
+            }
+        }
+    }
+
+
+
+
+}
+*/
+
+/*fun getUnderLineZipping(){
+    AppUtil.makeDebugLog("extracted pdf size " +extractedPdfTexts.size )
+    idiomList = HashMap()
+    if(TranslatedAndUntranslatedDataEmitter.untranslatedIdiomList.isEmpty() || TranslatedAndUntranslatedDataEmitter.translatedIdiomList.isEmpty() ){
+        AppUtil.makeErrorLog("error size list 0")
+        underliningCallback.onErrorUnderliningText()
+    }
+
+
+    var sentenceIndex = 0
+    var decoratedSpans : ArrayList<CharSequence> = arrayListOf(SpannableStringBuilder())
+
+    Observable.zip(getTranslatedIdiomListObservable(),
+            getUntranslatedIdiomListObservable(), BiFunction<ArrayList<TranslatedIdiom>, ArrayList<UntranslatedIdiom>, ArrayList<CharSequence>> {
+        translatedIdiomList, untranslatedIdiomList ->
+
+        englishSentences.forEach {
+            sentence ->
+            AppUtil.makeDebugLog("hiii "+sentenceIndex)
+            val sentenceStringBuilder = SpannableStringBuilder("")
+            val sentence = AppUtil.newSpaceBetweenSentences(sentence)
+            val decoratedSpan =  SpannableStringBuilder(TextUtils.concat(sentenceStringBuilder, findingTranslatedIdiom(translatedIdiomList, sentence, SpannableStringBuilder(sentence) ,sentenceIndex)))
+            val decoratedSpan2 = findingUntranslatedIdiom(untranslatedIdiomList, sentence, decoratedSpan, sentenceIndex)
+            decoratedSpans.add(decoratedSpan2)
+            sentenceIndex++
+        }
+
+
+
+        *//* englishSentences.forEach { singleString ->
+                 val sentence = AppUtil.newSpaceBetweenSentences(singleString)
+                 var decoratedSpan =  SpannableStringBuilder(TextUtils.concat(decoratedSpans, findingTranslatedIdiom(translatedIdiomList, sentence, SpannableStringBuilder(sentence) ,sentenceIndex)))
+                 decoratedSpans = findingUntranslatedIdiom(untranslatedIdiomList, sentence, decoratedSpan, sentenceIndex)
+                 sentenceIndex++
+             }*//*
+
+            sentenceIndex++
+            decoratedSpans
+            //FIND
+        }) *//* .filter { it.isNotEmpty() }*//*.subscribeOn(Schedulers.computation()) // Be notified on the main thread
+                .observeOn(Schedulers.io())
+                .subscribe(getObserver())
+
+    }*/
+
+
+    //test lagi dan harus pakai index sentence
+    /*END_OF_SENTENCE.split(extractedPdfString).forEachIndexed {  sentenceIndex, sentence -> //bisapakai maxent, trigger
+
+        for(combinedIdiom in list){
+        val lcword = combinedIdiom.idiom.toLowerCase()
+            var index = sentence.toLowerCase().indexOf(lcword)
+            if (index >= 0) {
+
+                spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), index, index+lcword.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                spannableStringBuilder.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.secondaryDarkColor)), index, index+lcword.length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View?) {
+                        if (combinedIdiom.meaning.isBlank()) {
+                            getSingleTranslate(combinedIdiom.idiom, sentenceIndex, sentence)
+                            return
+                        }
+                        underliningCallback.onClickedIdiomText(combinedIdiom.meaning, sentenceIndex, sentence)
+                        //
+                    }
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = false
+                    }
+                }
+                spannableStringBuilder.setSpan(clickableSpan, index, index+lcword.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                //bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence, combinedIdiom.idiom)
+                flagged = true
+            }
+        }
+    }*/
 }

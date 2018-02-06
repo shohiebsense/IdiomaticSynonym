@@ -23,9 +23,9 @@ interface UnderliningCallback {
     fun onFinishedFindingTranslatedIdiom(decoratedSpan: ArrayList<SpannableStringBuilder>)
     fun onFindingUntranslatedIdiom()
     fun onFinishedUntranslatedIdiom()
-    fun onClickedIdiomText(idiomText: String, index: Int, sentence: String)
+    fun onClickedIdiomText(idiomText: String)
     fun onErrorClickedIdiomText()
     fun onTranslatingIdiomOneByOne()
-    fun onFinishedTranslatingIdiomOneByOne(combineStringMeaning: MutableList<String>, sentenceIndex: Int)
+    fun onFinishedTranslatingIdiomOneByOne(combineStringMeaning: MutableList<String>)
     fun onErrorTranslatingIdiomOneByOne()
 }
