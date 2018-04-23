@@ -17,10 +17,16 @@ class BookmarkViewHolder(val v : View) : FastAdapter.ViewHolder<BookmarkItem>(v)
 
     override fun bindView(item: BookmarkItem, payloads: MutableList<Any>?) {
         itemView.nameTextView.text = item.bookmark.fileName
-        itemView.textsTextView.setText(item.bookmark.english)
+        /*if(item.bookmark.english.length  >= 250){
+            var summarytext : CharSequence = item.bookmark.english.subSequence(0,250)
+            itemView.textsTextView.setText(StringBuffer(summarytext).append("..."))
+        }*/
+        itemView.textsTextView.setText(StringBuffer( item.bookmark.english))
+
         itemView.textsTextView.setOnSpanClickedObserver(object : RichContentViewDisplay.OnSpanClickedObserver{
             override fun onSpanClicked(span: ClickableSpan?): Boolean {
-                AppUtil.makeDebugLog("CLICKEDDD CLICKEDD CLICKEDD")
+
+                AppUtil.makeDebugLog("CLICKEDDD CLICKEDD CLICKEDD  "+span!!.action + "   "+span.toString())
                 return true
             }
 

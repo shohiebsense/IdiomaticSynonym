@@ -19,8 +19,17 @@ class BookmarkDataEmitter(val context: Context) {
     var queryService = BookmarkQueryService(context.bookmarkDatabase.writableDatabase)
     lateinit var bookmarkCallback : SingleBookmarkCallback
 
-    fun insertBookmarkEnglish(fileName: String, wholeText: CharSequence, indonesianText : CharSequence){
-        queryService.insertIntoBookmarkEnglish(fileName, AppUtil.toHtml(SpannedString(wholeText)),AppUtil.toHtml(SpannedString(indonesianText)))
+    fun insertBookmarkEnglish(fileName: String, wholeText: CharSequence, indonesianText : CharSequence) : Int{
+        AppUtil.makeDebugLog("bookmark inserted ")
+       return queryService.insertIntoBookmarkEnglish(fileName, AppUtil.toHtml(SpannedString(wholeText)),AppUtil.toHtml(SpannedString(indonesianText)))
+    }
+
+    fun getEnglishTextBasedOnId(id : Int) : CharSequence{
+        return queryService.getEnglishBookmarkBaaedOnLastId(id)
+    }
+
+    fun getLastId() : Int{
+        return queryService.selectLastInsertedId()
     }
 
     fun updateEnglishText(wholeText: CharSequence){
@@ -40,9 +49,7 @@ class BookmarkDataEmitter(val context: Context) {
         queryService.insertSentenceAndItsSource(context, indexedSentences, listener)
     }
 
-    fun getLastInsertedIdFromBookmarkedEnglish() : Int {
-        return queryService.selectLastInsertedId()
-    }
+
 
     fun getHowManyBookTranslated() : Int {
         return queryService.getBookmarkCounts()

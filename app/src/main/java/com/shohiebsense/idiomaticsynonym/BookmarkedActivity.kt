@@ -33,15 +33,15 @@ class BookmarkedActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCal
         bookmarkFastAdapter = FastAdapter.with(bookmarkItemAdapter)
         bookmarkRecyclerView.layoutManager = LinearLayoutManager(this)
         bookmarkRecyclerView.adapter = bookmarkFastAdapter
-        getIndexedSentence()
+        //getIndexedSentence()
     }
 
-    fun getIndexedSentence(){
+    /*fun getIndexedSentence(){
         val bookmarkDataEmitter = BookmarkDataEmitter(this)
         bookmarkDataEmitter.insertBookmarkEnglish("fileName","whoooolleee text","haloo ini indonesia")
         bookmarkDataEmitter.queryService.countBookmarkEnglishTable()
         bookmarkDataEmitter.getEnglisbBookmarks(this)
-    }
+    }*/
 
     override fun onFetched(bookmarks: ArrayList<BookmarkedEnglish>) {
         emptyTextView.visibility = if(bookmarks.isEmpty()) View.VISIBLE else View.GONE

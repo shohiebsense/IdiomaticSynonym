@@ -10,10 +10,9 @@ import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
 class UnderliningActivity : AppCompatActivity() {
 
     companion object {
-        val INTENT_FROM_CLASS = "INTENT_FROM_CLASS"
         val INTENT_MESSAGE = "INTENT_MESSAGE"
-        val INTENT_FETCHED_TEXT = "FETCHED_TEXT_MESSAGE"
         val INTENT_FILENAME = "INTENT_FILENAME"
+        val INTENT_ID = "INTENT_ID"
     }
 
 
@@ -47,7 +46,8 @@ class UnderliningActivity : AppCompatActivity() {
            // var fetchedTextMessage : ArrayList<String>? = intent.getStringArrayListExtra(INTENT_FETCHED_TEXT) development only
             var fetchedTextMessage : ArrayList<String>? = arrayListOf()
             val fileName = intent.getStringExtra(INTENT_FILENAME)
-            fragment = UnderliningFragment.newInstance(fetchedTextMessage,fileName)
+            val lastId = intent.getIntExtra(INTENT_ID,-1)
+            fragment = UnderliningFragment.newInstance(fetchedTextMessage,fileName,lastId)
         }
     }
 

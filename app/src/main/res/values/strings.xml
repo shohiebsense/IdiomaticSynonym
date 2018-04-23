@@ -71,4 +71,7 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="permission_required">Permission is required</string>
+    <string name="text_not_valid_pdf">Not a valid pdf file</string>
+    <string name="find_idioms">Find idioms</string>
 </resources>

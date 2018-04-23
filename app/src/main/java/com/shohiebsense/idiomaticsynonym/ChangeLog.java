@@ -11,6 +11,32 @@ public class ChangeLog {
      * Backlog:
      * Searching using 'while' not contains.
      *
+     * 20 Maret
+     * Initialization done, jump into next phase
+     *
+     * 21 Maret
+     *
+     *
+     * 25 Mar
+     * Errors found:
+     * - When resuming at UnderliningFragment
+     * - Toolbar won't changed
+     * Fixed:
+     * - Changed toolbar according to each page
+     * - added snackbar to display waiting message
+     *
+     * 27 Mar
+     * update gradle
+     * commented Link
+     *
+     * 8 Apr
+     * to test using combined translated and untranslated idiom, tomorrow expects to be worked
+     *
+     * 9 Apr
+     * - Tested, remove autobackup
+     * - next, adde
+     *
+     *
      * Objectives Per Januari 2018 hopefully get done :
      * 1. get extracted pdf text from sentences so that we got number (index)
      * 2. clicked the item, all posssible sentences to be displayed

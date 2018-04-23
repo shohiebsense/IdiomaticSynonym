@@ -30,16 +30,12 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
+
 }
 
 ext {
     anko_version = "0.10.4"
-    supportVersion = "27.0.2" //dont update,
+    supportVersion = "27.1.0" //dont update,
 }
 
 
@@ -64,19 +60,21 @@ dependencies {
     implementation 'com.tom_roush:pdfbox-android:1.8.9.1'
     implementation 'com.github.barteksc:android-pdf-viewer:3.0.0-beta.4'
     implementation 'com.google.guava:guava:23.6-android'
-    implementation('com.google.cloud:google-cloud-translate:1.10.0') {
+    implementation('com.google.cloud:google-cloud-translate:1.20.0') {
         exclude group: 'io.grpc', module: 'grpc-all'
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
         exclude group: 'com.google.api-client', module: 'google-api-client-appengine'
 
     }
-    annotationProcessor('com.google.cloud:google-cloud-translate:1.10.0') {
+    annotationProcessor('com.google.cloud:google-cloud-translate:1.20.0') {
         exclude group: 'io.grpc', module: 'grpc-all'
         exclude group: 'com.google.protobuf', module: 'protobuf-java'
         exclude group: 'com.google.api-client', module: 'google-api-client-appengine'
 
     }
 
+    implementation 'com.github.GrenderG:Toasty:1.2.8'
+    implementation 'com.github.matecode:Snacky:1.0.3'
     implementation 'com.github.angads25:filepicker:1.1.1'
     implementation 'com.wang.avi:library:2.1.3'
     //implementation files('libs/stringsearch-2.2.jar')
@@ -94,20 +92,14 @@ dependencies {
     implementation 'edu.stanford.nlp:stanford-corenlp:1.3.0'
     implementation 'org.ahocorasick:ahocorasick:0.4.0'
     implementation 'org.apache.commons:commons-lang3:3.7'
-
+    implementation 'org.sufficientlysecure:html-textview:3.5'
 
     implementation 'io.square1:richtext:6.0.18'
     implementation 'com.github.jaychang0917:SimpleText:1.3.2'
-    implementation 'com.klinkerapps:link_builder:1.6.1'
-
+    implementation 'com.klinkerapps:link_builder:2.0.3'
     //optional
     implementation 'com.github.woxthebox:draglistview:1.5.2'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testImplementation 'org.mockito:mockito-core:1.10.19'
     testImplementation 'junit:junit:4.12'
-    testImplementation "org.robolectric:robolectric:3.6.1"
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }

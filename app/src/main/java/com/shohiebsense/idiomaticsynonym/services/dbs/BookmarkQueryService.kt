@@ -20,21 +20,20 @@ import kotlin.collections.ArrayList
  */
 class BookmarkQueryService(val db : SQLiteDatabase) {
 
-    fun insertIntoBookmarkEnglish(fileName: String, wholeSentence: String, indonesian : String){
-        AppUtil.makeDebugLog("englishhh "+wholeSentence)
-        AppUtil.makeDebugLog("indonesiann "+indonesian)
+    fun insertIntoBookmarkEnglish(fileName: String, wholeSentence: String, indonesian : String) : Int{
         var mCompositeDisposable = CompositeDisposable()
-
+        var lastId = -1
         mCompositeDisposable.add(Single.fromCallable {
-
             db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
                     Bookmark.COLUMN_PDFFILENAME to fileName,
                     Bookmark.COLUMN_ENGLISH to wholeSentence,
                     Bookmark.COLUMN_INDONESIAN to indonesian
             )
-
         }.subscribeOn(Schedulers.io()).subscribe())
-
+        mCompositeDisposable.add(Single.fromCallable {
+            lastId = selectLastInsertedId()
+        }.subscribe())
+        return lastId
     }
 
     fun updateIndonesianSentence(wholeSentence: String){
@@ -128,6 +127,22 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe())
+    }
+
+    fun getEnglishBookmarkBaaedOnLastId(id: Int) : CharSequence{
+        var englishText : CharSequence  = ""
+        AppUtil.makeDebugLog("idddd nya berapa? "+id)
+            db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).whereArgs(Bookmark.COLUMN_ID +"="+ id).limit(1).exec {
+                //val parser = getBookmarkedEnglishParser()
+                val parser = rowParser { id: Int, fileName: String, english: String, indonesian : String ->
+                    BookmarkedEnglish(id,fileName,english,indonesian)
+                }
+                // parser2 = classParser<BookmarkedEnglish>()
+                AppUtil.makeDebugLog("hiiiifiaewfj ia ")
+                englishText = parseSingle(parser).english
+                close()
+            }
+        return englishText
     }
 
     fun getEnglishBookmarkBaaedOnLastId(id: Int, observer: Observer<BookmarkedEnglish>){

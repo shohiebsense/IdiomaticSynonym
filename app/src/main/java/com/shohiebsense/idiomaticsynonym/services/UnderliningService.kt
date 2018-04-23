@@ -57,16 +57,15 @@ class UnderliningService constructor (val context: Context) {
     // lateinit var translatedIdiomList: MutableList<TranslatedIdiom>
     // lateinit var untranslatedIdiomList: MutableList<UntranslatedIdiom>
     lateinit var underliningCallback: UnderliningCallback
-    var extractedPdfString = String()
     var translatedFetchedPdfText = arrayListOf<SpannableStringBuilder>()
     //var fetchedUntranslatedIdiomTexts = mutableListOf<String>()
     //var fetchedTranslatedIdiomTexts = mutableListOf<String>()
     lateinit var translateService : TranslateService
-    var indexedSentences = arrayListOf<TempIndexedSentence>()
+    var indexedSentences = arrayListOf<Link>()
     var indices = arrayListOf<Int>()
     val bookmarkDataEmitter = BookmarkDataEmitter(context)
     lateinit var fileName : String
-    var  extractedPdfTexts = arrayListOf<String>()
+    lateinit var  extractedPdfTexts : CharSequence
     init {
         /* extractedPdfTexts.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe {
             englishSentences = AppUtil.splitParagraphsIntoSentences(it)
@@ -87,32 +86,17 @@ class UnderliningService constructor (val context: Context) {
 
 
 
-    constructor(activity: Context, extractedPdfText: ArrayList<String>, underliningCallback: UnderliningCallback,fileName : String) : this(activity){
+    constructor(activity: Context, extractedPdfText: CharSequence, underliningCallback: UnderliningCallback,fileName : String) : this(activity){
         this.extractedPdfTexts = extractedPdfText
         this.underliningCallback = underliningCallback
         this.fileName = fileName
     }
 
     constructor(activity: Context, extractedPdfText:String, underliningCallback: UnderliningCallback,fileName : String) : this(activity){
-        this.extractedPdfString = extractedPdfText
+        this.extractedPdfTexts = extractedPdfText
         this.underliningCallback = underliningCallback
         this.fileName = fileName
         //englishSentences = AppUtil.splitParagraphsIntoSentences(extractedPdfString)
-    }
-
-
-    companion object {
-        val STATUS_LOADING = 5
-        val ERROR_LOAD = 0
-        val ERROR_FETCH = 1
-        val ERROR_TRANSLATE = 2
-        val STATUS_LOADED = 10
-        val STATUS_RESUMED = 11
-        val STATUS_FETCHED = 9
-        val STATUS_TRANSLATED = 8
-        val STATUS_FETCHED_DB = 7
-        val STATUS_COMPLETED = 6
-        val STATUS_INIT = 3
     }
 
     fun init() : UnderliningService {
@@ -120,14 +104,14 @@ class UnderliningService constructor (val context: Context) {
         return this
     }
 
-    private fun getObserver(): Observer<ArrayList<TempIndexedSentence>> {
-        return object : Observer<ArrayList<TempIndexedSentence>> {
+    private fun getObserver(): Observer<ArrayList<Link>> {
+        return object : Observer<ArrayList<Link>> {
             override fun onSubscribe(d: Disposable) {
-                AppUtil.makeDebugLog("Underlining Bergins ")
+                AppUtil.makeDebugLog("Underlining Begins ")
             }
 
 
-            override fun onNext(sentences : ArrayList<TempIndexedSentence>) {
+            override fun onNext(sentences : ArrayList<Link>) {
                 indexedSentences = sentences
             }
 
@@ -139,7 +123,7 @@ class UnderliningService constructor (val context: Context) {
             override fun onComplete() {
                 AppUtil.makeDebugLog("completed !!!")
                 underliningCallback.onFinishedUnderliningText(indexedSentences)
-                translate()
+                //translate()
             }
         }
     }
@@ -155,29 +139,18 @@ class UnderliningService constructor (val context: Context) {
         return null
     }
 
-    fun convertToCharSequence(list : ArrayList<CombinedIdiom>): ArrayList<TempIndexedSentence> {
-        val idiomSet = HashSet<String>()
-        val links = arrayListOf<Link>()
-        /*   val simpleText = SimpleText.create(context, extractedPdfString)
-           for(combinedIdiom in list) {
-               var index = extractedPdfString.indexOf(combinedIdiom.idiom)
-               if (index >= 0 && idiomSet.add(combinedIdiom.idiom) && extractedPdfString.get(combinedIdiom.idiom.length + 1).equals("\\s")) {
-                   simpleText.textColor(R.color.other_red)
-
-               }
-           }*/
-
+    fun convertToCharSequence(list : ArrayList<CombinedIdiom>): ArrayList<Link> {
 
         translateService = TranslateService(context)
-        val spannableStringBuilder = SpannableStringBuilder(extractedPdfString)
+        val spannableStringBuilder = SpannableStringBuilder(extractedPdfTexts)
+        AppUtil.makeDebugLog("Extractedpdfstring "+extractedPdfTexts)
         var flagged = false
         val END_OF_SENTENCE = Pattern.compile("\\s+[^.!?]*[.!?]")
 
         for(combinedIdiom in list) {
-
-            val matcher = Pattern.compile("[^.]*" + Pattern.quote(combinedIdiom.idiom) + "[^.]*\\.?", Pattern.CASE_INSENSITIVE).matcher(extractedPdfString)
-
+            val matcher = Pattern.compile("[^.]*" + Pattern.quote(combinedIdiom.idiom) + "[^.]*\\.?", Pattern.CASE_INSENSITIVE).matcher(extractedPdfTexts)
             while (matcher.find()) {
+                AppUtil.makeDebugLog("matcher findd " + matcher.group().trim())
                 spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 spannableStringBuilder.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.secondaryDarkColor)), matcher.start(), matcher.end(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 val clickableSpan = object : ClickableSpan() {
@@ -196,10 +169,9 @@ class UnderliningService constructor (val context: Context) {
                     }
                 }
                 spannableStringBuilder.setSpan(clickableSpan, matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                //bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence, combinedIdiom.idiom)
                 flagged = true
             }
-            indexedSentences.add(TempIndexedSentence(spannableStringBuilder,flagged))
+          //  indexedSentences.add(TempIndexedSentence(spannableStringBuilder,flagged))
         }
 
 
@@ -249,8 +221,8 @@ class UnderliningService constructor (val context: Context) {
         return indexedSentences
     }
 
-    fun extractTranslation(indexedSentence: TempIndexedSentence){
-        translatedFetchedPdfText.add(translateService.translate(indexedSentence.sentence,indexedSentence.flagged)!!)
+    fun extractTranslation(indexedSentence: Link){
+        translatedFetchedPdfText.add(translateService.translate(indexedSentence,true)!!)
     }
 
     fun getError(e: Unit){
@@ -323,8 +295,8 @@ class UnderliningService constructor (val context: Context) {
                 e.onComplete()
             }
         }.observeOn(Schedulers.newThread()).subscribeOn(Schedulers.computation())
-                .map(object : Function<ArrayList<CombinedIdiom>, ArrayList<TempIndexedSentence>>{
-                    override fun apply(t: ArrayList<CombinedIdiom>): ArrayList<TempIndexedSentence> {
+                .map(object : Function<ArrayList<CombinedIdiom>, ArrayList<Link>>{
+                    override fun apply(t: ArrayList<CombinedIdiom>): ArrayList<Link> {
                         return convertToCharSequence(t)
                     }
                 }).subscribe(getObserver())

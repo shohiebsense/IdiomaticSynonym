@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
@@ -94,17 +95,20 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
     //end toggle
 
 
+    fun initToolbar(){
+        setSupportActionBar(toolbar)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppUtil.unzip(applicationContext)
         setContentView(R.layout.activity_main)
+        initToolbar()
+
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         val bookmarkEmitter = BookmarkDataEmitter(this)
-        bookmarkEmitter.insertBookmarkEnglish("fileName","whoooolleee text","hiii")
         bookmarkEmitter.getEnglisbBookmarks(this)
-        val lastId = bookmarkEmitter.getLastInsertedIdFromBookmarkedEnglish()
-        AppUtil.makeDebugLog("last id "+lastId)
+
         // bottomNavigation.isColored = true;
 
         bottomNavigation.accentColor = Color.parseColor("#f0dfbb")
@@ -126,9 +130,9 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
                     mainViewPager.currentItem = 0
                 }
                 when(position){
-                    0 -> title = getString(R.string.app_name)
-                    1 -> title = "Bookmarks"
-                    2 -> title = "Statistics"
+                    0 -> toolbar.title = getString(R.string.find_idioms)
+                    1 -> toolbar.title = "Bookmarks"
+                    2 -> toolbar.title = "Statistics"
                 }
                 mainViewPager.currentItem = position
                 return true
@@ -139,6 +143,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
     override fun onStart() {
         super.onStart()
         if(TranslatedAndUntranslatedDataEmitter.isIdiomsEmpty()){
+            AppUtil.makeErrorLog("yes is empty")
             TranslatedAndUntranslatedDataEmitter(this,this).getAll()
         }
     }

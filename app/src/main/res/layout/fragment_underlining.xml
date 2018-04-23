@@ -39,12 +39,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/textFetchedTextView"
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/ContentText"
-                android:lineSpacingExtra="@dimen/margin_item_standard" />
+                android:layout_height="wrap_content">
+
+                <io.square1.richtextlib.ui.RichContentView
+                    android:id="@+id/textFetchedTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    style="@style/ContentText"
+                    android:lineSpacingExtra="@dimen/margin_item_standard" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </ScrollView>
 

@@ -6,10 +6,10 @@ import android.os.Parcelable
 /**
  * Created by Shohiebsense on 14/01/2018.
  */
-class BookmarkedEnglish(val id : Int,
-                        val fileName : String,
-                        val english: CharSequence,
-                        val indonesian : CharSequence): Parcelable {
+class BookmarkedEnglish(var id : Int,
+                        var fileName : String,
+                        var english: CharSequence,
+                        var indonesian : CharSequence?): Parcelable {
 
 
     lateinit var indexedSentences : ArrayList<IndexedSentence>

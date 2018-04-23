@@ -1,6 +1,7 @@
 package com.shohiebsense.idiomaticsynonym.view.callbacks
 
 import android.text.SpannableStringBuilder
+import com.klinker.android.link_builder.Link
 import com.shohiebsense.idiomaticsynonym.model.TempIndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
@@ -18,7 +19,7 @@ interface UnderliningCallback {
     fun onFinishedFetchingUntranslatedDatabase(untranslatedIdiomList: MutableList<UntranslatedIdiom>)
     fun onErrorFetchingDatabase()
     fun onErrorUnderliningText()
-    fun onFinishedUnderliningText(decoratedSpan: ArrayList<TempIndexedSentence>)
+    fun onFinishedUnderliningText(decoratedSpan: ArrayList<Link>)
     fun onFindingTranslatedIdiom()
     fun onFinishedFindingTranslatedIdiom(decoratedSpan: ArrayList<SpannableStringBuilder>)
     fun onFindingUntranslatedIdiom()

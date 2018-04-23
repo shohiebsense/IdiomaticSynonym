@@ -33,7 +33,9 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context, var databaseCal
 
 
         fun isIdiomsEmpty() : Boolean{
-            return translatedIdiomList.isEmpty() || untranslatedIdiomList.isEmpty()
+           // return translatedIdiomList.isEmpty() || untranslatedIdiomList.isEmpty()
+            return idiomsList.isEmpty()
+
         }
     }
 
@@ -51,13 +53,11 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context, var databaseCal
     fun getIdiomStringObserver(): Observer<ArrayList<CombinedIdiom>> {
         return object : Observer<ArrayList<CombinedIdiom>>{
             override fun onSubscribe(d: Disposable) {
-                AppUtil.makeDebugLog("mulai????")
-
                 databaseCallback.onFetchingData(FETCHING_TRANSLATED_IDIOM_MODE)
             }
 
             override fun onNext(t: ArrayList<CombinedIdiom>) {
-                AppUtil.makeDebugLog("can beres????")
+                AppUtil.makeDebugLog("combined idiom copied")
                 idiomsList.addAll(t)
             }
 

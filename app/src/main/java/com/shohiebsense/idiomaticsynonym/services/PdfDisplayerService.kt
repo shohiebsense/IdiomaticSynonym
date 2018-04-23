@@ -4,11 +4,13 @@ import android.content.Context
 import com.github.angads25.filepicker.model.DialogConfigs
 import com.github.angads25.filepicker.model.DialogProperties
 import com.github.angads25.filepicker.view.FilePickerDialog
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.util.PDFBoxResourceLoader
+import de.mateware.snacky.Snacky
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,6 +27,22 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
     var pdfValid = false
     lateinit var pdfFile: File
     lateinit var callback: PdfDisplayCallback
+    
+    
+    companion object {
+        val STATUS_LOADING = 5
+        val ERROR_LOAD = 0
+        val ERROR_FETCH = 1
+        val ERROR_TRANSLATE = 2
+        val STATUS_LOADED = 10
+        val STATUS_RESUMED = 11
+        val STATUS_FETCHED = 9
+        val STATUS_TRANSLATED = 8
+        val STATUS_FETCHED_DB = 7
+        val STATUS_COMPLETED = 6
+        val STATUS_INIT = 3
+    }
+    
 
     constructor(activity: Context, callback: PdfDisplayCallback) : this(activity) {
         this.callback = callback
@@ -63,6 +81,9 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
 
                 if (pdfValid) {
                     loadPdf(fileString)
+                }
+                else{
+                   callback.onErrorReadingFile()
                 }
             }
         }

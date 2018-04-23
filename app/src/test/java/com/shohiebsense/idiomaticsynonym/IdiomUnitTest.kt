@@ -6,18 +6,14 @@ import com.shohiebsense.idiomaticsynonym.utils.TestUtil
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.runners.MockitoJUnitRunner
 import java.util.regex.Pattern
 
 /**
  * Created by Shohiebsense on 14/01/2018.
  */
 
-@RunWith(MockitoJUnitRunner::class)
 class IdiomUnitTest {
 
-    @Mock
     lateinit var context : Context
 
     @Test

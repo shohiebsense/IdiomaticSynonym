@@ -67,8 +67,6 @@ class TranslatedDisplayActivity : FragmentActivity(), BookmarkQueryService.Compl
         when(item.itemId){
             R.id.saveOption -> {
                 val bookmarkDataEmitter = BookmarkDataEmitter(this)
-                bookmarkDataEmitter.insertBookmarkEnglish(fileName, texts,"")
-                bookmarkDataEmitter.insertIndexedSentences(indexedSentenceList,this)
             }
         }
         return super.onOptionsItemSelected(item)

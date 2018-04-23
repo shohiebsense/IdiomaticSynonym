@@ -4,8 +4,8 @@ package com.shohiebsense.idiomaticsynonym.db
  * Created by Shohiebsense on 13/01/2018.
  */
 object Bookmark {
-    const val NAME : String = "Bookmark.db"
-    const val VERSION : Int = 3
+    const val NAME : String = "Bookmarks.db"
+    const val VERSION : Int = 5
 
 
     const val COLUMN_ID = "ID"

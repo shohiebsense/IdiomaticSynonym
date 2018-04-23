@@ -33,8 +33,8 @@ class BookmarkDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context,
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
-       // db.dropTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,true)
-        //db.dropTable(Bookmark.TABLE_BOOKMARK_ENGLISH, true)
+        db.dropTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,true)
+        db.dropTable(Bookmark.TABLE_BOOKMARK_ENGLISH, true)
     }
 
 

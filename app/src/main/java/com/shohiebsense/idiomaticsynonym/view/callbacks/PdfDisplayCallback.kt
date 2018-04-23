@@ -5,6 +5,7 @@ package com.shohiebsense.idiomaticsynonym.view.callbacks
  */
 interface PdfDisplayCallback {
 
+    fun onErrorReadingFile()
     fun onLoadingPdf()
     fun onErrorLoadingPdf()
     fun onFinishedLoadingPdf(file: String)
