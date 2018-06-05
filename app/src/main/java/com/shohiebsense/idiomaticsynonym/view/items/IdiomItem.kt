@@ -12,9 +12,9 @@ import com.shohiebsense.idiomaticsynonym.R
 class IdiomItem : AbstractItem<IdiomItem, IdiomViewHolder>() {
     lateinit var idiom : String
     lateinit var activity : Activity
-    lateinit var idiomItemClickListener : IdiomViewHolder.IdiomItemClickListener
+    lateinit var idiomItemClickListener : IdiomMeaningViewHolder.IdiomItemClickListener
 
-    fun withIdiomMeaning(meaning : String, idiomItemClickListener: IdiomViewHolder.IdiomItemClickListener) : IdiomItem {
+    fun withIdiomMeaning(meaning : String, idiomItemClickListener: IdiomMeaningViewHolder.IdiomItemClickListener) : IdiomItem {
         this.idiom = meaning
         this.idiomItemClickListener = idiomItemClickListener
         return this
