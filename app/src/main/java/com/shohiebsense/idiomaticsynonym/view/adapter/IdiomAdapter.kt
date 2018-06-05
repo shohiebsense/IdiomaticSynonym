@@ -19,7 +19,7 @@ class IdiomAdapter(val idioms: List<String>, val mListener: IdiomsSummaryFragmen
                 .inflate(R.layout.item_idiom_slide, parent, false)
         return ViewHolder(view)    }
 
-    override fun getItemCount(): Int = idioms.size
+    override fun getItemCount(): Int = idioms.size - 1
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val idiom = idioms[position]

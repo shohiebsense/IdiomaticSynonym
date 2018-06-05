@@ -19,7 +19,7 @@ class IdiomCardAdapter(val idioms: List<String>, val mListener: IdiomsSummaryFra
                 .inflate(R.layout.item_idiom_card, parent, false)
         return ViewHolder(view)    }
 
-    override fun getItemCount(): Int = idioms.size
+    override fun getItemCount(): Int = idioms.size - 1
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val idiom = idioms[position]
