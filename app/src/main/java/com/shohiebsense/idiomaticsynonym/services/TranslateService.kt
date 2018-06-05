@@ -36,13 +36,10 @@ class TranslateService(val context : Context) {
 
 
     init {
-
         init()
     }
 
-    fun anu() {
-        translateService
-    }
+
     //has not been initialized
     fun init(){
         Observable.create<TranslateOptions> {
@@ -58,76 +55,6 @@ class TranslateService(val context : Context) {
     }
 
 
-     /*fun translate(observer : Observer<SpannableStringBuilder>, mutableListArray: List<String>, indices : ArrayList<Int>)  {
-         //commented due to development, uncomment again.
-
-         Observable.create<SpannableStringBuilder> { observerr ->
-
-             options = TranslateOptions.newBuilder()
-                     .setApiKey(context.getString(R.string.API_TRANSLATE_KEY))
-                     .build()
-             translateService = options.service
-
-             mutableListArray.forEachIndexed { index, it ->
-
-                 val language = translateService.detect(it).language.toLowerCase()
-
-                 val detections = translateService.detect(ImmutableList.of(it))
-                 AppUtil.makeDebugLog("Language(s) detected:")
-                 for (detection in detections) {
-                     AppUtil.makeDebugLog(detection.toString())
-                 }
-                 AppUtil.makeDebugLog("translatt: " + language)
-                 if (language.equals("en")) {
-                     AppUtil.makeDebugLog("before translation " + it)
-                     var translation = translateService.translate(it,
-                             Translate.TranslateOption.targetLanguage("id"), model)
-
-                     if (translation != null) {
-                         spannableStringBuilder = SpannableStringBuilder(translation.translatedText)
-
-                         if (flagged) {
-                             spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), 0, translation.translatedText.lastIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                         }
-
-                         return spannableStringBuilder
-
-                     }
-                 }
-             }
-                     //AppUtil.makeDebugLog("hasil translasi : \n" + translation.translatedText)
-         }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(observer)
-     }*/
-
-    fun translate(it: Link, flagged: Boolean) : SpannableStringBuilder? {
-        //commented due to development, uncomment again.
-
-        val language = translateService.detect(it.toString()).language.toLowerCase()
-        val detections = translateService.detect(ImmutableList.of(it.toString()))
-        AppUtil.makeDebugLog("Language(s) detected:")
-        for (detection in detections) {
-            AppUtil.makeDebugLog(detection.toString())
-        }
-        AppUtil.makeDebugLog("translatt: " + language)
-        var spannableStringBuilder = SpannableStringBuilder()
-        if (language.equals("en")) {
-            AppUtil.makeDebugLog("before translation " + it)
-            var translation = translateService.translate(it.toString(),
-                    Translate.TranslateOption.targetLanguage("id"), model)
-
-            if(translation != null){
-                spannableStringBuilder = SpannableStringBuilder(translation.translatedText)
-
-                if(flagged){
-                    spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), 0, translation.translatedText.lastIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                }
-                return spannableStringBuilder
-
-            }
-            //AppUtil.makeDebugLog("hasil translasi : \n" + translation.translatedText)
-        }
-        return spannableStringBuilder
-    }
 
     fun singleTranslate(observer: Observer<String>, text: MutableList<String>){
         AppUtil.makeDebugLog("BEGINNING THE SINGLE SENTENCE TRANSLATION")
@@ -157,6 +84,54 @@ class TranslateService(val context : Context) {
             observer.onComplete()
         }
 
+    }
+
+    fun translate(it: String, flagged: Boolean) : SpannableStringBuilder? {
+        //commented due to development, uncomment again.
+
+        val language = translateService.detect(it).language.toLowerCase()
+        //val detections = translateService.detect(ImmutableList.of(it))
+        AppUtil.makeDebugLog("Language(s) detected:")
+        var spannableStringBuilder = SpannableStringBuilder()
+        if (language.equals("en")) {
+            AppUtil.makeDebugLog("before translation " + it)
+            var translation = translateService.translate(it.toString(),
+                    Translate.TranslateOption.targetLanguage("id"), model)
+            //var translation = ":)"
+            if(translation != null){
+                spannableStringBuilder = SpannableStringBuilder(translation.translatedText)
+                //spannableStringBuilder = SpannableStringBuilder(translation)
+                return spannableStringBuilder
+            }
+            //AppUtil.makeDebugLog("hasil translasi : \n" + translation.translatedText)
+        }
+        return spannableStringBuilder
+    }
+
+    fun translate(it: Link, flagged: Boolean) : SpannableStringBuilder? {
+        //commented due to development, uncomment again.
+
+        val language = translateService.detect(it.toString()).language.toLowerCase()
+        val detections = translateService.detect(ImmutableList.of(it.toString()))
+        AppUtil.makeDebugLog("Language(s) detected:")
+        for (detection in detections) {
+            AppUtil.makeDebugLog(detection.toString())
+        }
+        AppUtil.makeDebugLog("translatt: " + language)
+        var spannableStringBuilder = SpannableStringBuilder()
+        if (language.equals("en")) {
+            AppUtil.makeDebugLog("before translation " + it)
+            var translation = translateService.translate(it.toString(),
+                    Translate.TranslateOption.targetLanguage("id"), model)
+            //var translation = ":)"
+            if(translation != null){
+                spannableStringBuilder = SpannableStringBuilder(translation.translatedText)
+                //spannableStringBuilder = SpannableStringBuilder(translation)
+                return spannableStringBuilder
+            }
+            //AppUtil.makeDebugLog("hasil translasi : \n" + translation.translatedText)
+        }
+        return spannableStringBuilder
     }
 }
 

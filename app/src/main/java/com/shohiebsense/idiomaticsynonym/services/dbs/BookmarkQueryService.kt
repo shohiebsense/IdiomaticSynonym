@@ -2,6 +2,7 @@ package com.shohiebsense.idiomaticsynonym.services.dbs
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.shohiebsense.idiomaticsynonym.db.Bookmark
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
@@ -9,6 +10,7 @@ import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.Single
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.db.*
@@ -27,22 +29,43 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
             db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
                     Bookmark.COLUMN_PDFFILENAME to fileName,
                     Bookmark.COLUMN_ENGLISH to wholeSentence,
-                    Bookmark.COLUMN_INDONESIAN to indonesian
+                    Bookmark.COLUMN_INDONESIAN to indonesian,
+                    Bookmark.COLUMN_IDIOM to "",
+                    Bookmark.COLUMN_SENTENCE_INDEX to "",
+                    Bookmark.COLUMN_UPLOAD_ID to ""
             )
         }.subscribeOn(Schedulers.io()).subscribe())
         mCompositeDisposable.add(Single.fromCallable {
             lastId = selectLastInsertedId()
+            AppUtil.makeErrorLog("id latest  "+lastId)
         }.subscribe())
         return lastId
     }
 
-    fun updateIndonesianSentence(wholeSentence: String){
+    fun updateIndonesianSentence(wholeSentence: String, sentenceIndex: StringBuilder){
         AppUtil.makeDebugLog("indonesian translation exists right ??? " + wholeSentence)
         db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
-                Bookmark.COLUMN_INDONESIAN to wholeSentence)
+                Bookmark.COLUMN_INDONESIAN to wholeSentence,
+                Bookmark.COLUMN_SENTENCE_INDEX to sentenceIndex.toString())
                 .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
                 .exec()
     }
+
+    fun updateIndonesianSentence(observer : SingleObserver<Unit>, wholeSentence: String, id: String){
+        AppUtil.makeDebugLog("indonesian translation exists right ??? " + wholeSentence)
+        Single.fromCallable<Unit> {
+            db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
+                    Bookmark.COLUMN_INDONESIAN to wholeSentence,
+                    Bookmark.COLUMN_ID to id)
+                    .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
+                    .exec()
+        }
+                .subscribeOn(Schedulers.io())
+                .subscribe(observer)
+
+    }
+
+
 
     fun updateEnglishSentence(englishSentences: String) {
         db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
@@ -51,6 +74,29 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                 .exec()
     }
 
+    fun updateIdioms(idioms: String) {
+        Log.e("shohiebsensenseee ","inserted "+idioms + "  "+selectLastInsertedId())
+
+        Single.fromCallable {
+            db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
+                    Bookmark.COLUMN_IDIOM to idioms
+            ) .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
+                    .exec()
+        }
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+    }
+
+    fun updateUploadId(id: String, uploadId: String){
+        Single.fromCallable {
+            db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
+                    Bookmark.COLUMN_UPLOAD_ID to uploadId
+            ) .whereArgs(Bookmark.COLUMN_ID + " = " + id)
+                    .exec()
+        }
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+    }
 
     fun selectLastInsertedId() : Int{
         var lastInsertedId = -1
@@ -121,45 +167,49 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                     db.insert(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,
                             Bookmark.COLUMN_SENTENCE to sentence,
                             Bookmark.COLUMN_SENTENCE_INDEX to index,
-                            Bookmark.COLUMN_IDIOM to idiom,
                             Bookmark.COLUMN_BOOKMARK_ENGLISH_ID to selectLastInsertedId()
-                            )
+                    )
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe())
     }
 
+
     fun getEnglishBookmarkBaaedOnLastId(id: Int) : CharSequence{
         var englishText : CharSequence  = ""
-        AppUtil.makeDebugLog("idddd nya berapa? "+id)
-            db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).whereArgs(Bookmark.COLUMN_ID +"="+ id).limit(1).exec {
-                //val parser = getBookmarkedEnglishParser()
-                val parser = rowParser { id: Int, fileName: String, english: String, indonesian : String ->
-                    BookmarkedEnglish(id,fileName,english,indonesian)
-                }
-                // parser2 = classParser<BookmarkedEnglish>()
-                AppUtil.makeDebugLog("hiiiifiaewfj ia ")
-                englishText = parseSingle(parser).english
-                close()
+        AppUtil.makeDebugLog("idddd  berapa? "+id)
+        db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).whereArgs(Bookmark.COLUMN_ID +"="+ id).limit(1).exec {
+            //val parser = getBookmarkedEnglishParser()
+            val parser = rowParser { id: Int, fileName: String, english: String, indonesian: String , idioms : String, indexedSentences : String, uploadId : String ->
+                AppUtil.makeDebugLog("the englishhh is  "+english )
+                //englishText = english
+                BookmarkedEnglish(id,fileName,english,indonesian,idioms,indexedSentences,uploadId)
             }
+            // parser2 = classParser<BookmarkedEnglish>()
+            AppUtil.makeDebugLog("afawaefweaf ia ")
+            englishText = parseSingle(parser).english
+            close()
+        }
         return englishText
     }
 
     fun getEnglishBookmarkBaaedOnLastId(id: Int, observer: Observer<BookmarkedEnglish>){
-        AppUtil.makeDebugLog("idddd nya berapa? "+id)
+        AppUtil.makeDebugLog("english bookmark id nya berapa? "+id)
         Observable.create<BookmarkedEnglish> {
             e->
             db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).whereArgs(Bookmark.COLUMN_ID +"="+ id).limit(1).exec {
                 //val parser = getBookmarkedEnglishParser()
-                val parser = rowParser { id: Int, fileName: String, english: String, indonesian : String ->
-                    BookmarkedEnglish(id,fileName,english,indonesian)
+                val parser = rowParser { id: Int, fileName: String, english: String, indonesian : String, idioms : String, indexedSentences : String, uploadId : String ->
+                    AppUtil.makeErrorLog("dapet nih "+id+"  "+fileName+ "   "+idioms)
+                    BookmarkedEnglish(id,fileName,english,indonesian,idioms,indexedSentences,uploadId)
                 }
                 // parser2 = classParser<BookmarkedEnglish>()
                 AppUtil.makeDebugLog("hiiiifiaewfj ia ")
                 e.onNext(parseSingle(parser))
-
+                AppUtil.makeErrorLog("not getting into this")
                 e.onComplete()
                 close()
+                AppUtil.makeDebugLog("finishhz")
             }
         }.subscribe(observer)
     }
@@ -174,26 +224,50 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
 
     fun getIdiomFoundedCount() : Int {
         var count = 0
-        db.select(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES).column(Bookmark.COLUMN_ID). exec {
-            count = getCount()
+        var idioms = ""
+        db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).column(Bookmark.COLUMN_IDIOM). exec {
+            var parser = StringParser
+            asSequence().forEach {
+                row ->
+                idioms += StringParser.parseRow(row)
+            }
+            if(idioms.isNotBlank()){
+                count = AppUtil.getListOfIdioms(idioms).size
+            }
+        }
+        return count
+    }
+
+    fun getIndexedSentencesFoundedCount() : Int {
+        var count = 0
+        var idioms = ""
+        db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).column(Bookmark.COLUMN_SENTENCE_INDEX). exec {
+            var parser = StringParser
+            asSequence().forEach {
+                row ->
+                idioms += StringParser.parseRow(row)
+            }
+            if(idioms.isNotBlank()){
+                count = AppUtil.getListOfIndexedSentences(idioms).size
+            }
         }
         return count
     }
 
     fun selectAllBookmarks() : List<BookmarkedEnglish>{
         val bookmarkedEnglishes = arrayListOf<BookmarkedEnglish>()
-            db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).exec {
-                AppUtil.makeDebugLog(" jumlahnya "+columnCount)
+        db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).exec {
+            AppUtil.makeDebugLog(" jumlahnya "+columnCount)
 
-                val parser = getBookmarkedEnglishParser()
-                asSequence().forEach {
-                    row ->
-                    AppUtil.makeDebugLog("h"+ row.size)
+            val parser = getBookmarkedEnglishParser()
+            asSequence().forEach {
+                row ->
+                AppUtil.makeDebugLog("h"+ row.size)
 
-                    bookmarkedEnglishes.add(parser.parseRow(row))
-                }
-                close()
+                bookmarkedEnglishes.add(parser.parseRow(row))
             }
+            close()
+        }
         return bookmarkedEnglishes
     }
 
@@ -205,6 +279,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                 val parser = getBookmarkedEnglishParser()
                 asSequence().forEach {
                     row ->
+                    Log.e("shohiebsenseee ",""+ parser.parseRow(row).id + " " +parser.parseRow(row).fileName + " " + parser.parseRow(row).idioms )
                     bookmarkedEnglishes.add(parser.parseRow(row))
                 }
                 if(!e.isDisposed){
@@ -241,6 +316,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
             }
         }.subscribe(observer)
     }
+
 
 
     fun selectIndexedSentenceBasedOnId(id: Int, observer: Observer<ArrayList<IndexedSentence>>){
@@ -286,11 +362,15 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
         }
     }
 
+
+
     fun getBookmarkedEnglishParser() : RowParser<BookmarkedEnglish>{
-        return rowParser { id: Int, fileName: String, english: String, indonesian : String ->
-            return@rowParser BookmarkedEnglish(id, fileName, english, indonesian)
+        return rowParser { id: Int, fileName: String, english: String, indonesian : String, idioms : String, indexedSentences : String, uploadId : String ->
+            return@rowParser BookmarkedEnglish(id, fileName, english, indonesian,idioms,indexedSentences,uploadId)
         }
     }
+
+
 
     interface CompletedTransactionListener{
         fun onCompleted()

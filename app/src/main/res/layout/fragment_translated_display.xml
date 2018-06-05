@@ -30,12 +30,11 @@
             android:layout_marginEnd="@dimen/margin_layout_standard"
             >
 
-            <io.square1.richtextlib.ui.RichContentView
+            <TextView
                 android:id="@+id/translatedTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="@dimen/margin_item_standard"
-                android:textColor="@color/secondaryDarkColor"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

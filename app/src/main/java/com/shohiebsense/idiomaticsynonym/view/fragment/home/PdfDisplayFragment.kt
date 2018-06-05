@@ -525,6 +525,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onFinishedFetchingPdf(fetchedText: String, name: String) {
+        AppUtil.makeErrorLog("the name is "+name)
         toggleViews(PdfDisplayerService.STATUS_FETCHED)
         var intent = Intent(activity, UnderliningActivity::class.java)
         intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)

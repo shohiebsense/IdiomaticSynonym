@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootCoordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/emptyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/RootPadding"
+            android:visibility="gone"
+            android:text="@string/hello_blank_fragment" />
+
+        <com.leochuan.AutoPlayRecyclerView
+            android:id="@+id/idiomsRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:direction="right"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/idiomsCardRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/bottomSheetLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/secondaryDarkColor"
+        app:behavior_hideable="true"
+        android:padding="@dimen/activity_margin"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+        <View
+            android:id="@+id/dividerView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/secondaryColor"
+            app:layout_constraintBottom_toTopOf="@+id/idiomRecyclerView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/idiomRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dividerView">
+
+        </android.support.v7.widget.RecyclerView>
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

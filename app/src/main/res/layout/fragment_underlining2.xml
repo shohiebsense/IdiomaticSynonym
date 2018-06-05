@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-             <!--   <TextView
+                <TextView
                     android:id="@+id/textFetchedTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -52,9 +52,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     style="@style/ContentText"
-                    android:lineSpacingExtra="@dimen/margin_item_standard" />-->
+                    android:lineSpacingExtra="@dimen/margin_item_standard" />
 
-                <org.sufficientlysecure.htmltextview.HtmlTextView
+           <!--     <org.sufficientlysecure.htmltextview.HtmlTextView
                     android:id="@+id/textFetchedTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    style="@style/ContentText" />
+                    style="@style/ContentText" />-->
 
             </android.support.constraint.ConstraintLayout>
 

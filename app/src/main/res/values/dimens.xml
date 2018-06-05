@@ -33,4 +33,12 @@
 
     <dimen name="widget_container_margin">8dp</dimen>
     <dimen name="widget_container_padding">8dp</dimen>
+
+
+
+
+        <!-- Default screen margins, per the Android Design guidelines. -->
+        <dimen name="activity_horizontal_margin">16dp</dimen>
+        <dimen name="activity_vertical_margin">16dp</dimen>
+        <dimen name="g_top_margin">30dp</dimen>
 </resources>

@@ -3,14 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.shohiebsense.idiomaticsynonym">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:name=".IdiomApplication"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:allowBackup="false"
         android:theme="@style/BaseTheme.Red"
         tools:replace="android:allowBackup">
         <meta-data
@@ -19,6 +23,7 @@
         <meta-data
             android:name="CLOUDINARY_URL"
             android:value="cloudinary://@shohiebsense" />
+
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,12 +31,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".TranslatedDisplayActivity" />
         <activity android:name=".BookmarkedActivity" />
         <activity android:name=".UnderliningActivity" />
-
+        <activity android:name=".DriveSignInActivity"></activity>
+        <activity android:name=".DriveCreateFileActivity"></activity>
+        <activity android:name=".DriveOpenFileActivity"></activity>
+        <activity android:name=".UpdateIndonesianActivity"></activity>
     </application>
 
 </manifest>

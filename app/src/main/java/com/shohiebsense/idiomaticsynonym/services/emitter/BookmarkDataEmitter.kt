@@ -1,14 +1,13 @@
 package com.shohiebsense.idiomaticsynonym.services.emitter
 
 import android.content.Context
-import android.text.SpannedString
 import com.shohiebsense.idiomaticsynonym.db.bookmarkDatabase
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.services.dbs.BookmarkQueryService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment
 import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
 /**
@@ -21,11 +20,15 @@ class BookmarkDataEmitter(val context: Context) {
 
     fun insertBookmarkEnglish(fileName: String, wholeText: CharSequence, indonesianText : CharSequence) : Int{
         AppUtil.makeDebugLog("bookmark inserted ")
-       return queryService.insertIntoBookmarkEnglish(fileName, AppUtil.toHtml(SpannedString(wholeText)),AppUtil.toHtml(SpannedString(indonesianText)))
+       //return queryService.insertIntoBookmarkEnglish(fileName, AppUtil.toHtml(SpannedString(wholeText)),AppUtil.toHtml(SpannedString(indonesianText)))
+        return queryService.insertIntoBookmarkEnglish(fileName, wholeText.toString() , indonesianText.toString())
     }
 
     fun getEnglishTextBasedOnId(id : Int) : CharSequence{
         return queryService.getEnglishBookmarkBaaedOnLastId(id)
+    }
+
+    fun getEnglishBasedOnId(id : Int,listener : SingleBookmarkCallback){
     }
 
     fun getLastId() : Int{
@@ -33,12 +36,39 @@ class BookmarkDataEmitter(val context: Context) {
     }
 
     fun updateEnglishText(wholeText: CharSequence){
-        queryService.updateEnglishSentence(AppUtil.toHtml(SpannedString(wholeText)))
+        queryService.updateEnglishSentence(wholeText.toString())
     }
 
 
-    fun updateIndonesianText(wholeText: CharSequence){
-        queryService.updateIndonesianSentence(AppUtil.toHtml(SpannedString(wholeText)))
+    fun updateIndonesianText(wholeText: CharSequence, sentenceIndex: StringBuilder) {
+        queryService.updateIndonesianSentence(wholeText.toString(), sentenceIndex)
+    }
+
+    fun updateIndonesianText(wholeText: String, id: String,listener : UpdateBookmarkCallback) {
+        val observer = object : SingleObserver<Unit>{
+            override fun onSuccess(t: Unit) {
+                listener.onSuccess()
+            }
+
+            override fun onSubscribe(d: Disposable) {
+            }
+
+
+
+            override fun onError(e: Throwable) {
+                listener.onError()
+            }
+
+        }
+        queryService.updateIndonesianSentence(observer, wholeText, id)
+    }
+
+    fun updateIdioms(idioms : String){
+        queryService.updateIdioms(idioms)
+    }
+
+    fun updateUploadId(id : String, uploadId: String){
+        queryService.updateUploadId(id,uploadId)
     }
 
     fun insertIndexedSentence(index: Int, sentence: String, idiom: String){
@@ -56,7 +86,13 @@ class BookmarkDataEmitter(val context: Context) {
     }
 
     fun getHowManyIdiomsFound() : Int {
-        return queryService.getIdiomFoundedCount()
+        val number = queryService.getIdiomFoundedCount() - 1
+        return if(number < 0) 0 else number
+    }
+
+    fun getHowManyIndexedSentencesFound() : Int {
+        val number = queryService.getIndexedSentencesFoundedCount() - 1
+        return if(number < 0) 0 else number
     }
 
 
@@ -207,16 +243,18 @@ class BookmarkDataEmitter(val context: Context) {
             }
 
             override fun onComplete() {
-                AppUtil.makeDebugLog("COMPLETED FINDING NAME")
+                AppUtil.makeDebugLog("COMPLETED FINDING NAME AAAA")
             }
 
             override fun onError(e: Throwable) {
-                AppUtil.makeDebugLog("ada errorr "+e.toString())
+                AppUtil.makeDebugLog("ada errorrss "+e.toString())
             }
 
         }
         queryService.getEnglishBookmarkBaaedOnLastId(lastId, observer)
     }
+
+
 
     interface BookmarkAndIndexedSentenceCallback {
         fun onFetched(bookmark: BookmarkedEnglish, indexedSentences: ArrayList<IndexedSentence>)
@@ -228,6 +266,11 @@ class BookmarkDataEmitter(val context: Context) {
 
     interface SingleBookmarkCallback {
         fun onFetched(bookmark : BookmarkedEnglish)
+    }
+
+    interface UpdateBookmarkCallback {
+        fun onSuccess()
+        fun onError()
     }
 
 

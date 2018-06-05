@@ -11,7 +11,6 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
-import com.google.api.client.repackaged.org.apache.commons.codec.binary.StringUtils
 import com.klinker.android.link_builder.Link
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.*
@@ -22,8 +21,6 @@ import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
 import com.tom_roush.pdfbox.pdmodel.PDResources
 import com.tom_roush.pdfbox.pdmodel.graphics.form.PDFormXObject
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
-import edu.stanford.nlp.ling.Sentence
-import edu.stanford.nlp.tagger.maxent.MaxentTagger
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -32,7 +29,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
-import java.io.StringReader
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
@@ -238,7 +234,7 @@ class UnderliningService constructor (val context: Context) {
         translatedFetchedPdfText.forEach {
             spannableStringBuilder.append(it)
         }
-        bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder)
+        //bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder, sentenceIndex)
     }
 
     fun translate(){
@@ -343,7 +339,7 @@ class UnderliningService constructor (val context: Context) {
             }
 
         }
-        bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence ,idiom) //harusnya bukan idiom, tapi sentence
+        //bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence ,idiom) //harusnya bukan idiom, tapi sentence
         decoratedSpan.setSpan(clickableSpan, index, endIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         return decoratedSpan
     }

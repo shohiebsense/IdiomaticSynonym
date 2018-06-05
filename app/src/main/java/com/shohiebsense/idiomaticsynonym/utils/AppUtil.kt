@@ -4,27 +4,24 @@ import android.app.Activity
 import android.app.Fragment
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
 import android.widget.Toast
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.utils.ConstantsUtil
-import com.shohiebsense.idiomaticsynonym.MainActivity
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import edu.stanford.nlp.ling.Sentence
 import org.jetbrains.anko.bundleOf
 import java.io.*
-import java.util.*
 import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import edu.stanford.nlp.tagger.maxent.MaxentTagger
+import org.apache.commons.lang3.time.StopWatch
 import org.jetbrains.anko.defaultSharedPreferences
-import kotlin.collections.ArrayList
 
 
 /**
@@ -104,6 +101,9 @@ class AppUtil {
 
         fun splitParagraphsIntoSentences(words: String): MutableList<String> {
             val tokenizedSentences = MaxentTagger.tokenizeText(StringReader(words))
+            val timer = StopWatch()
+            timer.start()
+
             val sentences = arrayListOf<String>()
             for (act in tokenizedSentences)
             //Travel trough sentences
@@ -111,6 +111,10 @@ class AppUtil {
                  //This is your sentence
                 sentences.add(Sentence.listToString(act))
             }
+            timer.stop()
+            val seconds = timer.time/60
+            AppUtil.makeErrorLog("time elapsed during tokenize "+seconds+" seconds "+sentences.size)
+
             return sentences
         }
 
@@ -124,12 +128,17 @@ class AppUtil {
             return result
         }
 
-        fun toHtml(charSequence: Spanned) : String{
+        fun toHtml(charSequence: CharSequence) : String{
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                return Html.toHtml(charSequence, Html.FROM_HTML_MODE_LEGACY)
+                return Html.toHtml(charSequence as Spanned?, Html.FROM_HTML_MODE_LEGACY)
             }
-            return Html.toHtml(charSequence)
+            return Html.toHtml(charSequence as Spanned?)
         }
+
+       /* fun toHtml(context: Context, charSequence: CharSequence) : String{
+            return HtmlCompat.toHtml(context, charSequence as Spanned?, HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE)
+
+        }*/
 
 
         fun findText2() {
@@ -380,7 +389,70 @@ class AppUtil {
                     .findAny()
                     .orElse(null)
         }*/
+
+
+        fun getListOfIdioms(idioms : String) : List<String>{
+
+            println("=== String into List ===")
+            var result: List<String> = idioms.split(",").mapIndexed { index, it ->
+
+                it.trim()
+
+            }
+            //result.forEach { println(it) }
+
+            return result
+        }
+
+        fun getListOfIndexedSentences(indexedSentences : String) : List<String>{
+            return getListOfIdioms(indexedSentences)
+        }
+
+        fun separateParagraphIntoEachLine(text: String, indexedSentences: String) : String {
+            val tokenizedSentences = MaxentTagger.tokenizeText(StringReader(text))
+            var indexedSentenceNumbers = getListOfIdioms(indexedSentences)
+
+            AppUtil.makeErrorLog("sizzeeee is "+indexedSentenceNumbers.size+"  "+indexedSentenceNumbers[0]+ "  "+indexedSentenceNumbers[1])
+            var sentences = ""
+            for (i in tokenizedSentences.indices)
+            //Travel trough sentences
+            {
+                var sentence = Sentence.listToString(tokenizedSentences[i])
+                if(indexedSentenceNumbers.contains(i.toString())){
+                    sentence.prependIndent("<b>")
+                    sentence += "</b>"
+                }
+                else{
+                    AppUtil.makeDebugLog("falsee")
+                }
+                sentences += sentence + "<br/>"
+            }
+            return sentences
+        }
+
+
+        fun checkInternetConnection(context : Context) : Boolean{
+            val ConnectionManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = ConnectionManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+
+
+        fun Dp2px(context: Context?, dp: Float): Int {
+            if (context != null) {
+                val scale = context.resources.displayMetrics.density
+                return (dp * scale + 0.5f).toInt()
+            }
+            return 2
+        }
+
+        fun getOnlyFileName(name : String) : String{
+            return name.substring(name.lastIndexOf("/")+1)
+        }
+
     }
+
+
 
 
 }

@@ -4,20 +4,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
-import android.support.v4.content.ContextCompat
+import android.support.design.widget.BottomSheetBehavior
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
-import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.text.style.URLSpan
 import android.util.Log
 import android.view.View
-import com.google.api.client.repackaged.org.apache.commons.codec.binary.StringUtils
 import com.klinker.android.link_builder.Link
-import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.*
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
@@ -26,10 +21,6 @@ import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
 import com.tom_roush.pdfbox.pdmodel.PDResources
 import com.tom_roush.pdfbox.pdmodel.graphics.form.PDFormXObject
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
-import de.mateware.snacky.Snacky
-import edu.stanford.nlp.ling.Sentence
-import edu.stanford.nlp.tagger.maxent.MaxentTagger
-import es.dmoral.toasty.Toasty
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -39,7 +30,6 @@ import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.time.StopWatch
 import java.io.IOException
-import java.io.StringReader
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
@@ -61,19 +51,16 @@ class UnderliningService(val context : Context, val uri : Uri) {
 class UnderliningServiceUsingContains constructor (val context: Context) {
 
     var translatedIdiomText : String = ""
-    // lateinit var translatedIdiomList: MutableList<TranslatedIdiom>
-    // lateinit var untranslatedIdiomList: MutableList<UntranslatedIdiom>
     lateinit var underliningCallback: UnderliningCallback
     var translatedFetchedPdfText = arrayListOf<SpannableStringBuilder>()
-    //var fetchedUntranslatedIdiomTexts = mutableListOf<String>()
-    //var fetchedTranslatedIdiomTexts = mutableListOf<String>()
     lateinit var translateService : TranslateService
-    var indexedSentences = arrayListOf<Link>()
-
-    var indices = arrayListOf<Int>()
+    var clickableIdioms = arrayListOf<Link>()
+    var sentences = mutableListOf<String>()
     val bookmarkDataEmitter = BookmarkDataEmitter(context)
     lateinit var fileName : String
     lateinit var  extractedPdfTexts : CharSequence
+    var sentenceIndex : StringBuilder = StringBuilder("")
+
     init {
         /* extractedPdfTexts.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe {
             englishSentences = AppUtil.splitParagraphsIntoSentences(it)
@@ -98,6 +85,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         this.extractedPdfTexts = extractedPdfText
         this.underliningCallback = underliningCallback
         this.fileName = fileName
+        sentences = AppUtil.splitParagraphsIntoSentences(extractedPdfTexts.toString())
     }
 
     constructor(activity: Context, extractedPdfText:String, underliningCallback: UnderliningCallback,fileName : String) : this(activity){
@@ -127,15 +115,15 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         return this
     }
 
-    private fun getObserver(): Observer<ArrayList<Link>> {
+    private fun getLinksObserver(): Observer<ArrayList<Link>> {
         return object : Observer<ArrayList<Link>> {
             override fun onSubscribe(d: Disposable) {
                 AppUtil.makeDebugLog("Underlining Begins ")
             }
 
 
-            override fun onNext(sentences : ArrayList<Link>) {
-                indexedSentences = sentences
+            override fun onNext(cliclableIdioms : ArrayList<Link>) {
+                clickableIdioms = cliclableIdioms
             }
 
             override fun onError(e: Throwable) {
@@ -145,8 +133,8 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
 
             override fun onComplete() {
                 AppUtil.makeDebugLog("completed !!!")
-                underliningCallback.onFinishedUnderliningText(indexedSentences)
-                //translate()
+                underliningCallback.onFinishedUnderliningText(clickableIdioms)
+                translate()
             }
         }
     }
@@ -162,53 +150,59 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         return null
     }
 
-    fun convertToCharSequence(list : ArrayList<CombinedIdiom>): ArrayList<Link> {
+    fun convertToCharSequence(combinedIdioms: ArrayList<CombinedIdiom>, behaviour: BottomSheetBehavior<View>): ArrayList<Link> {
 
-        translateService = TranslateService(context)
+        if(AppUtil.checkInternetConnection(context)){
+            translateService = TranslateService(context)
+        }
         val singleCombinedIdiom = HashSet<String>()
         val timer = StopWatch()
         timer.start()
-
         //MaxentTagger.tokenizeText(StringReader(extractedPdfTexts.toString())).forEachIndexed { sentenceIndex, sentenceChar ->
         AppUtil.makeDebugLog("tokenize finished")
         // var sentence = Sentence.listToString(sentenceChar)
         // var spannableStringBuilder = SpannableStringBuilder(sentence)
-        var flagged = false
-        for(combinedIdiom in list){
-            if(extractedPdfTexts.contains(combinedIdiom.idiom)) {
-                var index = extractedPdfTexts.toString().indexOf(combinedIdiom.idiom,0,true)
+        val idioms = StringBuilder()
+        for(i in combinedIdioms.indices){
+            if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
+                var index = extractedPdfTexts.toString().indexOf(combinedIdioms[i].idiom,0,true)
                 val prevIndex = extractedPdfTexts[index-1].toLowerCase()
-                val afterLastIndex = extractedPdfTexts[index+combinedIdiom.idiom.length].toLowerCase()
+                val afterLastIndex = extractedPdfTexts[index+combinedIdioms[i].idiom.length].toLowerCase()
                 var bool = prevIndex.isLetterOrDigit()
                 var boolFinal = afterLastIndex.isLetter()
                 if(index >= 0 && (!bool && !boolFinal)){
-                        AppUtil.makeErrorLog("this is worddd "+ combinedIdiom.idiom + " last char "+ afterLastIndex+ "  prevChar "+ prevIndex)
-                        AppUtil.makeErrorLog("this is real word "+ combinedIdiom.idiom + " last char "+ extractedPdfTexts[index] + "  prevChar "+ extractedPdfTexts[index+combinedIdiom.idiom.length])
+                    idioms.append(combinedIdioms[i].idiom+", ")
+                    //AppUtil.makeErrorLog("this is worddd "+ combinedIdioms[i].idiom + " last char "+ afterLastIndex+ "  prevChar "+ prevIndex)
+                    //AppUtil.makeErrorLog("this is real word "+ combinedIdioms[i].idiom + " last char "+ extractedPdfTexts[index] + "  prevChar "+ extractedPdfTexts[index+combinedIdiom.idiom.length])
+                    sentenceIndex.append("$i, ")
 
-                        val link = Link(Pattern.compile("[\\s]"+ combinedIdiom.idiom+"[^a-z]",Pattern.CASE_INSENSITIVE))
-                                .setTextColor(Color.parseColor("#00BCD4"))
-                                .setUnderlined(false)
-                                .setOnClickListener {  if (combinedIdiom.meaning.isBlank()) {
-                                    getSingleTranslate(combinedIdiom.idiom,0, extractedPdfTexts.toString())
-                                }
-                                else{
-                                    underliningCallback.onClickedIdiomText(combinedIdiom.meaning)
-                                }}
+                    val link = Link(Pattern.compile("[\\s]"+ combinedIdioms[i].idiom+"[^a-z]",Pattern.CASE_INSENSITIVE))
+                            .setTextColor(Color.parseColor("#00BCD4"))
+                            .setUnderlined(false)
+                            .setOnClickListener {  if (combinedIdioms[i].meaning.isBlank()) {
+                                behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+                                getSingleTranslate(combinedIdioms[i].idiom,index, extractedPdfTexts.toString())
+                            }
+                            else{
+                                underliningCallback.onClickedIdiomText(combinedIdioms[i].meaning)
+                            }}
 
-                        indexedSentences.add(link)
+                    //record to the database
+                    clickableIdioms.add(link)
 
                 }
             }
         }
 
+        bookmarkDataEmitter.updateIdioms(idioms.toString())
         timer.stop()
         val seconds = timer.time/60
         Log.e("shohiebsense ","time ellapsedd seconds "+seconds)
-        Log.e("shohiebsenseeee ","linkss size "+indexedSentences.size)
-        return indexedSentences
+        Log.e("shohiebsenseeee ","linkss size "+clickableIdioms.size)
+        return clickableIdioms
     }
 
-    fun extractTranslation(indexedSentence: Link){
+    fun extractTranslation(indexedSentence: String){
         translatedFetchedPdfText.add(translateService.translate(indexedSentence,true)!!)
     }
 
@@ -220,16 +214,18 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
 
     fun translateCompletion(){
         AppUtil.makeDebugLog("COMPLETED ALL TRANSLATION")
-        underliningCallback.onFinishedTranslatingText()
         var spannableStringBuilder = SpannableStringBuilder()
         translatedFetchedPdfText.forEach {
             spannableStringBuilder.append(it)
         }
-        bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder)
+
+        AppUtil.makeErrorLog("finished the indonesian  "+spannableStringBuilder.toString())
+        bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder,sentenceIndex)
+        underliningCallback.onFinishedTranslatingText()
     }
 
     fun translate(){
-        indexedSentences.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribeBy  (
+        sentences.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribeBy  (
                 onNext = { extractTranslation(it) },
                 onError =  { getError(it.printStackTrace()) },
                 onComplete = { translateCompletion() }
@@ -268,7 +264,8 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
 
 
 
-    fun underLine(){
+
+    fun underLine(behaviour: BottomSheetBehavior<View>) {
         if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
             AppUtil.makeErrorLog("error size list 0")
             underliningCallback.onErrorUnderliningText()
@@ -284,9 +281,9 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         }.observeOn(Schedulers.newThread()).subscribeOn(Schedulers.computation())
                 .map(object : Function<ArrayList<CombinedIdiom>, ArrayList<Link>>{
                     override fun apply(t: ArrayList<CombinedIdiom>): ArrayList<Link> {
-                        return convertToCharSequence(t)
+                        return convertToCharSequence(t,behaviour)
                     }
-                }).subscribe(getObserver())
+                }).subscribe(getLinksObserver())
 
     }
 
@@ -330,7 +327,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
             }
 
         }
-        bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence ,idiom) //harusnya bukan idiom, tapi sentence
+       // bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence ,idiom) //harusnya bukan idiom, tapi sentence
         decoratedSpan.setSpan(clickableSpan, index, endIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         return decoratedSpan
     }
@@ -391,6 +388,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
             }
 
             override fun onNext(t: String) {
+
                 combineStringMeaning.add(t)
             }
         }

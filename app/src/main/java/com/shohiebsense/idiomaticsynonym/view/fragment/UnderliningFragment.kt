@@ -14,16 +14,13 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.TextUtils
-import android.text.method.LinkMovementMethod
 import android.transition.TransitionManager
 import android.view.*
 import android.widget.TextView
 import com.klinker.android.link_builder.Link
-import com.klinker.android.link_builder.applyLinks
+import com.klinker.android.link_builder.LinkBuilder
+import com.klinker.android.link_builder.TouchableMovementMethod
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
@@ -32,14 +29,12 @@ import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
-import com.shohiebsense.idiomaticsynonym.model.TempIndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
-import com.shohiebsense.idiomaticsynonym.services.UnderliningService
 import com.shohiebsense.idiomaticsynonym.services.UnderliningServiceUsingContains
-import com.shohiebsense.idiomaticsynonym.services.UnderliningServiceUsingTokenization
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
+import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
@@ -67,7 +62,8 @@ import org.jetbrains.anko.act
  *
  * The factCardView must showing Indonesian translation not english
  */
-class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter.IndexedSentenceCallback, IndexedSentenceViewHolder.IndexedSentenceClickListener {
+class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter.IndexedSentenceCallback, IndexedSentenceViewHolder.IndexedSentenceClickListener, KategloService.KategloListener {
+
 
 
     val KEY_PROCESSEDTEXT = "processed_text"
@@ -82,6 +78,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     lateinit var snackbar : CustomSnackbar
     var translated = false
     var underlined = false
+    var currentClickedWord = ""
+
+    lateinit var kategloService : KategloService
 
     var lastId = -1
     //var isShowingIdiom = true
@@ -89,7 +88,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     lateinit var transitionsContainer : ViewGroup
 
 
-     var goToTranslatedDisplayMenuItem : MenuItem? = null
+    var goToTranslatedDisplayMenuItem : MenuItem? = null
     var idiomCounter = 0
     var selectedIndex = 0
     var tooltips: ToolTipManager? = null
@@ -110,6 +109,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
         //This is for development
 
@@ -117,9 +117,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         extractedPdfTexts = BookmarkDataEmitter(act).getEnglishTextBasedOnId(lastId)
         fileName = arguments.getString(UnderliningActivity.INTENT_FILENAME)
         underliningService = UnderliningServiceUsingContains(activity, extractedPdfTexts, this,fileName)
+        kategloService = KategloService()
 
 
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -136,8 +136,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
         goToTranslatedDisplayMenuItem = menu.findItem(R.id.goToTranslatedDisplayOption).setVisible(false)
+        AppUtil.makeErrorLog("is it null again  "+(goToTranslatedDisplayMenuItem != null))
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -147,8 +148,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 AppUtil.makeDebugLog("filenamee is ? "+fileName)
                 intent.putExtra(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
                 intent.putExtra(TranslatedDisplayActivity.INTENT_FILENAME, fileName)
-
+                intent.putExtra(TranslatedDisplayActivity.INTENT_IS_FROM_BOOKMARKITEM,false)
                 startActivity(intent)
+                activity.finish()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -157,6 +159,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity.title = "Finding Idiom(s) ..."
+        activity.invalidateOptionsMenu()
         snackbar = CustomSnackbar.make(rootCoordinatorLayout,
                 CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
         snackbar.show()
@@ -164,8 +167,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
         tooltips = ToolTipManager(act)
 
-        textFetchedTextView.setHtml(extractedPdfTexts.toString())
-       // textFetchedTextView.movementMethod = LinkMovementMethod()
+        //textFetchedTextView.setHtml(extractedPdfTexts.toString())
         var snackbarView = snackbar.view
         snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryLightColor))
       //  TranslatedAndUntranslatedDataEmitter(context, this).getAll()
@@ -188,7 +190,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         }*/
         if(KEY_STATE == 0){
             if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
-                underliningService.underLine()
+                underliningService.underLine(behaviour)
             }
             else{
                 TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
@@ -271,13 +273,17 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     activity.title = fileName
                     showMessageDialog()
                     translated = true
+                    AppUtil.makeErrorLog("not hello "+translated+ "  "+underlined+ "   "+goToTranslatedDisplayMenuItem)
                     if(translated && underlined && goToTranslatedDisplayMenuItem != null){
                         goToTranslatedDisplayMenuItem?.isVisible = true
+
                     }
                 }
             }
         }.start()
+
     }
+
 
     override fun onErrorTranslatingText() {
       //  toggleErrorViews(UnderliningService.ERROR_TRANSLATE)
@@ -304,10 +310,13 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                       spannableString = TextUtils.concat(spannableString,it.sentence)
                     }*/
 
-                    textFetchedTextView.applyLinks(decoratedSpan)
+                    val charSequence = LinkBuilder.from(act,extractedPdfTexts.toString()).addLinks(decoratedSpan).build()
+                    textFetchedTextView.setText (charSequence)
+
+                    textFetchedTextView.movementMethod = TouchableMovementMethod.instance
 
                     //commented
-                   // underliningService.bookmarkDataEmitter.updateEnglishText(AppUtil.toHtml(spannableString as Spanned))
+                   // underliningService.bookmarkDataEmitter.updateEnglishText(AppUtil.toHtml(act, charSequence!!))
                     snackbar.dismiss()
                /*     if(decoratedSpan.isEmpty()){
                         showEmptyResultDialog()
@@ -315,9 +324,12 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     addToToolTipView(getString(R.string.dialog_find_idioms_and_replaced_it))
                     underlined = true
                     KEY_STATE = 1
+                    AppUtil.makeErrorLog("finished helloww "+underlined +"  and "+translated)
                     if(underlined && translated){
                         KEY_STATE = 2
                         goToTranslatedDisplayMenuItem?.isVisible = true
+                        act.invalidateOptionsMenu()
+
                     }
                 }
             }
@@ -468,17 +480,32 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
-        override fun onIdiomItemClick(view: TextView) {
-            ++idiomCounter
-            TransitionManager.beginDelayedTransition(transitionsContainer)
-
-
-            //makeFlyAnimation(view)
-           //addToToolTipView(underliningService.indexedSentences[index].sentence)
-
+        override fun onIdiomItemClick(word: String) {
+            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            currentClickedWord = word
+            kategloService.getSynonymStrings(word,this@UnderliningFragment)
         }
-
     }
+
+    override fun onGetSyonyms(synonyms: MutableList<String>) {
+        synonyms.add(0,currentClickedWord)
+        if(synonyms.isEmpty()){
+            return;
+        }
+        var items = mutableListOf<IdiomMeaningItem>()
+
+        for(synonym in synonyms){
+            var synonymItem = IdiomMeaningItem().withIdiomMeaning(synonym,idiomItemClickedListener)
+            items.add(synonymItem)
+        }
+        // selectedIdiomList!!.put(index,idiomList.first())
+        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
+        idiomMeaningItemAdapter.clear()
+        idiomMeaningItemAdapter.add(items)
+        idiomRecyclerView.adapter = idiomMeaningFastAdapter
+        toggleBottomSheet()
+    }
+
 
     fun addToToolTipView(text : String){
         var toolTip = ToolTip()

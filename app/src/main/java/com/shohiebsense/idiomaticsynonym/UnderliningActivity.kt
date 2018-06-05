@@ -1,11 +1,16 @@
 package com.shohiebsense.idiomaticsynonym
 
+import android.app.AlertDialog
 import android.app.Fragment
 import android.app.FragmentManager
 import android.app.FragmentTransaction
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
+import android.content.DialogInterface
+import kotlinx.android.synthetic.main.activity_underlining.*
+
 
 class UnderliningActivity : AppCompatActivity() {
 
@@ -18,9 +23,25 @@ class UnderliningActivity : AppCompatActivity() {
 
     lateinit var fragment : Fragment
 
+    var dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
+        when (which) {
+            DialogInterface.BUTTON_POSITIVE -> {
+                finish()
+                startActivity(Intent(this,MainActivity::class.java))
+            }
+
+            DialogInterface.BUTTON_NEGATIVE -> {
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_underlining)
+
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_white_24)
+        toolbar.setNavigationOnClickListener { onBackPressed() }
         if(intent != null)
         navigateFragment()
         addFragment(fragment)
@@ -38,8 +59,6 @@ class UnderliningActivity : AppCompatActivity() {
 
         // var clazz : Class<*> = Class.forName(INTENT_MESSAGE)
         //var ctor : Constructor<*> =  clazz.getConstructor(String::class.java)
-
-
 
         fragment = Class.forName(intentMessage).getConstructor().newInstance() as Fragment
         if(intentMessage.equals(UnderliningFragment::class.java.name)){
@@ -79,6 +98,9 @@ class UnderliningActivity : AppCompatActivity() {
         super.onStart()
     }
 
-
-
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(getString(R.string.confirmation_back)).setPositiveButton(getString(R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(R.string.no), dialogClickListener).show()
+    }
 }

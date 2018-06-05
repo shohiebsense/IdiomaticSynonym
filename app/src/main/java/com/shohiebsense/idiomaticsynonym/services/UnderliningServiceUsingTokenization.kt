@@ -14,7 +14,6 @@ import android.text.style.StyleSpan
 import android.text.style.URLSpan
 import android.util.Log
 import android.view.View
-import com.google.api.client.repackaged.org.apache.commons.codec.binary.StringUtils
 import com.klinker.android.link_builder.Link
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.*
@@ -234,7 +233,7 @@ class UnderliningServiceUsingTokenization constructor (val context: Context) {
         translatedFetchedPdfText.forEach {
             spannableStringBuilder.append(it)
         }
-        bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder)
+        //bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder, sentenceIndex)
     }
 
     fun translate(){

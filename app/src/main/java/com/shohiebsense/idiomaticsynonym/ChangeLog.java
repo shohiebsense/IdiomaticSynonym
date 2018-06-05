@@ -37,6 +37,10 @@ public class ChangeLog {
      * - next, adde
      *
      *
+     * 10 May
+     * insert founded idiom words to db
+     * insert
+     *
      * Objectives Per Januari 2018 hopefully get done :
      * 1. get extracted pdf text from sentences so that we got number (index)
      * 2. clicked the item, all posssible sentences to be displayed

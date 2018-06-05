@@ -6,15 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IndexedSentenceFragment.OnListFragmentInteractionListener
+import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IdiomsSummaryFragment.OnClickedItemListener
 import kotlinx.android.synthetic.main.item_indexed_sentence.view.*
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
+ * specified [OnClickedItemListener].
  * TODO: Replace the implementation with code for your data type.
  */
-class MyIndexedSentenceListRecyclerViewAdapter(private val mValues: ArrayList<IndexedSentence>, private val mListener: OnListFragmentInteractionListener?) : RecyclerView.Adapter<MyIndexedSentenceListRecyclerViewAdapter.ViewHolder>() {
+class MyIndexedSentenceListRecyclerViewAdapter(private val mValues: ArrayList<IndexedSentence>, private val mListener: OnClickedItemListener?) : RecyclerView.Adapter<MyIndexedSentenceListRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -28,7 +28,7 @@ class MyIndexedSentenceListRecyclerViewAdapter(private val mValues: ArrayList<In
         holder.itemView.sentenceNumber.text = mValues[position].index.toString()
 
         holder.mView.setOnClickListener {
-            mListener?.onListFragmentInteraction(holder.mItem!!)
+           // mListener?.onListFragmentInteraction(holder.mItem!!)
         }
     }
 

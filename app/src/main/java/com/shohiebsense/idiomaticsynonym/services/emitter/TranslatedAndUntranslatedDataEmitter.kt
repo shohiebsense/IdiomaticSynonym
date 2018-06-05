@@ -8,14 +8,26 @@ import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.services.dbs.QueryService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
+import com.shohiebsense.idiomaticsynonym.view.callbacks.SingleEntityCallback
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import kotlin.math.sin
 
 /**
  * Created by Shohiebsense on 16/10/2017.
  */
 
-class TranslatedAndUntranslatedDataEmitter(val context: Context, var databaseCallback: DatabaseCallback) {
+class TranslatedAndUntranslatedDataEmitter(val context: Context) {
+    lateinit var databaseCallback : DatabaseCallback
+    lateinit var singleEntityCallback : SingleEntityCallback
+
+    constructor(context: Context, databaseCallback: DatabaseCallback) : this(context){
+       this.databaseCallback = databaseCallback
+    }
+
+    constructor(context: Context, singleEntityCallback: SingleEntityCallback) : this(context){
+        this.singleEntityCallback = singleEntityCallback
+    }
 
     var FETCHING_TRANSLATED_IDIOM_MODE = 1
     var FETCHING_UNTRANSLATED_IDIOM_MODE = 2
@@ -50,6 +62,27 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context, var databaseCal
 
     }
 
+    fun getTranslatedIdiomObserver() : Observer<TranslatedIdiom> {
+        return object : Observer<TranslatedIdiom> {
+            override fun onComplete() {
+
+            }
+
+            override fun onSubscribe(d: Disposable) {
+            }
+
+            override fun onNext(t: TranslatedIdiom) {
+                singleEntityCallback.onFetched(t)
+            }
+
+            override fun onError(e: Throwable) {
+                AppUtil.makeErrorLog("errorreess during click "+e.toString())
+                singleEntityCallback.onError()
+            }
+
+        }
+    }
+
     fun getIdiomStringObserver(): Observer<ArrayList<CombinedIdiom>> {
         return object : Observer<ArrayList<CombinedIdiom>>{
             override fun onSubscribe(d: Disposable) {
@@ -82,6 +115,11 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context, var databaseCal
         queryService.getAllUntranslated(unTranslatedListConsumer)
     }
 
+    fun getSingleTranslatedIdiom(idiom : String)  {
+        queryService.getIdiom(idiom,getTranslatedIdiomObserver())
+    }
+
+
 
 
     var translatedListConsumer = object : Observer<ArrayList<TranslatedIdiom>> {
@@ -106,6 +144,7 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context, var databaseCal
 
         }
     }
+
 
     var unTranslatedListConsumer = object : Observer<ArrayList<UntranslatedIdiom>> {
 

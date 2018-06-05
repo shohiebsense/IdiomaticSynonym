@@ -12,6 +12,7 @@ import android.view.View
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
+import com.shohiebsense.idiomaticsynonym.obsoletes.KategloService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
@@ -19,7 +20,12 @@ import com.shohiebsense.idiomaticsynonym.view.adapter.MainPagerFragmentStatePage
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback, DatabaseCallback {
+class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback, DatabaseCallback, com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService.KategloListener {
+    override fun onGetSyonyms(syonyms: MutableList<String>) {
+        for(synonym in syonyms){
+            AppUtil.makeErrorLog("helloo  "+synonym)
+        }
+    }
 
 
     val NAVIGATION_TRANSLATE = 0
@@ -131,13 +137,16 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
                 }
                 when(position){
                     0 -> toolbar.title = getString(R.string.find_idioms)
-                    1 -> toolbar.title = "Bookmarks"
-                    2 -> toolbar.title = "Statistics"
+                    1 -> toolbar.title = getString(R.string.bookmarks)
+                    2 -> toolbar.title = getString(R.string.statistics)
                 }
                 mainViewPager.currentItem = position
                 return true
             }
         })
+
+        var kategloNewService = com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService()
+        kategloNewService.getSynonymStrings("kakak",this)
     }
 
     override fun onStart() {
@@ -163,6 +172,8 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
 
     override fun onFetched(bookmarks: ArrayList<BookmarkedEnglish>) {
         this.bookmarks.addAll(bookmarks)
+        if(bookmarks.isNotEmpty())
+        Log.e("shohiebsenseee ","bookmarks hohoho  "+bookmarks[bookmarks.lastIndex].idioms)
         mainPagerAdapter = MainPagerFragmentStatePagerAdapter(supportFragmentManager, bookmarks)
         mainViewPager.offscreenPageLimit = 3
         mainViewPager.adapter = mainPagerAdapter
@@ -173,6 +184,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
         mainViewPager.offscreenPageLimit = 3
         mainViewPager.adapter = mainPagerAdapter
     }
+
 
 
     /**

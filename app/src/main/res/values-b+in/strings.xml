@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StraightIdiomaLearn</string>
+    <string name="app_name">IdiomaticSynonym</string>
     <string name="translate_api">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
 
     <!-- titles, subtitles -->

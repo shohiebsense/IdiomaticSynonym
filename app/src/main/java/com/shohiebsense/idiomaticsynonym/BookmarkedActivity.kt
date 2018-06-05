@@ -29,6 +29,10 @@ class BookmarkedActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCal
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bookmarked)
 
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_white_24)
+        toolbar.setNavigationOnClickListener { onBackPressed() }
+
         bookmarkItemAdapter= ItemAdapter.items()
         bookmarkFastAdapter = FastAdapter.with(bookmarkItemAdapter)
         bookmarkRecyclerView.layoutManager = LinearLayoutManager(this)

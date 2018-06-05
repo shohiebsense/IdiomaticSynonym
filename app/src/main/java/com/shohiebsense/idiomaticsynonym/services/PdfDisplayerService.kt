@@ -136,19 +136,23 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
             var document = PDDocument.load(destinationFile)
             var pdfStripper = PDFTextStripper()
             //FOR DEVELOPMENT ONLY
-            var numberOfPages2 = 2
             //document = PDDocument.load(context.assets.open("samplepdf.pdf"))
             //document =
             // var endPage = if(numberOfPages > document.numberOfPages) document.numberOfPages else numberOfPages
 
             //FOR DEVELOPMENT , UNCOMMENT ABOVE
-            var endPage = if(numberOfPages2 > document.numberOfPages) document.numberOfPages else numberOfPages2
+            if(numberOfPages <= 0){
+                myObserver.onError(Throwable(context.getString(R.string.error_invalid_page_number)))
+                return@create
+            }
+
+            var endPage = if(numberOfPages > document.numberOfPages) document.numberOfPages else numberOfPages
 
 
             //fir development only, change to 1
             //for(i in 2 .. endPage ){
             pdfStripper.startPage = 1
-            pdfStripper.endPage = 2
+            pdfStripper.endPage = endPage
                 //AppUtil.makeDebugLog(" page : .." + i + parsedText)
            // }
 

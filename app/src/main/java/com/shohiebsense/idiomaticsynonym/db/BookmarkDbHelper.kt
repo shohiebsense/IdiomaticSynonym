@@ -17,24 +17,26 @@ class BookmarkDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context,
                 Bookmark.COLUMN_ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT,
                 Bookmark.COLUMN_PDFFILENAME to TEXT,
                 Bookmark.COLUMN_ENGLISH to TEXT,
-                Bookmark.COLUMN_INDONESIAN to TEXT
+                Bookmark.COLUMN_INDONESIAN to TEXT,
+                Bookmark.COLUMN_IDIOM to TEXT,
+                Bookmark.COLUMN_SENTENCE_INDEX to TEXT,
+                Bookmark.COLUMN_UPLOAD_ID to TEXT
         )
 
-        db.createTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES, true,
+        /*db.createTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES, true,
                 Bookmark.COLUMN_ID to INTEGER + PRIMARY_KEY + AUTOINCREMENT,
                 Bookmark.COLUMN_BOOKMARK_ENGLISH_ID to INTEGER,
                 Bookmark.COLUMN_SENTENCE to TEXT,
                 Bookmark.COLUMN_SENTENCE_INDEX to INTEGER,
-                Bookmark.COLUMN_IDIOM to TEXT,
                 FOREIGN_KEY(Bookmark.COLUMN_BOOKMARK_ENGLISH_ID, Bookmark.TABLE_BOOKMARK_ENGLISH, Bookmark.COLUMN_ID)
-        )
+        )*/
 
         AppUtil.makeDebugLog("table created")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
-        db.dropTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,true)
         db.dropTable(Bookmark.TABLE_BOOKMARK_ENGLISH, true)
+        //db.dropTable(Bookmark.TABLE_BOOKMARK_INDEXED_SENTENCES,true)
     }
 
 

@@ -9,21 +9,34 @@ import android.os.Parcelable
 class BookmarkedEnglish(var id : Int,
                         var fileName : String,
                         var english: CharSequence,
-                        var indonesian : CharSequence?): Parcelable {
+                        var indonesian : CharSequence?,
+                        var idioms : String,
+                        var indexedSentences : String,
+                        var uploadId : String
+                        ) : Parcelable {
 
 
-    lateinit var indexedSentences : ArrayList<IndexedSentence>
 
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readString()) {
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString()
+            ) {
 
     }
 
-    override fun writeToParcel(p0: Parcel?, p1: Int) {
-
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
+        parcel.writeString(fileName)
+        parcel.writeString(english.toString())
+        parcel.writeString(indonesian?.toString())
+        parcel.writeString(idioms)
+        parcel.writeString(indexedSentences)
+        parcel.writeString(uploadId)
     }
 
     override fun describeContents(): Int {

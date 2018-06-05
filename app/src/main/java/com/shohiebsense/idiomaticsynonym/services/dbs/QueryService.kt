@@ -10,10 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.jetbrains.anko.db.RowParser
-import org.jetbrains.anko.db.asSequence
-import org.jetbrains.anko.db.rowParser
-import org.jetbrains.anko.db.select
+import org.jetbrains.anko.db.*
 
 /**
  * Created by Shohiebsense on 15/10/2017.
@@ -146,6 +143,13 @@ class QueryService(val db : SQLiteDatabase)  {
         }
     }
 
+    fun getTranslatedIdiomParser() : RowParser<TranslatedIdiom>{
+        return rowParser{id : Int, idiom : String, meaning : String ->
+            AppUtil.makeErrorLog("hallowww each "+idiom+meaning)
+            return@rowParser TranslatedIdiom(id,idiom,meaning)
+        }
+    }
+
 
 
     fun getAllUntranslated(consumer : Observer<ArrayList<UntranslatedIdiom>>) {
@@ -181,6 +185,24 @@ class QueryService(val db : SQLiteDatabase)  {
         AppUtil.makeDebugLog("untranslatedd querying ")
     }
 
+
+    fun getIdiom(idiom : String, consumer : Observer<TranslatedIdiom>) {
+        AppUtil.makeErrorLog("harusnya masuk sini lahhh ")
+        Observable.create<TranslatedIdiom>{
+            e->
+            db.select(Idioms.TABLE_TRANSLATED_IDIOM).whereArgs(Idioms.COLUMN_IDIOM +"=\'"+idiom+"\'")
+                    .exec {
+                        val parser = getTranslatedIdiomParser()
+                        //asSequence().forEach { row -> AppUtil.makeDebugLog ("wuttt "+ parser.parseRow(row).idiom) }
+                        e.onNext(parseOpt(parser)!!)
+                        e.onComplete()
+                        close()
+                    }
+        }
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe(consumer)
+    }
 
 
 

@@ -45,7 +45,8 @@ class TranslatedDisplayService(val context: Context , val callback: TranslatedDi
 
 
             override fun onNext(t: SpannableString) {
-                spannableStrings = TextUtils.concat(spannableStrings, t)
+                var newline = TextUtils.concat(t,"\n") as SpannableString
+                spannableStrings = TextUtils.concat(spannableStrings, newline)
             }
 
             override fun onSubscribe(d: Disposable) {

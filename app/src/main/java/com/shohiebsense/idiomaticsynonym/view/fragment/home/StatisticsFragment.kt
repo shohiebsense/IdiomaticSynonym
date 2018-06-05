@@ -35,9 +35,11 @@ class StatisticsFragment : Fragment() {
 
         val bookCountItem = StatisticItem().withStatistic(getString(R.string.text_statistic_books_translated),bookmarkEmitter.getHowManyBookTranslated().toString())
         val idiomCountItem = StatisticItem().withStatistic(getString(R.string.text_statistic_idioms_found), bookmarkEmitter.getHowManyIdiomsFound().toString())
+        val indexedSentenceCountItem = StatisticItem().withStatistic(getString(R.string.text_statistic_indexed_sentences_found), bookmarkEmitter.getHowManyIndexedSentencesFound().toString())
 
         itemAdapter.add(bookCountItem)
         itemAdapter.add(idiomCountItem)
+        itemAdapter.add(indexedSentenceCountItem)
 
         statisticsRecyclerView.layoutManager = LinearLayoutManager(activity)
         statisticsRecyclerView.adapter = fastAdapter

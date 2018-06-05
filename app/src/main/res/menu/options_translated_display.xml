@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
     <item
         android:id="@+id/saveOption"
         android:title="@string/menuOptions_save"
-        android:icon="@drawable/ic_note_add_white_24dp"
-        app:showAsAction="always" />
+        />
+    <item
+        android:id="@+id/uploadOption"
+        android:title="@string/menuOptions_upload" />
+    <item
+        android:id="@+id/docsViewOption"
+        android:title="@string/menuOptions_docsview"
+        />
+    <item
+        android:id="@+id/updateIndonesianOption"
+        android:title="@string/menuOptions_updateIndonesian"
+        />
+    <item
+        android:id="@+id/toggleEachLineOption"
+        android:title=""
+        android:icon="@drawable/baseline_sort_white_24"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/toggleIdiomCardOption"
+        android:title=""
+        android:icon="@drawable/baseline_style_white_24"
+        app:showAsAction="always"/>
 </menu>

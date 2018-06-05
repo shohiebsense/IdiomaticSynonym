@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IndexedSentenceFragment
+import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IdiomsSummaryFragment
 import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.TranslatedDisplayFragment
 
 /**
@@ -22,7 +22,7 @@ class TranslatedDisplayPagerAdapter(val context: Context, fm: FragmentManager, v
         return when (position) {
             0 -> EnglishResultFragment.newInstance(lastId)
             1 -> TranslatedDisplayFragment.newInstance(lastId)
-            else -> IndexedSentenceFragment.newInstance(lastId)
+            else -> IdiomsSummaryFragment.newInstance(lastId)
         }
     }
 
@@ -34,7 +34,7 @@ class TranslatedDisplayPagerAdapter(val context: Context, fm: FragmentManager, v
         return when(position){
             0 -> context.getString(R.string.text_title_english)
             1 -> context.getString(R.string.text_title_translation)
-            else -> context.getString(R.string.text_title_indexed_sentence)
+            else -> context.getString(R.string.idioms)
         }
     }
 }

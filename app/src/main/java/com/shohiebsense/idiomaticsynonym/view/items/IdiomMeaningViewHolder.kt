@@ -32,13 +32,13 @@ class IdiomMeaningViewHolder : FastAdapter.ViewHolder<IdiomMeaningItem> {
 
         view.setOnClickListener {
             AppUtil.makeDebugLog("clickedddd this item ")
-            item.idiomItemClickListener.onIdiomItemClick(idiomMeaningTextView)
+            item.idiomItemClickListener.onIdiomItemClick(item.idiomMeaning)
         }
     }
 
 
     interface IdiomItemClickListener {
-        fun onIdiomItemClick(view: TextView)
+        fun onIdiomItemClick(word: String)
     }
 
 

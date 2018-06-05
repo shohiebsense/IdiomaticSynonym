@@ -6,6 +6,7 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
+import android.text.Html
 import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +17,10 @@ import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.api.ChosenSynonymWord
+import com.shohiebsense.idiomaticsynonym.model.event.ViewEvent
 import com.shohiebsense.idiomaticsynonym.services.TranslatedDisplayService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
-import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloServiceNe
+import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.TranslatedDisplayCallback
 import com.shohiebsense.idiomaticsynonym.view.items.KategloItem
@@ -26,6 +28,9 @@ import com.shohiebsense.idiomaticsynonym.view.items.KategloViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
 import kotlinx.android.synthetic.main.fragment_translated_display.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Created by Shohiebsense on 11/12/2017.
@@ -37,7 +42,7 @@ import kotlinx.android.synthetic.main.fragment_translated_display.*
  *
  * cek kata idiom yang diterjemahin, kok karena. harusny abukan karena
  */
-class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListener, TranslatedDisplayCallback, KategloServiceNe.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback {
+class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListener, TranslatedDisplayCallback, KategloService.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback {
 
 
 
@@ -46,7 +51,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     //dev only
     lateinit var idiomsList : MutableList<String>
     lateinit var translatedDisplayService : TranslatedDisplayService
-    var kategloNewService = KategloServiceNe()
+    var kategloNewService = KategloService()
     lateinit var fastAdapter : FastAdapter<KategloItem>
     lateinit var itemAdapter : ItemAdapter<KategloItem>
     lateinit var behaviour : BottomSheetBehavior<View>
@@ -54,6 +59,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     lateinit var translatedSpannable : SpannableString
     var tooltips: ToolTipManager? = null
     var lastId = 0
+    lateinit var bookmark : BookmarkedEnglish
 
     companion object {
         fun newInstance(lastId: Int) : TranslatedDisplayFragment {
@@ -115,6 +121,15 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         //translatedTextView.text = "pada hari minggu ku turut ayah ke kotaaa "+getString(R.string.dialog_message_find_idioms)
     }
 
+    override fun onStart() {
+        EventBus.getDefault().register(this)
+        super.onStart()
+    }
+
+    override fun onStop() {
+        EventBus.getDefault().unregister(this)
+        super.onStop()
+    }
 
     fun onShowingBottomSheet(){
         behaviour = BottomSheetBehavior.from(bottomSheetLayout)
@@ -177,6 +192,18 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onChangeOrientation(e: ViewEvent) {
+        if(!e.isWrapped){
+            val newlinesentence = AppUtil.separateParagraphIntoEachLine(bookmark.indonesian.toString(),bookmark.indexedSentences)
+            translatedTextView.setText(Html.fromHtml(newlinesentence))
+        }
+        else{
+            translatedTextView.setText(Html.fromHtml(bookmark.indonesian.toString()))
+        }
+    }
+
+
     override fun onFinishExtractText(decoratedSpan: CharSequence) {
 
        /* decoratedSpan.forEachIndexed{
@@ -203,8 +230,9 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     }
 
     override fun onFetched(bookmark: BookmarkedEnglish) {
-        translatedTextView.setText(bookmark.indonesian)
-
+        this.bookmark = bookmark
+        val newlinesentence = AppUtil.separateParagraphIntoEachLine(bookmark.indonesian.toString(),bookmark.indexedSentences)
+        translatedTextView.setText(Html.fromHtml(newlinesentence))
     }
 
 

@@ -16,13 +16,14 @@ object Bookmark {
     const val COLUMN_PDFFILENAME = "pdfFileName"
     const val COLUMN_ENGLISH = "english"
     const val COLUMN_INDONESIAN = "indonesia"
+    const val COLUMN_UPLOAD_ID = "upload_id"
+    const val COLUMN_IDIOM = "idioms"
 
     const val TABLE_BOOKMARK_INDEXED_SENTENCES = "BookSenIndex"
     //bookmark indexed sentence : id, sentence index : INT, bookmark english id, SENTENCE
     const val COLUMN_BOOKMARK_ENGLISH_ID = "book_id"
     const val COLUMN_SENTENCE_INDEX = "sentenceIndex"
     const val COLUMN_SENTENCE = "sentence"
-    const val COLUMN_IDIOM = "idiom"
 
     const val TABLE_BOOKMARK_IDIOM_AND_MEANGS = "Meanings"
     const val COLUMN_INDEXED_SENTENCE_ID = "index_id"

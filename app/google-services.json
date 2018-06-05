@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "107077290465",
+    "firebase_url": "https://idiomalearn-180105.firebaseio.com",
+    "project_id": "idiomalearn-180105",
+    "storage_bucket": "idiomalearn-180105.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107077290465:android:a6aa562efbb26d7e",
+        "android_client_info": {
+          "package_name": "com.shohiebsense.idiomaticsynonym"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107077290465-48jg6ef1o2ejfrtame1ho47vefr67q3h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shohiebsense.idiomaticsynonym",
+            "certificate_hash": "0b4393c0fc136367f0c878ba7ccc847a65e37ad2"
+          }
+        },
+        {
+          "client_id": "107077290465-j1p332tg9gg2ruj5bh583gb95m42cg9q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shohiebsense.idiomaticsynonym",
+            "certificate_hash": "84af8fc71e9717b7d1199691678fae7d6696aac0"
+          }
+        },
+        {
+          "client_id": "107077290465-7g2e7b9lneqbma2g2phet784obaqh9no.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "107077290465-7g2e7b9lneqbma2g2phet784obaqh9no.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN0zzEHruw6Hut1jct7q2zvkB2p3EFn0Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107077290465-7g2e7b9lneqbma2g2phet784obaqh9no.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
