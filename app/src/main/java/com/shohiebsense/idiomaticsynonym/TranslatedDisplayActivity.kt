@@ -12,21 +12,26 @@ import com.shohiebsense.idiomaticsynonym.services.dbs.BookmarkQueryService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.adapter.TranslatedDisplayPagerAdapter
-import kotlinx.android.synthetic.main.activity_translated_display.*
 import org.jetbrains.anko.contentView
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import com.klinker.android.link_builder.Link
+import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.WordClickableService
 import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService
 import com.shohiebsense.idiomaticsynonym.view.callbacks.WordClickableCallback
-import kotlinx.android.synthetic.main.fragment_indexedsentencelist.*
+import de.mateware.snacky.Snacky
+import kotlinx.android.synthetic.main.activity_translated_display.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
-class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransactionListener, WordClickableCallback, KategloService.KategloListener {
+class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransactionListener, WordClickableCallback, KategloService.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback {
 
     override fun onCompleted(links: ArrayList<Link>) {
         AppUtil.makeErrorLog("hii this is from english fragment ")
@@ -63,11 +68,9 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     lateinit var indices : ArrayList<Int>
     lateinit var texts : CharSequence
     var lastId = 0
-    var isFromBookmarkItem = false
+    var isTranslationEmpty = false
     lateinit var uploadService : UploadService
-    var saveMenuItem : MenuItem? = null
-    var uploadMenuItem : MenuItem? = null
-    var docViewMenuItem : MenuItem? = null
+    var generateFileOption : MenuItem? = null
     var toggleEachLineItem : MenuItem? = null
     var toggleIdiomCardItem : MenuItem? = null
     var isWrapped = true
@@ -75,15 +78,20 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     var isToggleVisible = false
     var isToggleCardVisible = false
     var isFromEnglishFragment = true
+    var isFromBookmarkItem = false
+    var isFetched = false
     lateinit var wordClickableService: WordClickableService
     lateinit var kategloService : KategloService
     var currentSelectedWord = ""
+    lateinit var bookmarkDataEmitter : BookmarkDataEmitter
 
 
     companion object {
         val INTENT_LAST_ID = "lastid"
-        val INTENT_IS_FROM_BOOKMARKITEM = "isfrombookmarkitem"
+        val INTENT_IS_TRANSLATION_EMPTY = "isuploadidempty"
+        val INTENT_IS_FROM_BOOKMARK_ITEM ="isfrombookmarkitem"
         val UPDATE_RESULT = 1
+        val DOCS_VIEW_RESULT = 2
         @JvmStatic val INTENT_FILENAME = "FILENAME"
         @JvmStatic var INTENT_MESSAGE = "INTENT_MESSAGE"
         @JvmStatic var INTENT_FETCHED_TEXT = "FETCHED_TEXT_MESSAGE"
@@ -106,16 +114,23 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
             AppUtil.makeDebugLog("Translated display isnt null")
             fileName = intent.getStringExtra(INTENT_FILENAME)
             lastId = intent.getIntExtra(INTENT_LAST_ID,0)
-            isFromBookmarkItem = intent.getBooleanExtra(INTENT_IS_FROM_BOOKMARKITEM,false)
+            isTranslationEmpty = intent.getBooleanExtra(INTENT_IS_TRANSLATION_EMPTY,false)
+            isFromBookmarkItem = intent.getBooleanExtra(INTENT_IS_FROM_BOOKMARK_ITEM, false)
             invalidateOptionsMenu()
             toolbar.title = AppUtil.getOnlyFileName(fileName)
-            //bookmarkDataEmitter.getAllIndexedSentenceBasedOnLastId(lastId,this)
+            bookmarkDataEmitter = BookmarkDataEmitter(this)
         }
         val adapter = TranslatedDisplayPagerAdapter(this, supportFragmentManager, lastId)
         translatedDisplayViewPager.offscreenPageLimit = 3
         translatedDisplayViewPager.adapter = adapter
         translatedDisplayTabLayout.setupWithViewPager(translatedDisplayViewPager)
 
+        if(!AppUtil.getIdiomGuidance(this)){
+            Snacky.builder().setActivity(this).success().setText(getString(R.string.idiom_guidance)).setDuration(Snacky.LENGTH_LONG).show()
+            AppUtil.setIdiomGuidance(this,true)
+        }
+        AppUtil.makeErrorLog("yooo ")
+        bookmarkDataEmitter.getEnglishBookmark(lastId,this)
     }
 
     fun getSynonym(word : String){
@@ -125,6 +140,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
 
     override fun onGetSyonyms(syonyms: MutableList<String>) {
         syonyms.add(0,currentSelectedWord)
+        AppUtil.makeErrorLog("get synonymss "+syonyms.size)
         if(isFromEnglishFragment){
             EventBus.getDefault().post(EnglishFragmentSynonymEvent(syonyms))
         }
@@ -133,14 +149,33 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
         }
     }
 
+    var dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
+        when (which) {
+            DialogInterface.BUTTON_POSITIVE -> {
+                startActivity(Intent(this,MainActivity::class.java))
+                finish()
+            }
+
+            DialogInterface.BUTTON_NEGATIVE -> {
+            }
+        }
+    }
+
 
     override fun onBackPressed() {
+        if(!isTranslationEmpty && !isFromBookmarkItem){
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(getString(R.string.confirmation_back_no_upload)).setPositiveButton(getString(R.string.yes), dialogClickListener)
+                    .setNegativeButton(getString(R.string.no), dialogClickListener).show()
+            return
+        }
         startActivity(Intent(this,MainActivity::class.java))
-        super.onBackPressed()
+        finish()
     }
 
     override fun onStart() {
         super.onStart()
+        EventBus.getDefault().register(this)
         translatedDisplayViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
             override fun onPageScrollStateChanged(state: Int) {
 
@@ -157,6 +192,18 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
             }
 
         })
+
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onFragmentReady(event : FragmentEvent){
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -165,48 +212,47 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        docViewMenuItem = menu?.findItem(R.id.docsViewOption)
-        saveMenuItem = menu?.findItem(R.id.saveOption)
-        uploadMenuItem = menu?.findItem(R.id.uploadOption)
+        generateFileOption = menu?.findItem(R.id.generateFileOption)
         toggleEachLineItem = menu?.findItem(R.id.toggleEachLineOption)
         toggleIdiomCardItem = menu?.findItem(R.id.toggleIdiomCardOption)
-        if(isFromBookmarkItem){
-            saveMenuItem?.setVisible(false)
-            uploadMenuItem?.setVisible(false)
-            docViewMenuItem?.setVisible(true)
+        if(!isTranslationEmpty){
+            generateFileOption?.setVisible(true)
         }
         else{
-            uploadMenuItem?.setVisible(true)
-            docViewMenuItem?.setVisible(false)
-            saveMenuItem?.setVisible(true)
+            generateFileOption?.setVisible(false)
         }
         toggleEachLineItem?.isVisible = isToggleVisible
         toggleIdiomCardItem?.isVisible = isToggleCardVisible
         return super.onPrepareOptionsMenu(menu)
     }
 
+    lateinit var bookmark : BookmarkedEnglish
+    override fun onFetched(bookmark: BookmarkedEnglish) {
+        this.bookmark = bookmark
+        EventBus.getDefault().post(BookmarkViewEvent())
+        AppUtil.makeErrorLog("hoiii "+bookmark.id)
+    }
+
+    override fun onFailedFetched() {
+
+    }
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.saveOption -> {
-                val bookmarkDataEmitter = BookmarkDataEmitter(this)
-
-            }
-            R.id.uploadOption -> {
-                uploadService = UploadService(this)
-                uploadService.upload(lastId,fileName)
-            }
-            R.id.docsViewOption -> {
-                val intent = Intent(this,DriveOpenFileActivity::class.java)
-                intent.putExtra(DriveOpenFileActivity.INTENT_ID,lastId)
+            R.id.generateFileOption -> {
+                /*val bookmarkDataEmitter = BookmarkDataEmitter(this!!)
+                bookmarkDataEmitter.getEnglishBookmark(lastId,this)*/
+                val intent = Intent(this,CreateFileActivity::class.java)
+                intent.putExtra(CreateFileActivity.INTENT_ID,lastId)
                 startActivity(intent)
             }
             R.id.updateIndonesianOption ->{
-                val intent = Intent(this,UpdateIndonesianActivity::class.java)
-                intent.putExtra(UpdateIndonesianActivity.INTENT_ID,lastId)
+                val intent = Intent(this,RTEditorActivity::class.java)
+                intent.putExtra(RTEditorActivity.INTENT_ID,lastId)
                 startActivityForResult(intent, UPDATE_RESULT)
             }
             R.id.toggleEachLineOption ->{
-                isWrapped = !isWrapped
                 if(isWrapped){
                     toggleEachLineItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_sort_white_24))
                 }
@@ -214,9 +260,9 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
                     toggleEachLineItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_wrap_text_white_24))
                 }
                 EventBus.getDefault().post(ViewEvent(isWrapped))
+                isWrapped = !isWrapped
             }
             R.id.toggleIdiomCardOption ->{
-                isSlideShow = !isSlideShow
                 if(isSlideShow){
                     toggleIdiomCardItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_view_comfy_white_24))
                 }
@@ -224,6 +270,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
                     toggleIdiomCardItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_style_white_24))
                 }
                 EventBus.getDefault().post(IdiomCardViewEvent(isSlideShow))
+                isSlideShow = !isSlideShow
             }
 
         }
@@ -238,14 +285,33 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == UPDATE_RESULT) {
             if (resultCode == Activity.RESULT_OK) {
+                Snacky.builder().setActivity(this).setText(getString(R.string.success_update)).success().show()
                 val adapter = TranslatedDisplayPagerAdapter(this, supportFragmentManager, lastId)
                 translatedDisplayViewPager.offscreenPageLimit = 3
                 translatedDisplayViewPager.adapter = adapter
                 translatedDisplayTabLayout.setupWithViewPager(translatedDisplayViewPager)
+                bookmarkDataEmitter.getEnglishBookmark(lastId,this)
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
+                //Snacky.builder().setActivity(this).setText(getString(R.string.failed_update)).success().show()
             }
         }
+        if(requestCode == DOCS_VIEW_RESULT){
+            if (resultCode == Activity.RESULT_OK) {
+               // Snacky.builder().setActivity(this).setText(getString(R.string.success_update)).success().show()
+                isTranslationEmpty = false
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Snacky.builder().setActivity(this).setText(getString(R.string.failed_docs)).error().show()
+            }
+        }
+
+
     }
+
+    override fun onErrorShowing() {
+        Snacky.builder().setActivity(this).error().setText(getString(R.string.error_translate_service_hasnt_ready)).show()
+    }
+
 }

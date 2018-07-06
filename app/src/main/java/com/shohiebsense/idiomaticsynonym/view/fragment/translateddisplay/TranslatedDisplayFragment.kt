@@ -17,6 +17,7 @@ import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.api.ChosenSynonymWord
+import com.shohiebsense.idiomaticsynonym.model.event.BookmarkViewEvent
 import com.shohiebsense.idiomaticsynonym.model.event.ViewEvent
 import com.shohiebsense.idiomaticsynonym.services.TranslatedDisplayService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
@@ -45,7 +46,6 @@ import org.greenrobot.eventbus.ThreadMode
 class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListener, TranslatedDisplayCallback, KategloService.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback {
 
 
-
     lateinit var translatedTextList: ArrayList<String>
     //lateinit var idiomsList : HashMap<Int,String>
     //dev only
@@ -59,7 +59,6 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     lateinit var translatedSpannable : SpannableString
     var tooltips: ToolTipManager? = null
     var lastId = 0
-    lateinit var bookmark : BookmarkedEnglish
 
     companion object {
         fun newInstance(lastId: Int) : TranslatedDisplayFragment {
@@ -73,6 +72,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
         //translatedTextList = arguments.getStringArrayList(MainActivity.INTENT_TRANSLATED_TEXT)
        // AppUtil.makeDebugLog("translatedTextList SIZEE "+translatedTextList.size)
         //idiomsList = arguments.getSerializable(MainActivity.INTENT_IDIOM_LIST) as HashMap<Int, String>
@@ -91,8 +91,6 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bookmarkDataEmitter = BookmarkDataEmitter(activity!!)
-        bookmarkDataEmitter.getEnglishBookmark(lastId,this)
         itemAdapter = ItemAdapter.items()
         fastAdapter = FastAdapter.with(itemAdapter)
         tooltips = ToolTipManager(activity)
@@ -119,10 +117,10 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         translatedTextView.text = ""+spannable*/
 
         //translatedTextView.text = "pada hari minggu ku turut ayah ke kotaaa "+getString(R.string.dialog_message_find_idioms)
+
     }
 
     override fun onStart() {
-        EventBus.getDefault().register(this)
         super.onStart()
     }
 
@@ -195,11 +193,11 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onChangeOrientation(e: ViewEvent) {
         if(!e.isWrapped){
-            val newlinesentence = AppUtil.separateParagraphIntoEachLine(bookmark.indonesian.toString(),bookmark.indexedSentences)
+            val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),(activity as TranslatedDisplayActivity).bookmark.indexedSentences)
             translatedTextView.setText(Html.fromHtml(newlinesentence))
         }
         else{
-            translatedTextView.setText(Html.fromHtml(bookmark.indonesian.toString()))
+            translatedTextView.setText(Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString()))
         }
     }
 
@@ -229,10 +227,24 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         fastAdapter.notifyAdapterDataSetChanged()
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onGettingBookmark(event : BookmarkViewEvent){
+       /* if((activity as TranslatedDisplayActivity).bookmark.indonesian.toString().isNotBlank()){
+            val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),(activity as TranslatedDisplayActivity).bookmark.indexedSentences)
+            translatedTextView.setText(Html.fromHtml(newlinesentence))
+        }*/
+        translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+    }
+
     override fun onFetched(bookmark: BookmarkedEnglish) {
-        this.bookmark = bookmark
+        //this.bookmark = bookmark
+        AppUtil.makeErrorLog("bukannya adaan "+bookmark.uploadId)
         val newlinesentence = AppUtil.separateParagraphIntoEachLine(bookmark.indonesian.toString(),bookmark.indexedSentences)
         translatedTextView.setText(Html.fromHtml(newlinesentence))
+    }
+
+    override fun onFailedFetched() {
+
     }
 
 

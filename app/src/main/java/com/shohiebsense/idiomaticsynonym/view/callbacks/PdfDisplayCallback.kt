@@ -7,11 +7,11 @@ interface PdfDisplayCallback {
 
     fun onErrorReadingFile()
     fun onLoadingPdf()
-    fun onErrorLoadingPdf()
-    fun onFinishedLoadingPdf(file: String)
-    fun onFetchingPdf()
+    fun onError()
+    fun onFinishedLoadingPdf()
+    fun onProcess()
     fun onFinishedFetchingPdfAsList(fetchedText: MutableList<String>, name: String)
-    fun onFinishedFetchingPdf(fetchedText: String, name: String)
+    fun onEmitted(fetchedText: String, name: String)
 
 
 

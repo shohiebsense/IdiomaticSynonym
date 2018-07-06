@@ -94,14 +94,12 @@ class CardPagerAdapter(var context: Activity) : PagerAdapter() {
 
 
         // Navigation bar hiding:  Backwards compatible to ICS.
-        if (Build.VERSION.SDK_INT >= 14) {
-            newUiOptions = newUiOptions xor View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-        }
+        newUiOptions = newUiOptions xor View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+
 
         // Status bar hiding: Backwards compatible to Jellybean
-        if (Build.VERSION.SDK_INT >= 16) {
-            newUiOptions = newUiOptions xor View.SYSTEM_UI_FLAG_FULLSCREEN
-        }
+        newUiOptions = newUiOptions xor View.SYSTEM_UI_FLAG_FULLSCREEN
+
 
         // Immersive mode: Backward compatible to KitKat.
         // Note that this flag doesn't do anything by itself, it only augments the behavior
@@ -111,9 +109,8 @@ class CardPagerAdapter(var context: Activity) : PagerAdapter() {
         // Sticky immersive mode differs in that it makes the navigation and status bars
         // semi-transparent, and the UI flag does not get cleared when the user interacts with
         // the screen.
-        if (Build.VERSION.SDK_INT >= 18) {
-            newUiOptions = newUiOptions xor View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        }
+        newUiOptions = newUiOptions xor View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
 
         context.getWindow().getDecorView().setSystemUiVisibility(newUiOptions)
         //END_INCLUDE (set_ui_flags)

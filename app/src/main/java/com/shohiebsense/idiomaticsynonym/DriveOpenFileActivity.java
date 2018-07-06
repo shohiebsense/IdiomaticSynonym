@@ -13,16 +13,18 @@
  */
 package com.shohiebsense.idiomaticsynonym;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
@@ -33,9 +35,6 @@ import com.shohiebsense.idiomaticsynonym.utils.AppUtil;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -59,9 +58,10 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
      * Text view for file contents
      */
 
-    private boolean driveClientReady = false;
+    private boolean fileRetrieved = false;
     BookmarkedEnglish bookmarkedEnglish;
     private TextView mFileContents;
+    Toolbar toolbar;
 
     private ExecutorService mExecutorService;
 
@@ -69,15 +69,28 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress);
+        englishId = getIntent().getIntExtra(INTENT_ID,0);
 
+        toolbar =  findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_white_24);
         BookmarkDataEmitter bookmarkDataEmitter = new BookmarkDataEmitter(this);
         bookmarkDataEmitter.getEnglishBookmark(englishId,this);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        toolbar.setTitle(getString(R.string.open_doc));
+
+
         mProgressBar = findViewById(R.id.progressBar);
         mProgressBar.setMax(100);
         mFileContents = findViewById(R.id.fileContents);
         mFileContents.setText("");
         mExecutorService = Executors.newSingleThreadExecutor();
-        englishId = getIntent().getIntExtra(INTENT_ID,0);
     }
 
     @Override
@@ -90,9 +103,12 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
                     showMessage(getString(R.string.file_not_selected));
                     finish();
                 });*/
-        driveClientReady = true;
-        if(bookmarkedEnglish != null){
+        if(bookmarkedEnglish != null && !bookmarkedEnglish.getUploadId().isEmpty()){
+            fileRetrieved = true;
             retrieveContents(DriveId.decodeFromString(bookmarkedEnglish.getUploadId()).asDriveFile());
+        }
+        else{
+            finish();
         }
     }
     @Override
@@ -104,10 +120,14 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
     @Override
     public void onFetched(@NotNull BookmarkedEnglish bookmark) {
         bookmarkedEnglish = bookmark;
+        toolbar.setTitle(AppUtil.Companion.getOnlyFileName(bookmark.getFileName()));
     }
 
     private void retrieveContents(DriveFile file) {
         // [START read_with_progress_listener]
+
+        String resourceId = file.getDriveId().getResourceId();
+        AppUtil.Companion.makeErrorLog("resource idd "+file.getDriveId().encodeToString());
         AppUtil.Companion.makeErrorLog("yoww "+file.getDriveId().encodeToString());
         OpenFileCallback openCallback = new OpenFileCallback() {
             @Override
@@ -126,30 +146,26 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
                 mProgressBar.setProgress(100);
                 // Read contents
                 // [START_EXCLUDE]
-                try {
-                    try (BufferedReader reader = new BufferedReader(
+                    /*try (BufferedReader reader = new BufferedReader(
                                  new InputStreamReader(driveContents.getInputStream()))) {
                         StringBuilder builder = new StringBuilder();
                         String line;
                         while ((line = reader.readLine()) != null) {
                             builder.append(line);
-                        }
+                        }*/
+                //mFileContents.setText(builder.toString());
 
-                        showMessage(getString(R.string.content_loaded));
-                        mFileContents.setText(builder.toString());
-                        getDriveResourceClient().discardContents(driveContents);
 
-                        String url = "https://docs.google.com/file/d/"+file.getDriveId().getResourceId();
-                        AppUtil.Companion.makeErrorLog(url);
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url));
-                        startActivity(i);
-                    }
-                } catch (IOException e) {
-                    onError(e);
-                }
-                // [END_EXCLUDE]
+                AppUtil.Companion.makeErrorLog("ngga sampai sini");
+                getDriveResourceClient().discardContents(driveContents);
+                String url = "http://docs.google.com/file/d/"+resourceId+"/edit";
+                AppUtil.Companion.makeErrorLog(url);
+                Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+                startActivity(i);
+
             }
+            // [END_EXCLUDE]
+
 
             @Override
             public void onError(@NonNull Exception e) {
@@ -171,4 +187,11 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
     }
 
 
+    @Override
+    public void onFailedFetched() {
+        AppUtil.Companion.makeErrorLog("unik, errornya malah ke sini");
+        Intent intent = new Intent(this,TranslatedDisplayActivity.class);
+        setResult(Activity.RESULT_CANCELED,intent);
+        finish();
+    }
 }

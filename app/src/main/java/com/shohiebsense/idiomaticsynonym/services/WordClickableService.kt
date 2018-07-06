@@ -3,17 +3,22 @@ package com.shohiebsense.idiomaticsynonym.services
 import android.content.Context
 import android.graphics.Color
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.content.ContextCompat
 import android.view.View
 import com.klinker.android.link_builder.Link
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
+import com.shohiebsense.idiomaticsynonym.services.yandex.YandexTranslationService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.SingleEntityCallback
 import com.shohiebsense.idiomaticsynonym.view.callbacks.WordClickableCallback
+import de.mateware.snacky.Snacky
 import io.reactivex.Observer
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import java.util.regex.Pattern
 
 
@@ -22,19 +27,11 @@ import java.util.regex.Pattern
  */
 
 class WordClickableService(var context : Context, var wordClickableCallback: WordClickableCallback) {
-    lateinit var translateService : TranslateService
+    var translateService : YandexTranslationService? = YandexTranslationService(context)
     lateinit var currentIdiom : String
+    var isReady = true
 
-    init {
-        AppUtil.makeErrorLog("attempt to initializee")
-        if(AppUtil.checkInternetConnection(context)){
-            //NETWORK ON MAIN THREAD EXCEPTION
-            Single.create<Unit> {
-                translateService = TranslateService(context)
-                AppUtil.makeDebugLog("initialized hehehehe ")
-            }.observeOn(Schedulers.newThread()).subscribeOn(Schedulers.newThread()).subscribe()
-        }
-    }
+
     var singleEntityCallback : SingleEntityCallback = object : SingleEntityCallback {
         override fun onFetched(translatedIdiom: TranslatedIdiom?) {
             if (translatedIdiom == null)
@@ -42,17 +39,22 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
                 AppUtil.makeErrorLog("halooo ")
             }
             else{
-                AppUtil.makeErrorLog("i got it "+translatedIdiom)
-                //Network mainn thread. use observable
-                //ehh udah sihh
-
+                val combineStrings = mutableListOf<String>()
+                if(translatedIdiom.meaning.contains(",")){
+                    combineStrings.addAll(translatedIdiom.meaning.split(","))
+                }
+                else{
+                    combineStrings.add(translatedIdiom.meaning)
+                }
+                AppUtil.makeDebugLog("hoii "+combineStrings.size)
+                wordClickableCallback.onShowingOnlineTranslation(combineStrings)
 
             }
         }
 
         override fun onError() {
             //service
-            getSingleTranslate(currentIdiom,0, "")
+            getSingleTranslate(0, "")
         }
 
 
@@ -77,7 +79,8 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
                 var boolFinal = afterLastIndex.isLetter()
                 if(index >= 0 && (!bool && !boolFinal)){
                     val link = Link(Pattern.compile("[\\s]"+ foundedIdiom+"[^a-z]", Pattern.CASE_INSENSITIVE))
-                            .setTextColor(Color.parseColor("#00BCD4"))
+                            .setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                            .setTextColorOfHighlightedLink(ContextCompat.getColor(context, R.color.colorPrimary))
                             .setUnderlined(false)
                             .setOnClickListener {
                                 //supposed to be select single query
@@ -106,7 +109,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
         emitter.getSingleTranslatedIdiom(idiom)
     }
 
-    fun getSingleTranslate(idiom: String, sentenceIndex: Int, sentence: String){
+    fun getSingleTranslate(sentenceIndex: Int, sentence: String){
 
         val observer = object : Observer<String> {
             var combineStringMeaning = mutableListOf<String>()
@@ -115,6 +118,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
             }
 
             override fun onComplete() {
+                AppUtil.makeErrorLog("combine finished "+combineStringMeaning[0])
                 wordClickableCallback.onShowingOnlineTranslation(combineStringMeaning)
             }
 
@@ -123,17 +127,27 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
             }
 
             override fun onNext(t: String) {
+                AppUtil.makeErrorLog("hoi")
                 combineStringMeaning.add(t)
+                wordClickableCallback.onShowingOnlineTranslation(combineStringMeaning)
             }
         }
         val combineStrings = mutableListOf<String>()
-        if(idiom.contains(",")){
-            combineStrings.addAll(idiom.split("\\s*,\\s*") )
+        if(currentIdiom.contains(",")){
+            combineStrings.addAll(currentIdiom.split("\\s*,\\s*") )
         }
         else{
-            combineStrings.add(idiom)
+            combineStrings.add(currentIdiom)
         }
-        translateService.singleTranslate(observer, combineStrings)
+        if(translateService == null) {
+            //
+            return
+        }
+        if(isReady)
+        translateService?.getSingleTranslate(observer, combineStrings)
+        else{
+            wordClickableCallback.onErrorShowing()
+        }
     }
 
 }

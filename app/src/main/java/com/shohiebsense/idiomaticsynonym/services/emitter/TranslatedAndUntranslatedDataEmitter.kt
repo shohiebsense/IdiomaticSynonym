@@ -76,7 +76,7 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context) {
             }
 
             override fun onError(e: Throwable) {
-                AppUtil.makeErrorLog("errorreess during click "+e.toString())
+                AppUtil.makeErrorLog("errorreess: kosong tidak ada pd db "+e.toString())
                 singleEntityCallback.onError()
             }
 
@@ -90,7 +90,6 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context) {
             }
 
             override fun onNext(t: ArrayList<CombinedIdiom>) {
-                AppUtil.makeDebugLog("combined idiom copied")
                 idiomsList.addAll(t)
             }
 
@@ -103,7 +102,6 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context) {
                 databaseCallback.onErrorFetchingData()
 
             }
-
         }
     }
 

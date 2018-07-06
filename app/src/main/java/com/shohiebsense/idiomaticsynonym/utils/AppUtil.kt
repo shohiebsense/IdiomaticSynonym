@@ -12,6 +12,7 @@ import android.text.Spanned
 import android.util.Log
 import android.widget.Toast
 import com.shohiebsense.idiomaticsynonym.R
+import com.shohiebsense.idiomaticsynonym.SplashActivity
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import edu.stanford.nlp.ling.Sentence
 import org.jetbrains.anko.bundleOf
@@ -22,6 +23,9 @@ import java.util.zip.ZipInputStream
 import edu.stanford.nlp.tagger.maxent.MaxentTagger
 import org.apache.commons.lang3.time.StopWatch
 import org.jetbrains.anko.defaultSharedPreferences
+import android.support.design.widget.Snackbar
+
+
 
 
 /**
@@ -34,7 +38,59 @@ class AppUtil {
 
         private val SDPath = "idiomalearn"
         val PREF_TEXTS = "english"
-       // private val destinationFolder = SDPath
+        val PREF_PRE_DATA = "data"
+        val PREF_MAIN_GUIDANCE = "guidance"
+        val PREF_IDIOM_GUIDANCE = "idiomGuidance"
+        val PREF_IS_FILE_UPLOADED_EVENT = "isfileuploadd"
+        val PREF_FILE_UPLOADED_NAME = "fileUploadedName"
+
+        fun setFileUploadedNameEvent(context: Context, fileName : String){
+            context.defaultSharedPreferences.edit().putString(PREF_FILE_UPLOADED_NAME, fileName).apply()
+        }
+
+        fun getFileUploadedNameEvent(context: Context) : String{
+            val isAsked =  context.defaultSharedPreferences.getString(PREF_FILE_UPLOADED_NAME,"")
+            return isAsked
+        }
+
+        fun setFileUploadedEvent(context: Context, isAsked : Boolean){
+            context.defaultSharedPreferences.edit().putBoolean(PREF_IS_FILE_UPLOADED_EVENT, isAsked).apply()
+        }
+
+        fun isFileUploadedEvent(context: Context) : Boolean{
+            val isAsked =  context.defaultSharedPreferences.getBoolean(PREF_IS_FILE_UPLOADED_EVENT,false)
+            return isAsked
+        }
+
+        fun setIdiomGuidance(context: Context, isAsked : Boolean){
+            context.defaultSharedPreferences.edit().putBoolean(PREF_IDIOM_GUIDANCE, isAsked).apply()
+        }
+
+        fun getIdiomGuidance(context: Context) : Boolean{
+            val isAsked =  context.defaultSharedPreferences.getBoolean(PREF_IDIOM_GUIDANCE,true)
+            return isAsked
+        }
+
+
+        fun setMainGuidance(context: Context, isAsked : Boolean){
+            context.defaultSharedPreferences.edit().putBoolean(PREF_MAIN_GUIDANCE, isAsked).apply()
+        }
+
+        fun getMainGuidance(context: Context) : Boolean{
+            val isAsked =  context.defaultSharedPreferences.getBoolean(PREF_MAIN_GUIDANCE,true)
+            return isAsked
+        }
+
+
+        fun setPreDataAskingPreference(context: Context, isAsked : Boolean){
+            context.defaultSharedPreferences.edit().putBoolean(PREF_PRE_DATA, isAsked).apply()
+        }
+
+        fun getPreDataAskingPreference(context: Context) : Boolean{
+            val isAsked =  context.defaultSharedPreferences.getBoolean(PREF_PRE_DATA,false)
+            return isAsked
+        }
+
 
         fun navigateToFragment(context: Context, fragmentName: String) {
             var intent = Intent(context, UnderliningActivity::class.java)
@@ -380,12 +436,14 @@ class AppUtil {
                 "seperti itu, berwenang, keluar dari, muncul, terbit, tahu tentang, dengar tentang, mampu"
 
 
-        /*fun getSentence(text: String, word: String): String {
+       /* fun getSentence(text: String, word: String): String {
             val END_OF_SENTENCE = Pattern.compile("\\.\\s+")
 
             val lcword = word.toLowerCase()
             return END_OF_SENTENCE.splitAsStream(text)
-                    .filter({ s -> s.toLowerCase().contains(lcword) })
+                    .filter({ s -> s.toLowerCase().contains(lcword)
+
+                    })
                     .findAny()
                     .orElse(null)
         }*/
@@ -411,8 +469,6 @@ class AppUtil {
         fun separateParagraphIntoEachLine(text: String, indexedSentences: String) : String {
             val tokenizedSentences = MaxentTagger.tokenizeText(StringReader(text))
             var indexedSentenceNumbers = getListOfIdioms(indexedSentences)
-
-            AppUtil.makeErrorLog("sizzeeee is "+indexedSentenceNumbers.size+"  "+indexedSentenceNumbers[0]+ "  "+indexedSentenceNumbers[1])
             var sentences = ""
             for (i in tokenizedSentences.indices)
             //Travel trough sentences
@@ -438,7 +494,7 @@ class AppUtil {
         }
 
 
-        fun Dp2px(context: Context?, dp: Float): Int {
+        fun dp2Px(context: Context?, dp: Float): Int {
             if (context != null) {
                 val scale = context.resources.displayMetrics.density
                 return (dp * scale + 0.5f).toInt()
@@ -450,7 +506,39 @@ class AppUtil {
             return name.substring(name.lastIndexOf("/")+1)
         }
 
+
+        fun restartApplication(oontext : Context) {
+            val i = Intent(oontext, SplashActivity::class.java)
+            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            oontext.startActivity(i)
+        }
+
+     /*   fun showSnackbar(message: String, root: View) {
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show()
+        }*/
+
+        fun fileExt(url: String): String? {
+            var url = url
+            if (url.indexOf("?") > -1) {
+                url = url.substring(0, url.indexOf("?"))
+            }
+            if (url.lastIndexOf(".") == -1) {
+                return null
+            } else {
+                var ext = url.substring(url.lastIndexOf(".") + 1)
+                if (ext.indexOf("%") > -1) {
+                    ext = ext.substring(0, ext.indexOf("%"))
+                }
+                if (ext.indexOf("/") > -1) {
+                    ext = ext.substring(0, ext.indexOf("/"))
+                }
+                return ext.toLowerCase()
+
+            }
+        }
+
     }
+
 
 
 

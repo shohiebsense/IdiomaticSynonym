@@ -1,10 +1,11 @@
 package com.shohiebsense.idiomaticsynonym.services
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Typeface
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
@@ -13,9 +14,11 @@ import android.text.style.StyleSpan
 import android.util.Log
 import android.view.View
 import com.klinker.android.link_builder.Link
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.*
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
+import com.shohiebsense.idiomaticsynonym.services.yandex.YandexTranslationService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
 import com.tom_roush.pdfbox.pdmodel.PDResources
@@ -23,6 +26,7 @@ import com.tom_roush.pdfbox.pdmodel.graphics.form.PDFormXObject
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.subscribeBy
@@ -48,13 +52,15 @@ import kotlin.collections.ArrayList
 /*
 class UnderliningService(val context : Context, val uri : Uri) {
 */
-class UnderliningServiceUsingContains constructor (val context: Context) {
+class UnderliningServiceUsingContains constructor (val context: Context) : YandexTranslationService.YandexListener {
 
     var translatedIdiomText : String = ""
     lateinit var underliningCallback: UnderliningCallback
     var translatedFetchedPdfText = arrayListOf<SpannableStringBuilder>()
-    lateinit var translateService : TranslateService
+    //lateinit var translateService : TranslateService
+    lateinit var translateService : YandexTranslationService
     var clickableIdioms = arrayListOf<Link>()
+    var translationSpannable = SpannableStringBuilder("")
     var sentences = mutableListOf<String>()
     val bookmarkDataEmitter = BookmarkDataEmitter(context)
     lateinit var fileName : String
@@ -79,6 +85,11 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
 
  */
 
+
+    constructor(activity: Context, extractedPdfText: CharSequence) : this(activity){
+        this.extractedPdfTexts = extractedPdfText
+        sentences = AppUtil.splitParagraphsIntoSentences(extractedPdfTexts.toString())
+    }
 
 
     constructor(activity: Context, extractedPdfText: CharSequence, underliningCallback: UnderliningCallback,fileName : String) : this(activity){
@@ -139,6 +150,31 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         }
     }
 
+    private fun getTranslationObserver(): Observer<SpannableStringBuilder> {
+        return object : Observer<SpannableStringBuilder> {
+            override fun onSubscribe(d: Disposable) {
+                AppUtil.makeDebugLog("Underlining Begins ")
+            }
+
+
+            override fun onNext(translationSpannable : SpannableStringBuilder) {
+                this@UnderliningServiceUsingContains.translationSpannable = translationSpannable
+            }
+
+            override fun onError(e: Throwable) {
+                AppUtil.makeDebugLog("error underlining :  "+e.toString())
+
+            }
+
+            override fun onComplete() {
+                AppUtil.makeDebugLog("completed !!!")
+                underliningCallback.onFinishedUnderliningText(clickableIdioms)
+                translate()
+            }
+        }
+    }
+
+
     fun getSentence(text: String, word: String): String? {
         val END_OF_SENTENCE = Pattern.compile("\\s+[^.!?]*[.!?]")
         val lcword = word.toLowerCase()
@@ -153,7 +189,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
     fun convertToCharSequence(combinedIdioms: ArrayList<CombinedIdiom>, behaviour: BottomSheetBehavior<View>): ArrayList<Link> {
 
         if(AppUtil.checkInternetConnection(context)){
-            translateService = TranslateService(context)
+            translateService = YandexTranslationService(context)
         }
         val singleCombinedIdiom = HashSet<String>()
         val timer = StopWatch()
@@ -177,7 +213,8 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
                     sentenceIndex.append("$i, ")
 
                     val link = Link(Pattern.compile("[\\s]"+ combinedIdioms[i].idiom+"[^a-z]",Pattern.CASE_INSENSITIVE))
-                            .setTextColor(Color.parseColor("#00BCD4"))
+                            .setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
+                            .setTextColorOfHighlightedLink(ContextCompat.getColor(context, R.color.colorPrimary))
                             .setUnderlined(false)
                             .setOnClickListener {  if (combinedIdioms[i].meaning.isBlank()) {
                                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
@@ -202,14 +239,16 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         return clickableIdioms
     }
 
+
+
     fun extractTranslation(indexedSentence: String){
-        translatedFetchedPdfText.add(translateService.translate(indexedSentence,true)!!)
+        translatedFetchedPdfText.add(translateService.translate(indexedSentence))
     }
 
-    fun getError(e: Unit){
+    fun getError(e: String){
         AppUtil.makeErrorLog("error translating pertam ")
         AppUtil.makeErrorLog(e.toString())
-        underliningCallback.onErrorTranslatingText()
+        underliningCallback.onErrorTranslatingText(e)
     }
 
     fun translateCompletion(){
@@ -227,7 +266,10 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
     fun translate(){
         sentences.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribeBy  (
                 onNext = { extractTranslation(it) },
-                onError =  { getError(it.printStackTrace()) },
+                onError =  {
+
+                    getError( it.toString())
+                },
                 onComplete = { translateCompletion() }
         )
     }
@@ -262,9 +304,6 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         }
     }
 
-
-
-
     fun underLine(behaviour: BottomSheetBehavior<View>) {
         if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
             AppUtil.makeErrorLog("error size list 0")
@@ -285,6 +324,61 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
                     }
                 }).subscribe(getLinksObserver())
 
+    }
+
+
+    fun underLine(activity: Activity) {
+        if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
+            AppUtil.makeErrorLog("error size list 0")
+            underliningCallback.onErrorUnderliningText()
+            return
+        }
+        //Observable.fromIterable(englishSentences).observeOn(Schedulers.computation()).subscribeOn(Schedulers.computation()).subscribe(getObserver2())
+        Observable.create<ArrayList<CombinedIdiom>> { e->
+            if(!e.isDisposed){
+                e.onNext(TranslatedAndUntranslatedDataEmitter.idiomsList)
+                e.onComplete()
+            }
+        }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.newThread())
+                .map(object : Function<ArrayList<CombinedIdiom>, Unit>{
+                    override fun apply(combinedIdioms: ArrayList<CombinedIdiom>) {
+                        val singleCombinedIdiom = HashSet<String>()
+                        val timer = StopWatch()
+                        timer.start()
+                        AppUtil.makeDebugLog("tokenize finished")
+                        val idioms = StringBuilder()
+                        for(i in combinedIdioms.indices){
+                            if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
+                                var index = extractedPdfTexts.toString().indexOf(combinedIdioms[i].idiom,0,true)
+                                val prevIndex = extractedPdfTexts[index-1].toLowerCase()
+                                val afterLastIndex = extractedPdfTexts[index+combinedIdioms[i].idiom.length].toLowerCase()
+                                var bool = prevIndex.isLetterOrDigit()
+                                var boolFinal = afterLastIndex.isLetter()
+                                if(index >= 0 && (!bool && !boolFinal)){
+                                    idioms.append(combinedIdioms[i].idiom+", ")
+                                }
+                            }
+                        }
+
+                        bookmarkDataEmitter.updateIdioms(idioms.toString())
+                        timer.stop()
+                        val seconds = timer.time/60
+                    }
+                }).subscribe(object : Observer<Unit>{
+                    override fun onComplete() {
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                    }
+
+                    override fun onNext(t: Unit) {
+                    }
+
+                    override fun onError(e: Throwable) {
+
+                    }
+
+                })
     }
 
     //Untranslated
@@ -363,35 +457,12 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         else{
             combineStrings.add(idiom)
         }
-        translateService.singleTranslate(observer, combineStrings)
+        translateService.getSingleTranslate(observer, combineStrings)
     }
 
 
     //single sentences that contains idiom
     fun getSingleTranslate(idiom: String, sentenceIndex: Int, sentence: String){
-
-        val observer = object : Observer<String> {
-            var combineStringMeaning = mutableListOf<String>()
-            override fun onSubscribe(d: Disposable) {
-                //process startup
-                underliningCallback.onTranslatingIdiomOneByOne()
-            }
-
-            override fun onComplete() {
-                translatedIdiomText
-                underliningCallback.onFinishedTranslatingIdiomOneByOne(combineStringMeaning)
-            }
-
-            override fun onError(e: Throwable) {
-                AppUtil.makeErrorLog("e singleTranslating "+ e.toString())
-                underliningCallback.onErrorTranslatingIdiomOneByOne()
-            }
-
-            override fun onNext(t: String) {
-
-                combineStringMeaning.add(t)
-            }
-        }
         val combineStrings = mutableListOf<String>()
         if(idiom.contains(",")){
             combineStrings.addAll(idiom.split("\\s*,\\s*") )
@@ -399,7 +470,11 @@ class UnderliningServiceUsingContains constructor (val context: Context) {
         else{
             combineStrings.add(idiom)
         }
-        translateService.singleTranslate(observer, combineStrings)
+        translateService.getSingleTranslate(idiom, this)
+    }
+
+    override fun onGetTranslation(text: String) {
+        underliningCallback.onClickedIdiomText(text)
     }
 
     @Throws(IOException::class)

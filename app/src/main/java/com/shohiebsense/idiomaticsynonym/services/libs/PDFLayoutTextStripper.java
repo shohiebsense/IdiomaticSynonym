@@ -92,7 +92,7 @@ public class PDFLayoutTextStripper extends PDFTextStripper {
       try {
         this.sortTextPositionList(textList);
       } catch ( IllegalArgumentException e) {
-        System.err.println(e);
+        System.err.println(e.toString());
       }
       this.iterateThroughTextList(textList.iterator()) ;
     }

@@ -1,40 +1,38 @@
 package com.shohiebsense.idiomaticsynonym
 
-import android.app.Fragment
-import android.app.FragmentManager
-import android.app.FragmentTransaction
+import android.app.*
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
-import com.shohiebsense.idiomaticsynonym.obsoletes.KategloService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.adapter.MainPagerFragmentStatePagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
+import de.mateware.snacky.Snacky
+import io.reactivex.Completable
+import io.reactivex.CompletableObserver
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.internal.operators.observable.ObservableReplay.observeOn
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback, DatabaseCallback, com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService.KategloListener {
-    override fun onGetSyonyms(syonyms: MutableList<String>) {
-        for(synonym in syonyms){
-            AppUtil.makeErrorLog("helloo  "+synonym)
-        }
-    }
+class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback, DatabaseCallback{
 
-
-    val NAVIGATION_TRANSLATE = 0
-    val NAVIGATION_BOOKMARKS = 1
-    val NAVIGATION_STATISTCS = 2
 
     lateinit var fragment : Fragment
-     var bookmarks = arrayListOf<BookmarkedEnglish>()
     lateinit var mainPagerAdapter : MainPagerFragmentStatePagerAdapter
+    lateinit var bookmarkEmitter: BookmarkDataEmitter
 
     //toggle
 
@@ -96,6 +94,8 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
          * and a change of the status and navigation bar.
          */
         private val UI_ANIMATION_DELAY = 300
+        val INTENT_IS_FROM_UPLOAD_ACTIVITY = "isfromuploadactivity"
+
     }
 
     //end toggle
@@ -103,7 +103,9 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
 
     fun initToolbar(){
         setSupportActionBar(toolbar)
+        toolbar.title = getString(R.string.app_name) + " - "+ getString(R.string.find_idioms)
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,19 +113,29 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
         setContentView(R.layout.activity_main)
         initToolbar()
 
+        AppUtil.makeDebugLog("heyy "+AppUtil.getFileUploadedNameEvent(this))
+        if(AppUtil.isFileUploadedEvent(this) && AppUtil.getFileUploadedNameEvent(this).isNotBlank()){
+            Snacky.builder().setActivity(this).success().setText(getString(R.string.success_upload,AppUtil.getFileUploadedNameEvent(this))).show()
+            AppUtil.setFileUploadedEvent(this,false)
+            AppUtil.setFileUploadedNameEvent(this,"")
+        }
+
+        bookmarkEmitter = BookmarkDataEmitter(this)
+
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        val bookmarkEmitter = BookmarkDataEmitter(this)
-        bookmarkEmitter.getEnglisbBookmarks(this)
+
 
         // bottomNavigation.isColored = true;
-
+        mainPagerAdapter = MainPagerFragmentStatePagerAdapter(supportFragmentManager)
+        mainViewPager.offscreenPageLimit = 3
+        mainViewPager.adapter = mainPagerAdapter
         bottomNavigation.accentColor = Color.parseColor("#f0dfbb")
         bottomNavigation.inactiveColor = Color.parseColor("#fcfcfd")
         bottomNavigation.defaultBackgroundColor = Color.parseColor("#b23a3a")
 
 
         val item1 = AHBottomNavigationItem(R.string.text_navigation_do_translation, R.drawable.ic_note_add_white_24dp, R.color.soft_white)
-        val item2 = AHBottomNavigationItem(R.string.text_navigation_bookmarks, R.drawable.ic_subject_white_18dp, R.color.soft_white)
+        val item2 = AHBottomNavigationItem(R.string.text_navigation_history, R.drawable.ic_subject_white_18dp, R.color.soft_white)
         val item3 = AHBottomNavigationItem(R.string.text_navigation_statistics, R.drawable.ic_subject_white_18dp, R.color.soft_white)
        // item1.setColorRes(R.color.soft_white)
         bottomNavigation.isTranslucentNavigationEnabled = false
@@ -136,8 +148,8 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
                     mainViewPager.currentItem = 0
                 }
                 when(position){
-                    0 -> toolbar.title = getString(R.string.find_idioms)
-                    1 -> toolbar.title = getString(R.string.bookmarks)
+                    0 -> toolbar.title = getString(R.string.app_name) + " - "+ getString(R.string.find_idioms)
+                    1 -> toolbar.title = getString(R.string.histories)
                     2 -> toolbar.title = getString(R.string.statistics)
                 }
                 mainViewPager.currentItem = position
@@ -145,8 +157,47 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
             }
         })
 
-        var kategloNewService = com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService()
-        kategloNewService.getSynonymStrings("kakak",this)
+        if(!AppUtil.getPreDataAskingPreference(this) && AppUtil.getMainGuidance(this) ){
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(getString(R.string.ask_pre_data)).setPositiveButton(getString(R.string.yes), dialogClickListener)
+                    .setNegativeButton(getString(R.string.no), dialogClickListener).setNeutralButton(getString(R.string.remind_me_later),dialogClickListener).show()
+        }
+    }
+
+    var dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
+        when (which) {
+            DialogInterface.BUTTON_POSITIVE -> {
+                AppUtil.setPreDataAskingPreference(this,true)
+                Snacky.builder().setActivity(this).info().setText(getString(R.string.loading)).setDuration(Snacky.LENGTH_INDEFINITE).show()
+                Completable.timer(5, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                        .subscribe(object : CompletableObserver{
+                            override fun onComplete() {
+                                recreate()
+                            }
+
+                            override fun onSubscribe(d: Disposable) {
+                                AppUtil.setIdiomGuidance(this@MainActivity, false)
+                                AppUtil.setMainGuidance(this@MainActivity,true)
+                                bookmarkEmitter.getPrerequistes(this@MainActivity)
+                            }
+
+                            override fun onError(e: Throwable) {
+                            }
+                        })
+
+            }
+
+            DialogInterface.BUTTON_NEGATIVE -> {
+                AppUtil.setPreDataAskingPreference(this,true)
+                AppUtil.setIdiomGuidance(this,true)
+            }
+            DialogInterface.BUTTON_NEUTRAL -> {
+                AppUtil.setPreDataAskingPreference(this,false)
+            }
+
+        }
+
+
     }
 
     override fun onStart() {
@@ -154,6 +205,9 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
         if(TranslatedAndUntranslatedDataEmitter.isIdiomsEmpty()){
             AppUtil.makeErrorLog("yes is empty")
             TranslatedAndUntranslatedDataEmitter(this,this).getAll()
+        }
+        if(!AppUtil.getIdiomGuidance(this)){
+            Snacky.builder().setActivity(this@MainActivity).setText(getString(R.string.pre_requisition_message)).success().setDuration(Snacky.LENGTH_LONG).show()
         }
     }
 
@@ -171,16 +225,13 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
 
 
     override fun onFetched(bookmarks: ArrayList<BookmarkedEnglish>) {
-        this.bookmarks.addAll(bookmarks)
         if(bookmarks.isNotEmpty())
         Log.e("shohiebsenseee ","bookmarks hohoho  "+bookmarks[bookmarks.lastIndex].idioms)
-        mainPagerAdapter = MainPagerFragmentStatePagerAdapter(supportFragmentManager, bookmarks)
-        mainViewPager.offscreenPageLimit = 3
-        mainViewPager.adapter = mainPagerAdapter
+
     }
 
     override fun onError() {
-        mainPagerAdapter = MainPagerFragmentStatePagerAdapter(supportFragmentManager, bookmarks)
+        mainPagerAdapter = MainPagerFragmentStatePagerAdapter(supportFragmentManager)
         mainViewPager.offscreenPageLimit = 3
         mainViewPager.adapter = mainPagerAdapter
     }
@@ -241,8 +292,4 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
         mHideHandler.removeCallbacks(mHidePart2Runnable)
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY.toLong())
     }
-
-
-
-
 }

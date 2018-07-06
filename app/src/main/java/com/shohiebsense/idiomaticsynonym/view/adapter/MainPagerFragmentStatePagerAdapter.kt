@@ -11,13 +11,13 @@ import com.shohiebsense.idiomaticsynonym.view.fragment.home.StatisticsFragment
 /**
  * Created by Shohiebsense on 19/01/2018.
  */
-class MainPagerFragmentStatePagerAdapter(fm: FragmentManager, val bookmarks: ArrayList<BookmarkedEnglish>) : FragmentStatePagerAdapter(fm) {
+class MainPagerFragmentStatePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
 
     override fun getItem(position: Int): Fragment {
         when(position){
             0 -> return PdfDisplayFragment()
-            1 -> return BookmarksFragment.newInstance(bookmarks)
+            1 -> return BookmarksFragment.newInstance()
             2 -> return StatisticsFragment()
         }
         return PdfDisplayFragment()

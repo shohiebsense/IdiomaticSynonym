@@ -5,6 +5,7 @@ import android.widget.TextView
 import com.mikepenz.fastadapter.FastAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
+import kotlinx.android.synthetic.main.item_idioms.view.*
 
 /**
  * Created by Shohiebsense on 20/11/2017.
@@ -30,7 +31,7 @@ class IdiomMeaningViewHolder : FastAdapter.ViewHolder<IdiomMeaningItem> {
         var context = itemView.context
         idiomMeaningTextView.text = item!!.idiomMeaning
 
-        view.setOnClickListener {
+        view.itemTextView.setOnClickListener {
             AppUtil.makeDebugLog("clickedddd this item ")
             item.idiomItemClickListener.onIdiomItemClick(item.idiomMeaning)
         }

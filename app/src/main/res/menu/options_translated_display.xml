@@ -3,16 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item
-        android:id="@+id/saveOption"
-        android:title="@string/menuOptions_save"
-        />
-    <item
-        android:id="@+id/uploadOption"
-        android:title="@string/menuOptions_upload" />
-    <item
+        android:id="@+id/generateFileOption"
+        android:title="@string/menuOptions_generate_text" />
+   <!-- <item
         android:id="@+id/docsViewOption"
         android:title="@string/menuOptions_docsview"
-        />
+        />-->
     <item
         android:id="@+id/updateIndonesianOption"
         android:title="@string/menuOptions_updateIndonesian"
@@ -20,7 +16,7 @@
     <item
         android:id="@+id/toggleEachLineOption"
         android:title=""
-        android:icon="@drawable/baseline_sort_white_24"
+        android:icon="@drawable/baseline_wrap_text_white_24"
         app:showAsAction="always"
         />
     <item

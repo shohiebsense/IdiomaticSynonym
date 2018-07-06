@@ -51,12 +51,11 @@
         android:id="@+id/loadingDescTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="loadingg"
+        android:text="@string/loading"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/avi" />
+        app:layout_constraintRight_toRightOf="parent" />
 
 
 
@@ -94,7 +93,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:text="fetched : "
                 />
 
         </android.support.constraint.ConstraintLayout>

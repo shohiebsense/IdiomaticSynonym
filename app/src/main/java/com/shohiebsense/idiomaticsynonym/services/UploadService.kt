@@ -16,6 +16,9 @@ import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import de.mateware.snacky.Snacky
 import java.io.OutputStreamWriter
 import java.util.HashSet
+import com.google.android.gms.drive.ExecutionOptions
+
+
 
 
 /**
@@ -80,7 +83,7 @@ class UploadService(val activity: Activity) {
       //createFile()
   }
 
-    private fun createFile(id: Int, name: String) {
+    private fun createFile(id: Int, name: String, content : String) {
         // [START create_file]
         val rootFolderTask = mDriveResourceClient?.getRootFolder()
         val createContentsTask = mDriveResourceClient?.createContents()
@@ -89,22 +92,25 @@ class UploadService(val activity: Activity) {
                     val parent = rootFolderTask?.getResult()
                     val contents = createContentsTask?.getResult()
                     val outputStream = contents?.getOutputStream()
-                    OutputStreamWriter(outputStream).use { writer -> writer.write("Hello World!") }
+                    OutputStreamWriter(outputStream).use { writer -> writer.write(content) }
 
                     val changeSet = MetadataChangeSet.Builder()
-                            .setTitle("$name.docx")
+                            .setTitle("Sancturarit.doc")
                             .setMimeType("text/plain")
                             // .setMimeType("application/vnd.google-apps.document")
                             .setStarred(true)
                             .build()
 
                     mDriveResourceClient?.createFile(parent!!, changeSet, contents)
+
+
                 }
                 .addOnSuccessListener(activity) { driveFile ->
-                    Log.e("shohiebsenseee ", driveFile.getDriveId().toString())
-                    showMessage(activity.getString(R.string.file_created) + " " + driveFile.getDriveId().encodeToString())
+                    Log.e("shohiebsenseee ", "resource id "+ driveFile.getDriveId().resourceId)
+                    showMessage(activity.getString(R.string.file_created) + " " + driveFile.driveId.resourceId)
                     val emitter = BookmarkDataEmitter(activity)
                     emitter.updateUploadId(id.toString(),driveFile.driveId.encodeToString())
+                    //driveFile.addChangeSubscription(google);
                     //finish()
                 }
                 .addOnFailureListener(activity, { e ->
@@ -116,8 +122,8 @@ class UploadService(val activity: Activity) {
     }
 
 
-    fun upload(id: Int, name: String){
-        createFile(id,name)
+    fun upload(id: Int, name: String, contents : String){
+        createFile(id,name,contents)
     }
 
     protected fun showMessage(message: String) {

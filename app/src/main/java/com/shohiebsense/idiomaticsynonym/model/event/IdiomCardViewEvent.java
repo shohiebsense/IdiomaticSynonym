@@ -13,7 +13,7 @@ public class IdiomCardViewEvent {
     }
 
     public void setSlideShow(boolean isSlideShow) {
-        isSlideShow = isSlideShow;
+        this.isSlideShow = isSlideShow;
     }
 }
 

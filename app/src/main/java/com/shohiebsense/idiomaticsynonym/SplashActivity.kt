@@ -13,7 +13,6 @@ import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
 import com.shohiebsense.idiomaticsynonym.db.IdiomDbHelper
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
-import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_splash.*
 
 
@@ -30,6 +29,7 @@ class SplashActivity : AppCompatActivity(), DatabaseCallback {
 
     override fun onFetchingData(idiomMode: Int) {
         loadingDescTextView.text = getString(R.string.text_action_loading_queries)
+        loadingDescTextView.append("\n"+getString(R.string.make_sure_connect))
     }
 
     override fun onErrorFetchingData() {
@@ -52,7 +52,6 @@ class SplashActivity : AppCompatActivity(), DatabaseCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
         //TranslatedAndUntranslatedDataEmitter(this,this).getAll()
 
         TranslatedAndUntranslatedDataEmitter(this,this).getAll()

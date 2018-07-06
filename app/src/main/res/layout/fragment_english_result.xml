@@ -8,6 +8,8 @@
     tools:context="com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_constraint"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -35,8 +37,21 @@
         android:layout_alignParentBottom="true"
         android:background="@color/secondaryDarkColor"
         app:behavior_hideable="true"
+        android:clickable="true"
+        android:focusable="true"
         android:padding="@dimen/activity_margin"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+        <ImageView
+            android:id="@+id/dropDownView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_arrow_drop_down_white_24"
+            app:layout_constraintBottom_toTopOf="@+id/dividerView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside"/>
 
         <View
             android:id="@+id/dividerView"
@@ -46,7 +61,7 @@
             app:layout_constraintBottom_toTopOf="@+id/idiomRecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dropDownView"
             app:layout_constraintVertical_chainStyle="spread_inside"/>
 
         <android.support.v7.widget.RecyclerView

@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableStringBuilder
-import android.transition.TransitionManager
 import android.view.*
 import android.widget.TextView
 import com.klinker.android.link_builder.Link
@@ -46,6 +45,8 @@ import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceItem
 import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
+import de.mateware.snacky.Snacky
+import kotlinx.android.synthetic.main.activity_underlining.*
 import kotlinx.android.synthetic.main.fragment_underlining2.*
 import org.jetbrains.anko.act
 
@@ -86,6 +87,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     //var isShowingIdiom = true
 
     lateinit var transitionsContainer : ViewGroup
+    lateinit var toolbar : android.support.v7.widget.Toolbar
 
 
     var goToTranslatedDisplayMenuItem : MenuItem? = null
@@ -148,7 +150,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 AppUtil.makeDebugLog("filenamee is ? "+fileName)
                 intent.putExtra(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
                 intent.putExtra(TranslatedDisplayActivity.INTENT_FILENAME, fileName)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_IS_FROM_BOOKMARKITEM,false)
+                intent.putExtra(TranslatedDisplayActivity.INTENT_IS_TRANSLATION_EMPTY,false)
+                intent.putExtra(TranslatedDisplayActivity.INTENT_IS_FROM_BOOKMARK_ITEM,false)
                 startActivity(intent)
                 activity.finish()
             }
@@ -158,7 +161,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity.title = "Finding Idiom(s) ..."
+        toolbar = (activity as UnderliningActivity).toolbar
+        toolbar.title = getString(R.string.process_finding_idiom)
         activity.invalidateOptionsMenu()
         snackbar = CustomSnackbar.make(rootCoordinatorLayout,
                 CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
@@ -272,6 +276,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 Handler(Looper.getMainLooper()).post {
                     activity.title = fileName
                     showMessageDialog()
+                    toolbar.title = getString(R.string.done)
+                    addToToolTipView(getString(R.string.explore_idioms))
                     translated = true
                     AppUtil.makeErrorLog("not hello "+translated+ "  "+underlined+ "   "+goToTranslatedDisplayMenuItem)
                     if(translated && underlined && goToTranslatedDisplayMenuItem != null){
@@ -285,8 +291,15 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
 
-    override fun onErrorTranslatingText() {
-      //  toggleErrorViews(UnderliningService.ERROR_TRANSLATE)
+    override fun onErrorTranslatingText(error : String) {
+        Snacky.builder().error().setText(error).setDuration(Snacky.LENGTH_LONG).show()
+        toolbar.title = fileName
+        addToToolTipView(getString(R.string.error_check_your_connection))
+        translated = false
+        if(translated && underlined && goToTranslatedDisplayMenuItem != null){
+            goToTranslatedDisplayMenuItem?.isVisible = true
+
+        }
     }
 
 
@@ -322,6 +335,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                         showEmptyResultDialog()
                     }*/
                     addToToolTipView(getString(R.string.dialog_find_idioms_and_replaced_it))
+                    toolbar.title = getString(R.string.translating)
                     underlined = true
                     KEY_STATE = 1
                     AppUtil.makeErrorLog("finished helloww "+underlined +"  and "+translated)

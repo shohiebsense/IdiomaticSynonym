@@ -1,6 +1,5 @@
 package com.shohiebsense.idiomaticsynonym.model.event;
 
-import com.google.rpc.Help;
 import com.klinker.android.link_builder.Link;
 
 import java.util.ArrayList;

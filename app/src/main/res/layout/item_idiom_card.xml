@@ -20,7 +20,7 @@
 
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/layout_phone_balance_transfer"
+            android:id="@+id/layout_constraint_idiom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >

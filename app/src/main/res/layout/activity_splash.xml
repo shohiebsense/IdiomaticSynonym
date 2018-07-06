@@ -25,7 +25,7 @@
         android:id="@+id/loadingDescTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="loadingg"
+        android:text="@string/loading"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

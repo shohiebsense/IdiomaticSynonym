@@ -29,10 +29,10 @@ class TranslateService(val context : Context) {
 
     lateinit var model : Translate.TranslateOption
 
-    var options = TranslateOptions.newBuilder()
+    var options: TranslateOptions = TranslateOptions.newBuilder()
     .setApiKey(context.getString(R.string.API_TRANSLATE_KEY))
     .build()
-    var  translateService = options.service
+    var  translateService: Translate = options.service
 
 
     init {
@@ -58,7 +58,7 @@ class TranslateService(val context : Context) {
 
     fun singleTranslate(observer: Observer<String>, text: MutableList<String>){
         AppUtil.makeDebugLog("BEGINNING THE SINGLE SENTENCE TRANSLATION")
-        init()
+        //init()
         text.toObservable().subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe{
             val language = translateService.detect(it).language.toLowerCase()
 

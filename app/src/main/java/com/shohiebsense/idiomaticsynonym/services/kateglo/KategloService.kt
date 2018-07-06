@@ -1,5 +1,7 @@
 package com.shohiebsense.idiomaticsynonym.services.kateglo
 
+import android.text.SpannableStringBuilder
+import com.google.cloud.translate.Translate
 import com.google.gson.GsonBuilder
 import com.shohiebsense.idiomaticsynonym.model.api.Synonym
 import com.shohiebsense.idiomaticsynonym.model.api.SynonymWord
@@ -25,7 +27,7 @@ class KategloService {
     var BASE_URL = "http://kateglo.com/api.php?"
     val JSON = MediaType.parse("application/json; charset=utf-8")
     fun createKategloService(word : String): Response? {
-        var gson = GsonBuilder().registerTypeAdapter(Synonym::class.java, Deserializer()).create()
+        // var gson = GsonBuilder().registerTypeAdapter(Synonym::class.java, Deserializer()).create()
 
         var client = OkHttpClient()
         var request = Request.Builder()
@@ -80,20 +82,10 @@ class KategloService {
     }
 
 
+
     fun getSynonymStrings(word : String, listener : KategloListener) : List<String>{
 
         var syonymWordObjects = mutableListOf<String>()
-
-
-       /* var funcObserver = object : Callable<Observable<Response>>{
-            override fun call(): Observable<Response> {
-                var response = createKategloService(sentence)
-                return Observable.just(response)
-            }
-        }
-
-        Observable.defer(funcObserver)*/
-
         var callable = object : Callable<MutableList<String>>{
             override fun call(): MutableList<String>? {
                 val response = createKategloService(word)
@@ -114,7 +106,6 @@ class KategloService {
                         syonymWordObjects.add(synonymWord)
                     }
                 }
-                listener.onGetSyonyms(syonymWordObjects)
                 return syonymWordObjects
             }
 
@@ -123,7 +114,7 @@ class KategloService {
 
         var observer = object : Observer<MutableList<String>> {
             override fun onNext(t: MutableList<String>) {
-                AppUtil.makeDebugLog("size observable "+t.size)
+                listener.onGetSyonyms(syonymWordObjects)
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -139,10 +130,8 @@ class KategloService {
             }
 
         }
-
-
-        //style2
         Observable.fromCallable(callable).subscribeOn(Schedulers.io()).unsubscribeOn(AndroidSchedulers.mainThread()).subscribe(observer)
+        //Observable.fromCallable(callable).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer)
 
         AppUtil.makeDebugLog(" sizee "+syonymWordObjects.size)
         return syonymWordObjects

@@ -7,10 +7,12 @@ import com.shohiebsense.idiomaticsynonym.db.Bookmark
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
+import com.shohiebsense.idiomaticsynonym.utils.StoryExample
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.Single
 import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.db.*
@@ -21,6 +23,21 @@ import kotlin.collections.ArrayList
  * Created by Shohiebsense on 13/01/2018.
  */
 class BookmarkQueryService(val db : SQLiteDatabase) {
+
+    fun insertPrerequisites() {
+        var mCompositeDisposable = CompositeDisposable()
+        var lastId = -1
+        mCompositeDisposable.add(Single.fromCallable {
+            db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
+                    Bookmark.COLUMN_PDFFILENAME to "sample",
+                    Bookmark.COLUMN_ENGLISH to StoryExample.getStory(),
+                    Bookmark.COLUMN_INDONESIAN to StoryExample.getTranslation(),
+                    Bookmark.COLUMN_IDIOM to "",
+                    Bookmark.COLUMN_SENTENCE_INDEX to "",
+                    Bookmark.COLUMN_UPLOAD_ID to ""
+            )
+        }.subscribeOn(Schedulers.io()).subscribe())
+    }
 
     fun insertIntoBookmarkEnglish(fileName: String, wholeSentence: String, indonesian : String) : Int{
         var mCompositeDisposable = CompositeDisposable()
@@ -37,7 +54,6 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
         }.subscribeOn(Schedulers.io()).subscribe())
         mCompositeDisposable.add(Single.fromCallable {
             lastId = selectLastInsertedId()
-            AppUtil.makeErrorLog("id latest  "+lastId)
         }.subscribe())
         return lastId
     }
@@ -52,17 +68,14 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
     }
 
     fun updateIndonesianSentence(observer : SingleObserver<Unit>, wholeSentence: String, id: String){
-        AppUtil.makeDebugLog("indonesian translation exists right ??? " + wholeSentence)
         Single.fromCallable<Unit> {
             db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
-                    Bookmark.COLUMN_INDONESIAN to wholeSentence,
-                    Bookmark.COLUMN_ID to id)
-                    .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
+                    Bookmark.COLUMN_INDONESIAN to wholeSentence)
+                    .whereArgs(Bookmark.COLUMN_ID + " = " + id)
                     .exec()
         }
                 .subscribeOn(Schedulers.io())
                 .subscribe(observer)
-
     }
 
 
@@ -211,7 +224,9 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                 close()
                 AppUtil.makeDebugLog("finishhz")
             }
-        }.subscribe(observer)
+        } .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(observer)
     }
 
     fun getBookmarkCounts() : Int{

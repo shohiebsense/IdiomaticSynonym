@@ -24,35 +24,9 @@
         app:layout_constraintTop_toBottomOf="@+id/dailyIdiomTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_weight="2"
         />
-
-<!--
-
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:theme="@style/ColoredButtonRedTheme"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/bookmarkButton"
-        app:layout_constraintTop_toBottomOf="@+id/idiomsViewPager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/text_button_start" />
-
-    <Button
-        android:id="@+id/bookmarkButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/text_action_bookmarks"
-        android:theme="@style/ColoredButtonWhiteRedColorTheme"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@+id/startButton"
-        app:layout_constraintTop_toBottomOf="@+id/idiomsViewPager"
-        app:layout_constraintStart_toEndOf="@+id/startButton"/>
--->
 
 
 </android.support.constraint.ConstraintLayout>

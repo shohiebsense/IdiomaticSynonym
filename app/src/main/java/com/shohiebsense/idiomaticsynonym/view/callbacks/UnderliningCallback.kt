@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
  */
 interface UnderliningCallback {
     fun onTranslatingText()
-    fun onErrorTranslatingText()
+    fun onErrorTranslatingText(error : String)
     fun onFinishedTranslatingText()
     fun onFetchingDatabase()
     fun onFinishedFetchingTranslatedDatabase(translatedIdiomList: MutableList<TranslatedIdiom>)

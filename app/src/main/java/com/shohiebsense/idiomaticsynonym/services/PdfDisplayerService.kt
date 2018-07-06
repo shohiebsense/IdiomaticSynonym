@@ -4,13 +4,11 @@ import android.content.Context
 import com.github.angads25.filepicker.model.DialogConfigs
 import com.github.angads25.filepicker.model.DialogProperties
 import com.github.angads25.filepicker.view.FilePickerDialog
-import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.util.PDFBoxResourceLoader
-import de.mateware.snacky.Snacky
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,8 +25,9 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
     var pdfValid = false
     lateinit var pdfFile: File
     lateinit var callback: PdfDisplayCallback
-    
-    
+    lateinit var loadedDocument : PDDocument
+
+
     companion object {
         val STATUS_LOADING = 5
         val ERROR_LOAD = 0
@@ -56,7 +55,7 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
 
 
 
-    fun promptLoadPdf() {
+    fun promptLoadPdfDialog() {
         var properties = DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -78,7 +77,6 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
 
             files.forEach { fileString ->
                 pdfValid = AppUtil.isPdfDocument(fileString)
-
                 if (pdfValid) {
                     loadPdf(fileString)
                 }
@@ -91,91 +89,46 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
     }
 
     fun loadPdf(fileString: String) {
-
-        // copy(file)
-        callback.onFinishedLoadingPdf(fileString)
-
-        //file = FilePickerUriHelper.getFile(context, data);
+        pdfFile = File(fileString)
+        loadedDocument = PDDocument.load(pdfFile)
+        callback.onFinishedLoadingPdf()
     }
 
-    fun fetchText(numberOfPages : Int){
+    fun fetchText(from : Int,to : Int){
         callback.onLoadingPdf()
         val myObserver = object : Observer<String> {
             var fetchedPdfText = mutableListOf<String>()
-
             override fun onComplete() {
-                AppUtil.makeDebugLog("beresss fetched pdf text, size = " + fetchedPdfText.size)
-                //ccmmented due to fetched text test, uncommented and change to mutablelist
-               // callback.onFinishedFetchingPdfAsList(fetchedPdfText,pdfFile.name)
+                AppUtil.makeDebugLog("completed")
             }
-
-
             override fun onError(e: Throwable) {
-                AppUtil.makeDebugLog("rusakk "+e.toString())
+                callback.onError()
             }
-
             override fun onSubscribe(@NonNull d: Disposable) {
-                callback.onFetchingPdf()
+                callback.onProcess()
             }
-
             override fun onNext(text: String) {
-                // extractedPdfTexts = text
                 fetchedPdfText.add(text)
-                callback.onFinishedFetchingPdf(text,pdfFile.name)
-
+                callback.onEmitted(text,pdfFile.name)
             }
         }
-
-        getTextFromPdf(myObserver, pdfFile, numberOfPages)
+        getTextFromPdf(myObserver,from,to)
     }
 
 
-    fun getTextFromPdf(myObserver: Observer<String>, destinationFile: File, numberOfPages: Int) {
+    fun getTextFromPdf(myObserver: Observer<String>, from: Int, to : Int) {
         Observable.create<String> { subscriber ->
-            AppUtil.makeDebugLog("jalann "+destinationFile.absolutePath)
-            var document = PDDocument.load(destinationFile)
             var pdfStripper = PDFTextStripper()
-            //FOR DEVELOPMENT ONLY
-            //document = PDDocument.load(context.assets.open("samplepdf.pdf"))
-            //document =
-            // var endPage = if(numberOfPages > document.numberOfPages) document.numberOfPages else numberOfPages
-
-            //FOR DEVELOPMENT , UNCOMMENT ABOVE
-            if(numberOfPages <= 0){
-                myObserver.onError(Throwable(context.getString(R.string.error_invalid_page_number)))
-                return@create
-            }
-
-            var endPage = if(numberOfPages > document.numberOfPages) document.numberOfPages else numberOfPages
-
-
-            //fir development only, change to 1
-            //for(i in 2 .. endPage ){
-            pdfStripper.startPage = 1
-            pdfStripper.endPage = endPage
-                //AppUtil.makeDebugLog(" page : .." + i + parsedText)
-           // }
-
-            var parsedText = pdfStripper.getText(document)
+            AppUtil.makeErrorLog("jalanssz "+loadedDocument.numberOfPages)
+            pdfStripper.startPage = from
+            pdfStripper.endPage = to
+            var parsedText = pdfStripper.getText(loadedDocument)
             subscriber.onNext(parsedText)
-
-            //second way
-           /* val parser = PDFParser(destinationFile)
-            parser.parse()
-            val cosdoc = parser.document
-            val pdfStripper2= PDFTextStripper()
-            val pddoc = PDDocument(cosdoc)
-            pdfStripper2.startPage = 1
-            pdfStripper2.endPage =2
-            var text = pdfStripper2.getText(pddoc)
-            subscriber.onNext(text)*/
             document.close()
             subscriber.onComplete()
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(myObserver)
-
-
     }
 
 

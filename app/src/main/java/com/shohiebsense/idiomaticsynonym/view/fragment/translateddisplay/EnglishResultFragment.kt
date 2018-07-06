@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.google.cloud.translate.Translate
 import com.klinker.android.link_builder.LinkBuilder
 import com.klinker.android.link_builder.TouchableMovementMethod
 import com.mikepenz.fastadapter.FastAdapter
@@ -20,14 +21,14 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
-import com.shohiebsense.idiomaticsynonym.model.event.EnglishFragmentIdiomEvent
-import com.shohiebsense.idiomaticsynonym.model.event.EnglishFragmentLinksEvent
-import com.shohiebsense.idiomaticsynonym.model.event.EnglishFragmentMeaningsEvent
-import com.shohiebsense.idiomaticsynonym.model.event.EnglishFragmentSynonymEvent
+import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_english_result.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -40,6 +41,7 @@ import org.greenrobot.eventbus.ThreadMode
  * create an instance of this fragment.
  */
 class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCallback {
+
 
 
     companion object {
@@ -66,7 +68,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     // TODO: Rename and change types of parameters
     private var fileName: String? = null
     lateinit var idioms : List<String>
-    lateinit var bookmark : BookmarkedEnglish
     var lastId = 0
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
     lateinit var idiomMeaningItemAdapter: ItemAdapter<IdiomMeaningItem>
@@ -75,16 +76,19 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
             (activity as TranslatedDisplayActivity).getSynonym(word)
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDisplaySynonyms(event : EnglishFragmentSynonymEvent){
         if(event.synonyms.isEmpty()){
             return;
         }
         var items = mutableListOf<IdiomMeaningItem>()
+
+        AppUtil.makeErrorLog("tapi nyampe sini kannnn "+event.synonyms)
 
         for(synonym in event.synonyms){
             var synonymItem = IdiomMeaningItem().withIdiomMeaning(synonym,idiomItemClickedListener)
@@ -109,12 +113,14 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     override fun onDestroy() {
         AppUtil.makeErrorLog("destroyeddd")
-        EventBus.getDefault().unregister(this)
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
+        EventBus.getDefault().post(FragmentEvent())
         if (arguments != null) {
             lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
         }
@@ -129,21 +135,36 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        EventBus.getDefault().register(this)
-        englishTextsTextView.movementMethod = LinkMovementMethod()
-        val bookmarkDataEmitter = BookmarkDataEmitter(activity!!)
+        AppUtil.makeErrorLog("aku dulu kan?")
         behaviour = BottomSheetBehavior.from(bottomSheetLayout)
-        bookmarkDataEmitter.getEnglishBookmark(lastId,this)
+
+
 
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
-        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
+        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
         onShowingBottomSheet()
+        bottomSheetLayout.setOnClickListener {
+            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+
+        englishTextsTextView.movementMethod = LinkMovementMethod()
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onGettingBookmark(event : BookmarkViewEvent){
+        AppUtil.makeErrorLog("ongettingbookmark")
+        englishTextsTextView.text = (activity as TranslatedDisplayActivity).bookmark.english
+        idioms = AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms)
+        (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
+        (activity as TranslatedDisplayActivity).wordClickableService.generateClickableSpan((activity as TranslatedDisplayActivity).bookmark.english.toString(),(activity as TranslatedDisplayActivity).bookmark.idioms,behaviour)
+    }
+
+
+
     override fun onFetched(bookmark: BookmarkedEnglish) {
-        this.bookmark = bookmark
         englishTextsTextView.text = bookmark.english
         AppUtil.makeErrorLog("hello new world "+bookmark.idioms)
         idioms = AppUtil.getListOfIdioms(bookmark.idioms)
@@ -155,18 +176,12 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onCompleted(linksEvent : EnglishFragmentLinksEvent) {
         AppUtil.makeErrorLog("sampaiiii kawan")
-        object : Thread(){
-            override fun start() {
-                Handler(Looper.getMainLooper()).post {
-                    val charSequence = LinkBuilder.from(activity!!,bookmark.english.toString()).addLinks(linksEvent.links).build()
-                    englishTextsTextView.setText(charSequence)
-                    englishTextsTextView.movementMethod = TouchableMovementMethod.instance
-                    //commented
-                    // underliningService.bookmarkDataEmitter.updateEnglishText(AppUtil.toHtml(act, charSequence!!))
-                }
-            }
-        }.start()
 
+        Observable.just(LinkBuilder.from(activity!!,(activity as TranslatedDisplayActivity).bookmark.english.toString()).addLinks(linksEvent.links).build()
+        ).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
+            englishTextsTextView.setText(it)
+            englishTextsTextView.movementMethod = TouchableMovementMethod.instance
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -249,16 +264,10 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 // React to dragging events
             }
         })
+    }
 
+    override fun onFailedFetched() {
 
-
-
-
-
-        /*  textFetchedTextView.setOnClickListener {
-              behaviour.state = BottomSheetBehavior.STATE_EXPANDED
-
-          }*/
     }
 
 }// Required empty public constructor

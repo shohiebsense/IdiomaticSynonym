@@ -11,4 +11,5 @@ interface WordClickableCallback {
     fun onCompleted(links : ArrayList<Link>)
     fun onClickedIdiomText(idiom : String)
     fun onShowingOnlineTranslation(meanings: MutableList<String>)
+    fun onErrorShowing()
 }

@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
@@ -26,18 +25,16 @@ import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
+import com.shohiebsense.idiomaticsynonym.SettingsActivity
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.services.PdfDisplayerService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
-import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.custom.InputDocumentPageDialogFragment
 import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
 import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
 import de.mateware.snacky.Snacky
-import es.dmoral.toasty.Toasty
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_pdfdisplay.*
@@ -78,7 +75,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     lateinit var fetchedText : ArrayList<String>
     lateinit var transitionsContainer : ViewGroup
-    var pdfFilePath : String = ""
+    var pageCount : Int = 0
     var fileName = ""
     var VIEW_STATE = -1
 
@@ -118,7 +115,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     lateinit var uri : Uri
     var requestPermissions = 999
 
-    lateinit var translateMenuItemn : MenuItem
+    lateinit var translateMenuItem : MenuItem
     lateinit var pdfLoadMenuItem: MenuItem
 
 
@@ -378,29 +375,30 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         pdfLoadMenuItem = menu.findItem(R.id.loadPdfMenuOptions)!!
-        translateMenuItemn = menu.findItem(R.id.translateTextMenuOptions)!!
+        translateMenuItem = menu.findItem(R.id.translateTextMenuOptions)!!
 
         when(VIEW_STATE){
             -1 -> {
                 pdfLoadMenuItem.setVisible(true)
-                translateMenuItemn.setVisible(false)
+                translateMenuItem.setVisible(false)
             }
             PdfDisplayerService.STATUS_LOADED -> {
                 pdfLoadMenuItem.setVisible(false)
-                translateMenuItemn.setVisible(true)
+                translateMenuItem.setVisible(true)
             }
         }
 
     }
 
     fun isReadAndWritePermissionGranted() : Boolean {
+        AppUtil.makeErrorLog("ke sini kan??")
         if (Build.VERSION.SDK_INT >= 23) {
             if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                     activity?.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
 
                 //FOR DEVELOPMENT PURPOSES UNCOMMENTED IT
-                pdfDisplayerService.promptLoadPdf()
+                pdfDisplayerService.promptLoadPdfDialog()
 
 
                 Log.e("shohiebsense ", "truee")
@@ -415,7 +413,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 return false
             }
         } else {
-            pdfDisplayerService.promptLoadPdf()
+            pdfDisplayerService.promptLoadPdfDialog()
             //permission is automatically granted on sdk<23 upon installation
             return true
         }
@@ -429,7 +427,9 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
             R.id.loadPdfMenuOptions -> {
                 isReadAndWritePermissionGranted()
             }
-
+            R.id.settingMenuOption -> {
+                startActivity(Intent(activity, SettingsActivity::class.java))
+            }
         }
         return true
     }
@@ -437,7 +437,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == ASK_MULTIPLE_PERMISSION_REQUEST_CODE){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                pdfDisplayerService.promptLoadPdf()
+                pdfDisplayerService.promptLoadPdfDialog()
             } else {
                 AppUtil.makeErrorLog("deniedd")
                 Snacky.builder().setActivity(activity).setText(getString(R.string.permission_required)).warning().show()
@@ -468,8 +468,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         }
     }
 
-    override fun onFinishedLoadingPdf(fileString : String) {
-        pdfDisplayerService.pdfFile = File(fileString)
+    override fun onFinishedLoadingPdf() {
         pdfLoadMenuItem.setVisible(false)
         uploadPdfView.fromFile(pdfDisplayerService.pdfFile)
                 .defaultPage(pageNumber)
@@ -479,10 +478,12 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 .scrollHandle(DefaultScrollHandle(activity))
                 .spacing(10) // in dp
                 .load()
+        pageCount = pdfDisplayerService.loadedDocument.numberOfPages
+        AppUtil.makeErrorLog("page count "+pageCount)
         VIEW_STATE = PdfDisplayerService.STATUS_LOADED
         toggleViews(VIEW_STATE)
-        translateMenuItemn.setVisible(true)
-        this.fileName = fileString
+        translateMenuItem.setVisible(true)
+        this.fileName = AppUtil.getOnlyFileName(pdfDisplayerService.pdfFile.name)
         activity!!.invalidateOptionsMenu()
     }
 
@@ -491,14 +492,14 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         return bundle
     }
 
-    override fun onFetchingPdf() {
+    override fun onProcess() {
         toggleViews(PdfDisplayerService.STATUS_LOADING)
 
     }
 
 
 
-    override fun onErrorLoadingPdf() {
+    override fun onError() {
         toggleErrorViews(PdfDisplayerService.ERROR_LOAD)
     }
 
@@ -524,13 +525,14 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         startActivity(intent)
     }
 
-    override fun onFinishedFetchingPdf(fetchedText: String, name: String) {
+    override fun onEmitted(fetchedText: String, name: String) {
         AppUtil.makeErrorLog("the name is "+name)
         toggleViews(PdfDisplayerService.STATUS_FETCHED)
         var intent = Intent(activity, UnderliningActivity::class.java)
         intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
         intent.putExtra(UnderliningActivity.INTENT_FILENAME, name)
         val bookmarkEmitter = BookmarkDataEmitter(context!!)
+        AppUtil.makeErrorLog("fetched textt : \n"+fetchedText)
         val lastId = bookmarkEmitter.insertBookmarkEnglish(fileName, fetchedText,"")
         Log.e("SHOHIEBSENSE LAST ID",lastId.toString())
         intent.putExtra(UnderliningActivity.INTENT_ID, lastId)
@@ -540,17 +542,17 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
 
     fun showInputDialog(){
-        var dialog = InputDocumentPageDialogFragment()
+        var dialog = InputDocumentPageDialogFragment.newInstance(pageCount)
         dialog.setTargetFragment(this, 1)
         dialog.show(fragmentManager, InputDocumentPageDialogFragment::class.java.simpleName)
 
     }
 
-    override fun onDialogPositiveClick(number: Int) {
-        Snacky.builder().setActivity(activity).setText(getString(R.string.loading)).warning().show()
+    override fun onConfirmedProcess(from: Int, to : Int) {
+        Snacky.builder().setActivity(activity).setText(getString(R.string.loading)).warning().setDuration(Snacky.LENGTH_INDEFINITE).show()
         avLoadingIndicatorView.visibility = View.VISIBLE
        // CustomSnackbar.make(view!!.parent as ViewGroup, CustomSnackbar.LENGTH_INDEFINITE).setText("Please Wait ").hidePermissionAction().show()
-        pdfDisplayerService.fetchText(number)
+        pdfDisplayerService.fetchText(from,to)
     }
 
 

@@ -6,15 +6,15 @@
         android:title="@string/menuOptions_save"
         android:icon="@drawable/ic_find_in_page_white_24dp"
         app:showAsAction="always" />
-    <!--<item
-        android:id="@+id/fetchMenuOptions"
-        android:title="@string/menuOptions_fetch"
-        android:icon="@drawable/ic_subject_white_18dp"
-        app:showAsAction="always" />-->
 
     <item
         android:id="@+id/translateTextMenuOptions"
         android:title="@string/menuOptions_translate"
         android:icon="@drawable/ic_g_translate_white_18dp"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/settingMenuOption"
+        android:title="@string/options"
+        android:icon="@drawable/baseline_settings_white_24"
         app:showAsAction="always"/>
 </menu>

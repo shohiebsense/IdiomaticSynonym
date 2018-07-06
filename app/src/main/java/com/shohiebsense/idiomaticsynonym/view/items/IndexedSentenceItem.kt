@@ -13,7 +13,7 @@ class IndexedSentenceItem() : AbstractItem<IndexedSentenceItem, IndexedSentenceV
 
     override fun getViewHolder(v: View): IndexedSentenceViewHolder = IndexedSentenceViewHolder(v)
 
-    override fun getLayoutRes(): Int = R.layout.item_indexed_sentence
+    override fun getLayoutRes(): Int = R.layout.obsolete_item_indexed_sentence
 
     lateinit var indexedSentence : IndexedSentence
     lateinit var indexedSentenceClickListener: IndexedSentenceViewHolder.IndexedSentenceClickListener

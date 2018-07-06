@@ -19,7 +19,6 @@ class QueryService(val db : SQLiteDatabase)  {
 
     init {
         //AppUtil.makeDebugLog("mmkk sini")
-
         //query = (context.application as IdiomApplication).data
     }
 
@@ -33,9 +32,7 @@ class QueryService(val db : SQLiteDatabase)  {
                         asSequence().forEach {
                             row -> idioms.add(parser.parseRow(row))
                         }
-
                     }
-
             db.select(Idioms.TABLE_TRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM,Idioms.COLUMN_MEANING)
                     .exec {
                         val parser = getCombinedIdiomTranslatedParser()
@@ -158,7 +155,7 @@ class QueryService(val db : SQLiteDatabase)  {
         Observable.create<ArrayList<UntranslatedIdiom>>{
             e->
             AppUtil.makeDebugLog("masuk untranslated")
-            db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_ID,Idioms.COLUMN_IDIOM)
+            db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_ID,Idioms.COLUMN_IDIOM).groupBy(Idioms.COLUMN_IDIOM)
                     .exec {
                         val parser = getUntranslatedIdiomParser()
                         /*  parseList(object : MapRowParser<List<TranslatedIdiom>> {
@@ -203,7 +200,6 @@ class QueryService(val db : SQLiteDatabase)  {
                 .subscribeOn(Schedulers.io())
                 .subscribe(consumer)
     }
-
 
 
 

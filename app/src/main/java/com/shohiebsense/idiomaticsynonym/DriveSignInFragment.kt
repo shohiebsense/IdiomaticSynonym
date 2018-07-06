@@ -18,10 +18,7 @@ import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.SignInButton
@@ -48,7 +45,7 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
     private val disconnectButton: Button? = null
     private val signOutView: LinearLayout? = null
     private var mStatusTextView: TextView? = null
-    private var mProgressDialog: ProgressDialog? = null
+    private var mProgressDialog: ProgressBar? = null
     private var imgProfilePic: ImageView? = null
 
 
@@ -59,6 +56,19 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
     private val REQUEST_CODE_CAPTURE_IMAGE = 1
     private val REQUEST_CODE_CREATOR = 2
 
+    var bookmarkId = 0
+
+    companion object {
+
+        fun newInstance(id : Int) : DriveSignInFragment{
+            val fragment = DriveSignInFragment()
+            val args = Bundle()
+            args.putInt(DriveSignInActivity.INTENT_ID,id)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -67,6 +77,9 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(Drive.SCOPE_FILE)
                 .build()
+
+        bookmarkId = arguments!!.getInt(DriveSignInActivity.INTENT_ID)
+
 
         // Build a GoogleApiClient with access to the Google Sign-In API and the
         // options specified by gso.
@@ -133,42 +146,14 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
             mDriveClient = Drive.getDriveClient(activity!!, GoogleSignIn.getLastSignedInAccount(activity!!)!!)
             // Build a drive resource client.
             mDriveResourceClient = Drive.getDriveResourceClient(activity!!, GoogleSignIn.getLastSignedInAccount(activity)!!)
-            // Start camera.
-           /* startActivityForResult(
-                    Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_CODE_CAPTURE_IMAGE)*/
-            startActivity(Intent(activity,DriveCreateFileActivity::class.java))
+            val intent = Intent(activity, DriveCreateFileActivity::class.java)
+            intent.putExtra(DriveCreateFileActivity.INTENT_ID,bookmarkId)
+            activity?.startActivity(intent)
+            activity?.finish()
         }
-        else if(requestCode == REQUEST_CODE_CAPTURE_IMAGE) {
-            Log.i(TAG, "capture image request code")
-            // Called after a photo has been taken.
-            if (resultCode == Activity.RESULT_OK) {
-                Log.i(TAG, "Image captured successfully.")
-                // Store the image data as a bitmap for writing later.
-                mBitmapToSave = data?.getExtras()?.get("data") as Bitmap
-                saveFileToDrive()
-            }
-        }
-        else if(requestCode == REQUEST_CODE_CREATOR){
-        Log.i(TAG, "creator request code")
-        // Called after a file is saved to Drive.
-        if (resultCode == Activity.RESULT_OK) {
-            Log.i(TAG, "Image successfully saved.")
-            mBitmapToSave = null
-            // Just start the camera again for another photo.
-            startActivityForResult(
-                    Intent(MediaStore.ACTION_IMAGE_CAPTURE), REQUEST_CODE_CAPTURE_IMAGE)
-        }}
+
     }
 
-    private fun saveFileToDrive() {
-        // Start by creating a new contents, and setting a callback.
-        Log.i(TAG, "Creating new contents.")
-        val image = mBitmapToSave
-
-        mDriveResourceClient!!.createContents()
-                .continueWithTask { task -> createFileIntentSender(task.result, image!!) }
-                .addOnFailureListener { e -> Log.w(TAG, "Failed to create new contents.", e) }
-    }
 
 
     private fun handleSignInResult(result: GoogleSignInResult) {
@@ -208,85 +193,20 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
 
     private fun showProgressDialog() {
         if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialog(activity)
-            mProgressDialog!!.setMessage(getString(R.string.loading))
+            mProgressDialog = ProgressBar(activity)
             mProgressDialog!!.isIndeterminate = true
         }
+        layoutMain.addView(mProgressDialog)
+        mProgressDialog?.visibility = View.GONE
 
-        mProgressDialog!!.show()
     }
 
     private fun hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog!!.isShowing) {
-            mProgressDialog!!.hide()
+        if (mProgressDialog != null && mProgressDialog!!.isShown) {
+            mProgressDialog!!.visibility = View.VISIBLE
         }
 
     }
-
-
-    /**
-     * Background Async task to load user profile picture from url
-     */
-    private inner class LoadProfileImage(internal var bmImage: ImageView) : AsyncTask<String, Void, Bitmap>() {
-
-        override fun doInBackground(vararg uri: String): Bitmap? {
-            val url = uri[0]
-            var mIcon11: Bitmap? = null
-            try {
-                val `in` = java.net.URL(url).openStream()
-                mIcon11 = BitmapFactory.decodeStream(`in`)
-            } catch (e: Exception) {
-                Log.e("Error", e.message)
-                e.printStackTrace()
-            }
-
-            return mIcon11
-        }
-
-        override fun onPostExecute(result: Bitmap?) {
-
-            if (result != null) {
-
-
-                val resized = Bitmap.createScaledBitmap(result, 200, 200, true)
-
-            }
-        }
-    }
-
-
-    private fun createFileIntentSender(driveContents: DriveContents, image: Bitmap): Task<Void> {
-        Log.i(TAG, "New contents created.")
-        // Get an output stream for the contents.
-        val outputStream = driveContents.outputStream
-        // Write the bitmap data from it.
-        val bitmapStream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream)
-        try {
-            outputStream.write(bitmapStream.toByteArray())
-        } catch (e: IOException) {
-            Log.w(TAG, "Unable to write file contents.", e)
-        }
-
-        // Create the initial metadata - MIME type and title.
-        // Note that the user will be able to change the title later.
-        val metadataChangeSet = MetadataChangeSet.Builder()
-                .setMimeType("image/jpeg")
-                .setTitle("Android Photo.png")
-                .build()
-        // Set up options to configure and display the create file activity.
-        val createFileActivityOptions = CreateFileActivityOptions.Builder()
-                .setInitialMetadata(metadataChangeSet)
-                .setInitialDriveContents(driveContents)
-                .build()
-
-        return mDriveClient!!.newCreateFileActivityIntentSender(createFileActivityOptions)
-                .continueWith { task ->
-                    startIntentSenderForResult(task.result, REQUEST_CODE_CREATOR, null, 0, 0, 0,null)
-                    null
-                }
-    }
-
 
 }
 

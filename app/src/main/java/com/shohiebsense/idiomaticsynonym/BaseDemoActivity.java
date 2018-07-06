@@ -13,12 +13,10 @@
  */
 package com.shohiebsense.idiomaticsynonym;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

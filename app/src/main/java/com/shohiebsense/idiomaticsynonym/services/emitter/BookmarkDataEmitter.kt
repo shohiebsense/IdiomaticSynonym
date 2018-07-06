@@ -1,11 +1,14 @@
 package com.shohiebsense.idiomaticsynonym.services.emitter
 
+import android.app.Activity
 import android.content.Context
 import com.shohiebsense.idiomaticsynonym.db.bookmarkDatabase
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
+import com.shohiebsense.idiomaticsynonym.services.UnderliningServiceUsingContains
 import com.shohiebsense.idiomaticsynonym.services.dbs.BookmarkQueryService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
+import com.shohiebsense.idiomaticsynonym.utils.StoryExample
 import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
@@ -17,6 +20,12 @@ class BookmarkDataEmitter(val context: Context) {
 
     var queryService = BookmarkQueryService(context.bookmarkDatabase.writableDatabase)
     lateinit var bookmarkCallback : SingleBookmarkCallback
+
+    fun getPrerequistes(mainActivity: Activity) {
+        queryService.insertPrerequisites()
+        val underliningService = UnderliningServiceUsingContains(context, StoryExample.getStory())
+        underliningService.underLine(mainActivity)
+    }
 
     fun insertBookmarkEnglish(fileName: String, wholeText: CharSequence, indonesianText : CharSequence) : Int{
         AppUtil.makeDebugLog("bookmark inserted ")
@@ -56,7 +65,8 @@ class BookmarkDataEmitter(val context: Context) {
 
 
             override fun onError(e: Throwable) {
-                listener.onError()
+                AppUtil.makeErrorLog(e.toString())
+                listener.onError(e.toString())
             }
 
         }
@@ -239,6 +249,7 @@ class BookmarkDataEmitter(val context: Context) {
             }
 
             override fun onNext(t: BookmarkedEnglish) {
+                AppUtil.makeErrorLog("I thought it was okay???")
                 bookmarkCallback.onFetched(t)
             }
 
@@ -248,6 +259,7 @@ class BookmarkDataEmitter(val context: Context) {
 
             override fun onError(e: Throwable) {
                 AppUtil.makeDebugLog("ada errorrss "+e.toString())
+                bookmarkCallback.onFailedFetched()
             }
 
         }
@@ -266,11 +278,12 @@ class BookmarkDataEmitter(val context: Context) {
 
     interface SingleBookmarkCallback {
         fun onFetched(bookmark : BookmarkedEnglish)
+        fun onFailedFetched()
     }
 
     interface UpdateBookmarkCallback {
         fun onSuccess()
-        fun onError()
+        fun onError(message: String)
     }
 
 

@@ -13,11 +13,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
-import com.klinker.android.link_builder.Link
-import com.klinker.android.link_builder.LinkBuilder
-import com.klinker.android.link_builder.TouchableMovementMethod
 import com.leochuan.ScaleLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -26,18 +22,17 @@ import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.event.*
-import com.shohiebsense.idiomaticsynonym.services.WordClickableService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomAdapter
 import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomCardAdapter
 import com.shohiebsense.idiomaticsynonym.view.adapter.MyIndexedSentenceListRecyclerViewAdapter
-import com.shohiebsense.idiomaticsynonym.view.callbacks.WordClickableCallback
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
-import com.shohiebsense.idiomaticsynonym.view.items.IdiomViewHolder
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_idioms_summary.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -58,7 +53,6 @@ import org.greenrobot.eventbus.ThreadMode
 class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCallback, BookmarkDataEmitter.SingleBookmarkCallback {
 
 
-
     // TODO: Customize parameters
     lateinit var idioms: List<String>
     lateinit var layoutManager : ScaleLayoutManager
@@ -66,7 +60,6 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
     lateinit var idiomMeaningItemAdapter: ItemAdapter<IdiomMeaningItem>
     lateinit var behaviour : BottomSheetBehavior<View>
-    lateinit var bookmarkDataEmitter : BookmarkDataEmitter
 
     var lastId = 0
     private var mListener: OnClickedItemListener = object : OnClickedItemListener {
@@ -79,12 +72,14 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
+
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            (activity as TranslatedDisplayActivity).isFromEnglishFragment = false
             (activity as TranslatedDisplayActivity).getSynonym(word)
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDisplaySynonyms(event : IdiomsSummarySynonymEvent){
         if(event.synonyms.isEmpty()){
             return;
@@ -158,22 +153,44 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         EventBus.getDefault().register(this)
-        layoutManager = ScaleLayoutManager.Builder(activity,AppUtil.Dp2px(activity, 5f))
+        layoutManager = ScaleLayoutManager.Builder(activity,AppUtil.dp2Px(activity, 5f))
                 .setMinScale(0.95f)
                 .build()
         cardLayoutManager = SpannedGridLayoutManager(
                 orientation = SpannedGridLayoutManager.Orientation.VERTICAL,
                 spans = 3)
-        bookmarkDataEmitter = BookmarkDataEmitter(activity!!)
-        bookmarkDataEmitter.getEnglishBookmark(lastId,this)
 
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
         idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
         onShowingBottomSheet()
+
+
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onGettingBookmark(event : BookmarkViewEvent){
+        //CenterSnapHelper().attachToRecyclerView(idiomsRecyclerView)
+        Observable.create<List<String>> {
+            it.onNext(AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms))
+        }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
+            if((activity as TranslatedDisplayActivity).bookmark.idioms.isEmpty()){
+                emptyTextView.text = "Empty"
+            }
+            idioms = it
+            val adapter = IdiomAdapter(idioms,mListener)
+            val cardAdapter = IdiomCardAdapter(idioms,mListener)
+            idiomsRecyclerView.layoutManager = layoutManager
+            idiomsRecyclerView.adapter = adapter
+            /* idiomsCardRecyclerView.layoutManager = SpannedGridLayoutManager(
+                     orientation = SpannedGridLayoutManager.Orientation.VERTICAL,
+                     spans = 3)*/
+            idiomsCardRecyclerView.layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
+            idiomsCardRecyclerView.adapter = cardAdapter
+        }
+
+    }
 
     override fun onFetched(bookmark: BookmarkedEnglish) {
         if(bookmark.idioms.isEmpty()){
@@ -286,6 +303,10 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
                 }
             }
         }.start()
+    }
+
+    override fun onFailedFetched() {
+
     }
 
     /**

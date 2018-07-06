@@ -1,0 +1,86 @@
+<resources>
+    <string name="app_name">EXprediom</string>
+    <string name="translate_api">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
+
+    <!-- titles, subtitles -->
+    <string name="subtitle_upload">Mohon unggah berkas pdf</string>
+    <string name="text_button_upload">Unggah pdf</string>
+    <string name="menuOptions_fetch">Ambil Teks</string>
+    <string name="menuOptions_translate">Terjemahkan</string>
+    <string name="menuOptions_save">Simpan</string>
+    <string name="menuOptions_generate_text">Hasilkan File .txt</string>
+    <string name="menuOptions_docsview">Tampilan Dokumen</string>
+    <string name="text_button_start">Mulai</string>
+    <string name="text_button_statistics">Statistik</string>
+    <string name="text_button_booksTranslated">Jumlah Buku yang ditranslasi</string>
+    <string name="text_button_timeElapsed">Waktu Penggunaan</string>
+    <string name="text_button_collect_idiom">Kumpulkan</string>
+    <string name="text_button_choose">Pilih</string>
+    <string name="text_button_replace">Gantikan</string>
+    <string name="error_not_pdf">Error. Bukan file berformat .pdf</string>
+    <string name="text_action_requestPermission">Meminta Permission</string>
+    <string name="text_action_loading_queries">Mengambil Data…</string>
+    <string name="text_action_loading_finished">Loading Selesai</string>
+    <string name="text_error_loading_queries">Error pengambilan data</string>
+    <string name="dialog_message_input_page">Nomor halaman (dari - ke)</string>
+    <string name="dialog_message_result_empty">Hasilnya kosong, cari dokumen lain</string>
+    <string name="text_title_translation">Translasi</string>
+    <string name="text_title_english">Teks Inggris</string>
+    <string name="dialog_title_find_idioms">Cari Idiom</string>
+    <string name="dialog_message_find_idioms">Anda dapat mengklik kata yang memiliki makna idiom dan artinya, padanan akan muncul jika tersedia</string>
+    <string name="dialog_find_idioms_and_replaced_it">Mohon tunggu sampai proses translasi selesai. Selagi menunggu, anda dapat mengklik kata yang memiliki makna idiom</string>
+    <string name="text_action_bookmarks">Bookmark</string>
+    <string name="text_finished_saving">Tersimpan</string>
+    <string name="text_navigation_do_translation">Translasikan</string>
+    <string name="text_navigation_statistics">Statistik</string>
+    <string name="text_statistic_books_translated">Jumlah buku yang tertranslasi</string>
+    <string name="text_statistic_idioms_found">Jumlah idiomatik yang ditemukan</string>
+    <string name="text_statistic_indexed_sentences_found">Jumlah kalimat yang ditemukan idiom</string>
+    <string name="permission_required">Permission diperlukan</string>
+    <string name="text_not_valid_pdf">File tidak valid</string>
+    <string name="find_idioms">Cari Idiom</string>
+    <string name="statistics">Statistik</string>
+    <string name="error_invalid_page_number">Error, nomor halaman tidak valid</string>
+    <string name="confirmation_back">Anda yakin? proses translasi tidak dilakukan</string>
+    <string name="confirmation_back_no_upload">Anda yakin kembali tanpa melakukan penghasilan text?</string>
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="signed_in_fmt">Login sebagai: %s</string>
+    <string name="signed_in">Login</string>
+    <string name="loading">Loading</string>
+    <string name="contacts_permission_rationale">Contact access diperlukan</string>
+    <string name="select_file">Pilih file</string>
+    <string name="select_folder">Pilih Folder</string>
+    <string name="file_created">File telah dibuat</string>
+    <string name="file_create_error">Error dalam pembuatan file</string>
+    <string name="idioms">Idiom</string>
+    <string name="file_not_selected">File tidak dipilih</string>
+    <string name="content_loaded">Konten dimuat</string>
+    <string name="read_failed">Pembacaan gagal</string>
+    <string name="indonesian_text">Teks Indonesia</string>
+    <string name="menuOptions_updateIndonesian">Update Translasi</string>
+    <string name="success_update">Update berhasil</string>
+    <string name="failed_update">Update gagal</string>
+    <string name="permission_denied_storage">Permission ditolak</string>
+    <string name="permission_deny">Tolak</string>
+    <string name="permission_retry">Coba ulang</string>
+    <string name="text_navigation_history">Riwayat</string>
+    <string name="update_translation">Update Translasi</string>
+    <string name="open_doc">Buka Dokumen</string>
+    <string name="process_finding_idiom">Pencarian Idiom…</string>
+    <string name="translating">Mentranslasi</string>
+    <string name="done">Selesai</string>
+    <string name="explore_idioms">Anda bisa menjelajahi idiom dan padanan kata yang terkait</string>
+    <string name="empty">Kosong</string>
+    <string name="number_of_pages_allowed">Maksimum hanya empat belas halaman</string>
+
+    <!-- buttons -->
+    <string name="text_permission_storage_info">Aplikasi memerlukan database yang disimpan pada ponsel anda</string>
+    <string name="make_sure_connect">Pastikan ponsel terkoneksi Internet.</string>
+    <string name="pre_requisition_message">Sekarang, pergi ke bagian riwayat dan pilih item di atas</string>
+    <string name="idiom_guidance">Anda dapat sentuh kata/frasa yang bercetak tebal, klik kembali kata terjemahan yang muncul supaya mendapat padanan kata</string>
+    <string name="ask_pre_data">Apakah ingin disiapkan juga data sampel untuk kemudahan?</string>
+    <string name="remind_me_later">Ingatkan nanti</string>
+    <string name="success_upload">upload sukses dengan nama file : %s</string>
+
+</resources>

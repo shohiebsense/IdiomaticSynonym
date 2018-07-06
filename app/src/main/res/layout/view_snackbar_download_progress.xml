@@ -13,7 +13,7 @@
         android:paddingBottom="@dimen/design_snackbar_padding_vertical"
         android:textColor="@color/primaryLightColor"
         android:layout_gravity="center"
-        android:text="Aplikasi memerlukan database yang disimpan pada ponsel anda"
+        android:text="@string/text_permission_storage_info"
         />
 
    <!-- <ProgressBar
@@ -35,7 +35,7 @@
         android:paddingBottom="@dimen/design_snackbar_padding_vertical"
         android:textColor="@color/secondaryDarkColor"
         android:layout_gravity="center"
-        android:text="REQUEST PERMISSION"
+        android:text="@string/request_permission"
         />
 
 </LinearLayout>

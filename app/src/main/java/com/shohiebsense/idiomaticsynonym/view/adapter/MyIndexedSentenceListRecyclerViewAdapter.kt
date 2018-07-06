@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IdiomsSummaryFragment.OnClickedItemListener
-import kotlinx.android.synthetic.main.item_indexed_sentence.view.*
+import kotlinx.android.synthetic.main.obsolete_item_indexed_sentence.view.*
 
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
@@ -18,13 +18,12 @@ class MyIndexedSentenceListRecyclerViewAdapter(private val mValues: ArrayList<In
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_indexed_sentence, parent, false)
+                .inflate(R.layout.obsolete_item_indexed_sentence, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.mItem = mValues[position]
-        holder.itemView.indexedSentenceItemTextView.setText(mValues[position].sentence)
         holder.itemView.sentenceNumber.text = mValues[position].index.toString()
 
         holder.mView.setOnClickListener {
