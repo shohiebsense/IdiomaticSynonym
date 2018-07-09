@@ -26,7 +26,6 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
 
     fun insertPrerequisites() {
         var mCompositeDisposable = CompositeDisposable()
-        var lastId = -1
         mCompositeDisposable.add(Single.fromCallable {
             db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
                     Bookmark.COLUMN_PDFFILENAME to "sample",
@@ -38,6 +37,33 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
             )
         }.subscribeOn(Schedulers.io()).subscribe())
     }
+
+    fun insertPhrasalVerbSample(){
+        var mCompositeDisposable = CompositeDisposable()
+        mCompositeDisposable.add(Single.fromCallable {
+            db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
+                    Bookmark.COLUMN_PDFFILENAME to "phrasal verb",
+                    Bookmark.COLUMN_ENGLISH to StoryExample.getPhrasalVerbIdiomSample(),
+                    Bookmark.COLUMN_INDONESIAN to StoryExample.getPharasalVerbranslationSample(),
+                    Bookmark.COLUMN_IDIOM to "",
+                    Bookmark.COLUMN_SENTENCE_INDEX to "",
+                    Bookmark.COLUMN_UPLOAD_ID to ""
+            )
+        }.subscribeOn(Schedulers.io()).subscribe())
+    }
+
+    fun insertExpressionSample(){
+        var mCompositeDisposable = CompositeDisposable()
+        mCompositeDisposable.add(Single.fromCallable {
+            db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
+                    Bookmark.COLUMN_PDFFILENAME to "expression idiom",
+                    Bookmark.COLUMN_ENGLISH to StoryExample.getExpressionIdiomSample(),
+                    Bookmark.COLUMN_INDONESIAN to StoryExample.getExpressionIdiomTranslation(),
+                    Bookmark.COLUMN_IDIOM to "",
+                    Bookmark.COLUMN_SENTENCE_INDEX to "",
+                    Bookmark.COLUMN_UPLOAD_ID to ""
+            )
+        }.subscribeOn(Schedulers.io()).subscribe())    }
 
     fun insertIntoBookmarkEnglish(fileName: String, wholeSentence: String, indonesian : String) : Int{
         var mCompositeDisposable = CompositeDisposable()

@@ -169,10 +169,10 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
             DialogInterface.BUTTON_POSITIVE -> {
                 AppUtil.setPreDataAskingPreference(this,true)
                 Snacky.builder().setActivity(this).info().setText(getString(R.string.loading)).setDuration(Snacky.LENGTH_INDEFINITE).show()
-                Completable.timer(5, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                Completable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                         .subscribe(object : CompletableObserver{
                             override fun onComplete() {
-                                recreate()
+                               // recreate()
                             }
 
                             override fun onSubscribe(d: Disposable) {

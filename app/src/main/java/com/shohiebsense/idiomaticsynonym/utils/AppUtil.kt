@@ -451,7 +451,6 @@ class AppUtil {
 
         fun getListOfIdioms(idioms : String) : List<String>{
 
-            println("=== String into List ===")
             var result: List<String> = idioms.split(",").mapIndexed { index, it ->
 
                 it.trim()

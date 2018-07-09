@@ -22,9 +22,23 @@ class BookmarkDataEmitter(val context: Context) {
     lateinit var bookmarkCallback : SingleBookmarkCallback
 
     fun getPrerequistes(mainActivity: Activity) {
-        queryService.insertPrerequisites()
-        val underliningService = UnderliningServiceUsingContains(context, StoryExample.getStory())
-        underliningService.underLine(mainActivity)
+        /*queryService.insertPrerequisites()
+        var underliningService = UnderliningServiceUsingContains(context, StoryExample.getStory())
+        underliningService.underLine(mainActivity)*/
+        insertPhrasalSample(mainActivity)
+    }
+
+    fun insertPhrasalSample(mainActivity: Activity){
+        queryService.insertPhrasalVerbSample()
+        var underliningService2 = UnderliningServiceUsingContains(context, StoryExample.getPhrasalVerbIdiomSample())
+        underliningService2.underLine(mainActivity)
+       // insertExpresionSample(mainActivity)
+    }
+
+    fun insertExpresionSample(mainActivity: Activity){
+        queryService.insertExpressionSample()
+        var underliningService3 = UnderliningServiceUsingContains(context,  StoryExample.getExpressionIdiomSample())
+        underliningService3.underLine(mainActivity)
     }
 
     fun insertBookmarkEnglish(fileName: String, wholeText: CharSequence, indonesianText : CharSequence) : Int{

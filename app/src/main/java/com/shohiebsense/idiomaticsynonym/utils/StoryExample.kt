@@ -18,5 +18,21 @@ object StoryExample {
                 "Akhirnya, saya kehabisan kesabaran dan menjawab kembali - saya mengatakan saya tidak akan menahannya lagi, dan jika dia ingin membaringkan saya, dia harus pergi ke depan. Lagi pula, untuk mempersingkat cerita panjang, saya menyerbu keluar, menelepon sekretaris Mark, yang membuatku berhasil. Aku memberi tahu Mark aku ingin menerima tawarannya. Jadi, pada akhirnya, semuanya berjalan dengan sempurna! "
     }
 
+    fun getPhrasalVerbIdiomSample() : String{
+        return "As soon as I got off, I bumped into a school friend, Mark.";
+    }
+
+    fun getPharasalVerbranslationSample() : String {
+        return "Segera setelah saya pulang, saya bertemu dengan seorang teman sekolah, Mark."
+    }
+
+    fun getExpressionIdiomSample() : String {
+        return "The class ends at 2 and leaving before then is out of the question."
+    }
+
+    fun getExpressionIdiomTranslation() : String {
+        return "Kelas berakhir pukul 2 dan meninggalkan sebelum kemudian adalah keluar dari pertanyaan."
+    }
+
 
 }

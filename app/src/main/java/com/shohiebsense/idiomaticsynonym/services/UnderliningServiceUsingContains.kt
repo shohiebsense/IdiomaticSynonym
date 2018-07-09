@@ -348,20 +348,33 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                         AppUtil.makeDebugLog("tokenize finished")
                         val idioms = StringBuilder()
                         for(i in combinedIdioms.indices){
-                            if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
+
+                            if(combinedIdioms[i].idiom.contains("out of the question")){
+                                if(extractedPdfTexts.contains(combinedIdioms[i].idiom)){
+                                    AppUtil.makeErrorLog("yooo out of the q"+combinedIdioms[i].idiom + " "+extractedPdfTexts)
+                                }
+                            }
+                            if(extractedPdfTexts.contains(combinedIdioms[i].idiom)) {
+                                //if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
+                                AppUtil.makeErrorLog("dapatt, not done yet "+combinedIdioms[i].idiom)
+
                                 var index = extractedPdfTexts.toString().indexOf(combinedIdioms[i].idiom,0,true)
                                 val prevIndex = extractedPdfTexts[index-1].toLowerCase()
                                 val afterLastIndex = extractedPdfTexts[index+combinedIdioms[i].idiom.length].toLowerCase()
                                 var bool = prevIndex.isLetterOrDigit()
                                 var boolFinal = afterLastIndex.isLetter()
+                                AppUtil.makeErrorLog("$bool  owww $boolFinal")
+
                                 if(index >= 0 && (!bool && !boolFinal)){
+                                    AppUtil.makeErrorLog("dapatt "+combinedIdioms[i].idiom)
                                     idioms.append(combinedIdioms[i].idiom+", ")
                                 }
                             }
                         }
-
+                        AppUtil.makeErrorLog("overall idioms "+idioms.toString())
                         bookmarkDataEmitter.updateIdioms(idioms.toString())
                         timer.stop()
+                        AppUtil.makeErrorLog("jadi enggak ke sini nihhhh")
                         val seconds = timer.time/60
                     }
                 }).subscribe(object : Observer<Unit>{
@@ -375,7 +388,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                     }
 
                     override fun onError(e: Throwable) {
-
+                        AppUtil.makeErrorLog("throwableee "+e.toString())
                     }
 
                 })
