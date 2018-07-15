@@ -217,15 +217,14 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                             .setTextColorOfHighlightedLink(ContextCompat.getColor(context, R.color.colorPrimary))
                             .setUnderlined(false)
                             .setOnClickListener {
+                                behaviour.state = BottomSheetBehavior.STATE_HIDDEN
                                 if (combinedIdioms[i].meaning.isBlank()) {
-                                    behaviour.state = BottomSheetBehavior.STATE_HIDDEN
                                     getSingleTranslate(combinedIdioms[i].idiom,index, extractedPdfTexts.toString())
                                 }
                                 else{
                                     underliningCallback.onClickedIdiomText(combinedIdioms[i].meaning)
                                 }
                             }
-
                     //record to the database
                     clickableIdioms.add(link)
 
