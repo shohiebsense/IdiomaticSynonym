@@ -536,6 +536,23 @@ class AppUtil {
             }
         }
 
+         val END_OF_SENTENCE = Pattern.compile("\\.\\s+")
+        fun getSentence(text: String, word: String):  ArrayList<String> {
+            var index = 0
+            var endIndex = 0
+            var foundedSentences = arrayListOf<String>()
+            val lcword = word.toLowerCase()
+            for (sentence in END_OF_SENTENCE.split(text)) {
+                if (sentence.toLowerCase().contains(lcword)) {
+                    //get index
+                    index = lcword.indexOf(sentence)
+                    endIndex = index + sentence.length - 1
+                    foundedSentences.add(sentence)
+                }
+            }
+            return foundedSentences
+        }
+
     }
 
 

@@ -12,7 +12,9 @@
     <style name="CommonToolbarStyle">
         <item name="android:layout_height">?android:attr/actionBarSize</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
     <!-- Default Dialog Theme -->
     <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog"></style>
@@ -125,6 +127,15 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="ColoredSquareRedToggleButton" parent="TextAppearance.AppCompat.Widget.Button">
+        <item name="android:background">@drawable/button_toggle</item>
+        <item name="android:textColor">@color/soft_white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">@dimen/widget_container_padding</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="RootLayoutWithMargin">
         <item name="android:layout_marginLeft">@dimen/margin_layout_standard</item>
         <item name="android:layout_marginTop">@dimen/margin_layout_standard</item>
@@ -185,6 +196,9 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="BaseTheme.Red.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="BaseTheme.Red.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
     <!-- endText -->

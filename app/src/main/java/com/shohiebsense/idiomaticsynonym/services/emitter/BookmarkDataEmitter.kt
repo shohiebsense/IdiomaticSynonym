@@ -63,14 +63,15 @@ class BookmarkDataEmitter(val context: Context) {
     }
 
 
-    fun updateIndonesianText(wholeText: CharSequence, sentenceIndex: StringBuilder) {
+    fun updateTranslation(wholeText: CharSequence, sentenceIndex: StringBuilder) {
         queryService.updateIndonesianSentence(wholeText.toString(), sentenceIndex)
     }
 
-    fun updateIndonesianText(wholeText: String, id: String,listener : UpdateBookmarkCallback) {
+    fun updateTranslation(wholeText: String, id: String, listener : UpdateBookmarkCallback) {
         val observer = object : SingleObserver<Unit>{
             override fun onSuccess(t: Unit) {
-                listener.onSuccess()
+
+                listener.onSuccessUpdatingTranslation()
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -296,7 +297,7 @@ class BookmarkDataEmitter(val context: Context) {
     }
 
     interface UpdateBookmarkCallback {
-        fun onSuccess()
+        fun onSuccessUpdatingTranslation()
         fun onError(message: String)
     }
 

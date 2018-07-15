@@ -58,9 +58,11 @@
         <activity
             android:name=".LanguageSettingActivity"
             android:noHistory="true" />
-        <activity android:name=".CreateFileActivity">
-
-        </activity>
+        <activity android:name=".CreateFileActivity"></activity>
+        <activity
+            android:name=".Main2Activity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/BaseTheme.Red"></activity>
     </application>
 
 </manifest>

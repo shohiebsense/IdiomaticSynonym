@@ -198,7 +198,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.updateIndonesianOption -> {
-                bookmarkDataEmitter.updateIndonesianText(rtEditText_1.getText(RTFormat.SPANNED),id.toString(),this)
+                bookmarkDataEmitter.updateTranslation(rtEditText_1.getText(RTFormat.SPANNED),id.toString(),this)
             }
 
 
@@ -211,7 +211,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
         Snacky.builder().setActivity(this).setText(getString(R.string.failed_update) + " "+message).error().show()
     }
 
-    override fun onSuccess() {
+    override fun onSuccessUpdatingTranslation() {
         val intent = Intent()
         setResult(Activity.RESULT_OK,intent)
         finish()

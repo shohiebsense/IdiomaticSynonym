@@ -10,6 +10,7 @@ import com.klinker.android.link_builder.Link
 interface WordClickableCallback {
     fun onCompleted(links : ArrayList<Link>)
     fun onClickedIdiomText(idiom : String)
-    fun onShowingOnlineTranslation(meanings: MutableList<String>)
+    fun onShowingTranslation(meanings: MutableList<String>)
+    fun onShowingIdiomOnlineTranslation(translation : String)
     fun onErrorShowing()
 }

@@ -184,6 +184,17 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="label_save">Save</string>
     <string name="decline">Decline</string>
     <string name="drop_here">Drop_here</string>
-    <string name="error_translate_service_hasnt_ready">Error: Translate Service hasn't ready</string>
+
+    <string name="error_translate_service_hasnt_ready">Error: Translate Service hasn\'t ready</string>
+    <string name="mode_synonym">Synonym</string>
+    <string name="mode_translate">Translate</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="founded_sentences">Founded Sentences</string>
 </resources>
 

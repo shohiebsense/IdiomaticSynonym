@@ -5,14 +5,17 @@
     <item
         android:id="@+id/generateFileOption"
         android:title="@string/menuOptions_generate_text" />
-   <!-- <item
-        android:id="@+id/docsViewOption"
-        android:title="@string/menuOptions_docsview"
-        />-->
     <item
         android:id="@+id/updateIndonesianOption"
         android:title="@string/menuOptions_updateIndonesian"
         />
+    <item
+        android:id="@+id/toggleTranslateOption"
+        android:enabled="false"
+        android:title=""
+        android:visible="true"
+        app:actionLayout="@layout/view_idiom_item_toggle"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/toggleEachLineOption"
         android:title=""

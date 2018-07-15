@@ -46,6 +46,8 @@ import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
 import de.mateware.snacky.Snacky
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_underlining.*
 import kotlinx.android.synthetic.main.fragment_underlining2.*
 import org.jetbrains.anko.act
@@ -167,31 +169,15 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         snackbar = CustomSnackbar.make(rootCoordinatorLayout,
                 CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
         snackbar.show()
-
-
+        behaviour = BottomSheetBehavior.from(bottomSheetLayout)
         tooltips = ToolTipManager(act)
-
-        //textFetchedTextView.setHtml(extractedPdfTexts.toString())
         var snackbarView = snackbar.view
         snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryLightColor))
-      //  TranslatedAndUntranslatedDataEmitter(context, this).getAll()
-
-
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
         idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
         onShowingBottomSheet()
-
-        //commented for development
-        //underliningService.translate()
-
-
-        //commented for development
-      /*  if(TranslatedAndUntranslatedDataEmitter.translatedIdiomList.size > 0 && TranslatedAndUntranslatedDataEmitter.untranslatedIdiomList.size > 0){
-            //underliningService.getUnderLineZipping()
-            initAdapter()
-        }*/
         if(KEY_STATE == 0){
             if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
                 underliningService.underLine(behaviour)
@@ -200,7 +186,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
             }
         }
-
     }
 
     override fun onStart() {
@@ -224,7 +209,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     fun onShowingBottomSheet(){
-        behaviour = BottomSheetBehavior.from(bottomSheetLayout)
         behaviour.state = BottomSheetBehavior.STATE_HIDDEN
         behaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(@NonNull bottomSheet: View, newState: Int) {
@@ -235,16 +219,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 // React to dragging events
             }
         })
-
-
-
-
-
-
-      /*  textFetchedTextView.setOnClickListener {
-            behaviour.state = BottomSheetBehavior.STATE_EXPANDED
-
-        }*/
     }
 
     var fetcCallback = object : DatabaseCallback {
@@ -267,7 +241,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     override fun onTranslatingText() {
-       // toggleViews(UnderliningService.STATUS_LOADING)
+        // toggleViews(UnderliningService.STATUS_LOADING)
     }
     override fun onFinishedTranslatingText() {
 
@@ -319,9 +293,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     textFetchedTextView.visibility = View.VISIBLE
                     activity.title = fileName
                     var spannableString  : CharSequence = ""
-                  /*  decoratedSpan.forEach {
-                      spannableString = TextUtils.concat(spannableString,it.sentence)
-                    }*/
+                    /*  decoratedSpan.forEach {
+                        spannableString = TextUtils.concat(spannableString,it.sentence)
+                      }*/
 
                     val charSequence = LinkBuilder.from(act,extractedPdfTexts.toString()).addLinks(decoratedSpan).build()
                     textFetchedTextView.setText (charSequence)
@@ -329,11 +303,11 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     textFetchedTextView.movementMethod = TouchableMovementMethod.instance
 
                     //commented
-                   // underliningService.bookmarkDataEmitter.updateEnglishText(AppUtil.toHtml(act, charSequence!!))
+                    // underliningService.bookmarkDataEmitter.updateEnglishText(AppUtil.toHtml(act, charSequence!!))
                     snackbar.dismiss()
-               /*     if(decoratedSpan.isEmpty()){
-                        showEmptyResultDialog()
-                    }*/
+                    /*     if(decoratedSpan.isEmpty()){
+                             showEmptyResultDialog()
+                         }*/
                     addToToolTipView(getString(R.string.dialog_find_idioms_and_replaced_it))
                     toolbar.title = getString(R.string.translating)
                     underlined = true
@@ -353,17 +327,17 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
 
     override fun onErrorFetchingDatabase() {
-       // toggleErrorViews(UnderliningService.ERROR_FETCH)
+        // toggleErrorViews(UnderliningService.ERROR_FETCH)
     }
 
     override fun onFetchingDatabase() {
-       // toggleViews(UnderliningService.STATUS_LOADING)
+        // toggleViews(UnderliningService.STATUS_LOADING)
     }
 
     override fun onFinishedFetchingTranslatedDatabase(translatedIdiomList: MutableList<TranslatedIdiom>) {
         //toggleViews(UnderliningService.STATUS_FETCHED_DB)
         //commented due TranslatedAndUntranslatedDataEmitter had mutableList
-       // pdfDisplayerService.translatedIdiomList = translatedIdiomList
+        // pdfDisplayerService.translatedIdiomList = translatedIdiomList
 
 
         AppUtil.makeErrorLog("beres translatedIdiom list" + translatedIdiomList.size)
@@ -404,44 +378,33 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     override fun onClickedIdiomText(idiomText: String) {
-        //error,
-        //pdfDisplayerService
-        // .getSingleTranslate(idiomText)
-        //getTheselectedIndex
+        AppUtil.makeErrorLog("is clicked right???")
+        if(idiomText.isBlank()){
+            return;
+        }
+        var items = mutableListOf<IdiomMeaningItem>()
+        if(idiomText.contains(",")){
+            val regex = ","
+            var idiomList = idiomText.split(regex).toMutableList()
 
-        //if(isShowingIdiom){
-            if(idiomText.isBlank()){
-                return;
-            }
-            var items = mutableListOf<IdiomMeaningItem>()
-            if(idiomText.contains(",")){
-                val regex = ","
-                var idiomList = idiomText.split(regex).toMutableList()
-
-                for(meanings in idiomList){
-                    AppUtil.makeDebugLog("many choices : "+meanings)
-                    var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(meanings,idiomItemClickedListener)
-                    items.add(idiomMeaningItem)
-                }
-                // selectedIdiomList!!.put(index,idiomList.first())
-            }
-            else{
-
-                var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(idiomText,idiomItemClickedListener)
+            for(meanings in idiomList){
+                AppUtil.makeDebugLog("many choices : "+meanings)
+                var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(meanings,idiomItemClickedListener)
                 items.add(idiomMeaningItem)
             }
-
+        }
+        else{
+            var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(idiomText,idiomItemClickedListener)
+            items.add(idiomMeaningItem)
+        }
+        Completable.create {
             idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
             idiomMeaningItemAdapter.clear()
+            AppUtil.makeErrorLog("items sizee "+items.size)
             idiomMeaningItemAdapter.add(items)
             idiomRecyclerView.adapter = idiomMeaningFastAdapter
-        //}
-      /*  else{
-            getIndexedSentence()
-        }*/
-
+        }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(AndroidSchedulers.mainThread()).subscribe()
         toggleBottomSheet()
-
     }
 
 
@@ -454,7 +417,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         }
         //isShowingIdiom = !isShowingIdiom
     }
-
 
     override fun onErrorClickedIdiomText() {
         AppUtil.makeErrorLog("Translating idiom finiished")
@@ -481,7 +443,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                     idiomMeaningItemAdapter.add(items)
                     idiomRecyclerView.adapter = idiomMeaningFastAdapter
 
-                   toggleBottomSheet()
+                    toggleBottomSheet()
                 }
             }
         }.start()
@@ -513,11 +475,13 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             items.add(synonymItem)
         }
         // selectedIdiomList!!.put(index,idiomList.first())
-        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
-        idiomMeaningItemAdapter.clear()
-        idiomMeaningItemAdapter.add(items)
-        idiomRecyclerView.adapter = idiomMeaningFastAdapter
-        toggleBottomSheet()
+        Completable.create {
+            idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
+            idiomMeaningItemAdapter.clear()
+            idiomMeaningItemAdapter.add(items)
+            idiomRecyclerView.adapter = idiomMeaningFastAdapter
+            toggleBottomSheet()
+        }.subscribeOn(AndroidSchedulers.mainThread()).subscribe()
     }
 
 
@@ -538,7 +502,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
             override fun onAnimationEnd(animation: Animator) {
                 //addItem()
-               /// replaceSentenceButton.text =  idiomCounter.toString()
+                /// replaceSentenceButton.text =  idiomCounter.toString()
                 targetView.setVisibility(View.VISIBLE)
 
             }
@@ -556,10 +520,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     fun showMessageDialog(){
-       /* var dialog = FindIdiomsDialogFragment()
-        dialog.setTargetFragment(this, 1)
-        dialog.show(fragmentManager, FindIdiomsDialogFragment::class.java.simpleName)
-*/
+        /* var dialog = FindIdiomsDialogFragment()
+         dialog.setTargetFragment(this, 1)
+         dialog.show(fragmentManager, FindIdiomsDialogFragment::class.java.simpleName)
+ */
         val builder: AlertDialog.Builder
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = AlertDialog.Builder(act, R.style.MyDialogTheme)

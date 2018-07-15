@@ -82,5 +82,6 @@
     <string name="ask_pre_data">Apakah ingin disiapkan juga data sampel untuk kemudahan?</string>
     <string name="remind_me_later">Ingatkan nanti</string>
     <string name="success_upload">upload sukses dengan nama file : %s</string>
+    <string name="founded_sentences">Kalimat yang Ditemukan</string>
 
 </resources>

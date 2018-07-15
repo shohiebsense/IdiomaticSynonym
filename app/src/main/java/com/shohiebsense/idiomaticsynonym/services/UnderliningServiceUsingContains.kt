@@ -216,13 +216,15 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                             .setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
                             .setTextColorOfHighlightedLink(ContextCompat.getColor(context, R.color.colorPrimary))
                             .setUnderlined(false)
-                            .setOnClickListener {  if (combinedIdioms[i].meaning.isBlank()) {
-                                behaviour.state = BottomSheetBehavior.STATE_HIDDEN
-                                getSingleTranslate(combinedIdioms[i].idiom,index, extractedPdfTexts.toString())
+                            .setOnClickListener {
+                                if (combinedIdioms[i].meaning.isBlank()) {
+                                    behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+                                    getSingleTranslate(combinedIdioms[i].idiom,index, extractedPdfTexts.toString())
+                                }
+                                else{
+                                    underliningCallback.onClickedIdiomText(combinedIdioms[i].meaning)
+                                }
                             }
-                            else{
-                                underliningCallback.onClickedIdiomText(combinedIdioms[i].meaning)
-                            }}
 
                     //record to the database
                     clickableIdioms.add(link)
@@ -241,8 +243,8 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
 
 
 
-    fun extractTranslation(indexedSentence: String){
-        translatedFetchedPdfText.add(translateService.translate(indexedSentence))
+    fun extractTranslation(indexedSentence: String, index: Int){
+        translatedFetchedPdfText.add(translateService.translate(indexedSentence,index))
     }
 
     fun getError(e: String){
@@ -259,13 +261,17 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         }
 
         AppUtil.makeErrorLog("finished the indonesian  "+spannableStringBuilder.toString())
-        bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder,sentenceIndex)
+        bookmarkDataEmitter.updateTranslation(spannableStringBuilder,sentenceIndex)
         underliningCallback.onFinishedTranslatingText()
     }
 
     fun translate(){
+        var index = 0
         sentences.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribeBy  (
-                onNext = { extractTranslation(it) },
+                onNext = {
+                    extractTranslation(it,index)
+                    index++
+                },
                 onError =  {
 
                     getError( it.toString())
@@ -420,7 +426,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                 AppUtil.makeDebugLog("clicked, the idiom is  "+meaning)
 
                 if(meaning.isBlank()){
-                    //getSingleTranslate(idiom,sentenceIndex, sentence)
+                    //getIdiomTranslate(idiom,sentenceIndex, sentence)
                     return
                 }
 
@@ -434,7 +440,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
             }
 
         }
-       // bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence ,idiom) //harusnya bukan idiom, tapi sentence
+        // bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence ,idiom) //harusnya bukan idiom, tapi sentence
         decoratedSpan.setSpan(clickableSpan, index, endIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
         return decoratedSpan
     }

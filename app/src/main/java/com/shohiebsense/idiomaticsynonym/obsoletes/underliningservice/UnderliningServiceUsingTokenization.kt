@@ -234,7 +234,7 @@ class UnderliningServiceUsingTokenization constructor (val context: Context) {
         translatedFetchedPdfText.forEach {
             spannableStringBuilder.append(it)
         }
-        //bookmarkDataEmitter.updateIndonesianText(spannableStringBuilder, sentenceIndex)
+        //bookmarkDataEmitter.updateTranslation(spannableStringBuilder, sentenceIndex)
     }
 
     fun translate(){
@@ -325,7 +325,7 @@ class UnderliningServiceUsingTokenization constructor (val context: Context) {
                 AppUtil.makeDebugLog("clicked, the idiom is  "+meaning)
 
                 if(meaning.isBlank()){
-                    //getSingleTranslate(idiom,sentenceIndex, sentence)
+                    //getIdiomTranslate(idiom,sentenceIndex, sentence)
                     return
                 }
 

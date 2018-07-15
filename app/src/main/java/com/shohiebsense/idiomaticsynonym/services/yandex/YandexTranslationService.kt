@@ -52,9 +52,7 @@ class YandexTranslationService(context: Context) {
                 }
                 return ""
             }
-
         }
-
 
         var observer = object : Observer<String> {
             override fun onNext(t: String) {
@@ -94,9 +92,24 @@ class YandexTranslationService(context: Context) {
         //Observable.fromCallable(callable).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer)
     }
 
+    fun getIdiomTranslate(observer: Observer<String>, text: String) {
+        Observable.create<String> {
+            val response = translateExe(text)
+            if (response!!.isSuccessful) {
+                val responseString = response.body()!!.string()
+                val jsonObject = JSONObject(responseString)
+                AppUtil.makeErrorLog("dapet gaa nya "+jsonObject.toString()+ "  lang"+jsonObject.getString("lang"))
+                val textNode = jsonObject.getJSONArray("text")
+                val translationText = textNode.getString(0)
+                AppUtil.makeErrorLog("dapet ga oyyy "+translationText)
+                observer.onNext(translationText)
+            }
+        }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
+    }
 
 
-    fun translate(it: String) : SpannableStringBuilder {
+
+    fun translate(it: String, index: Int) : SpannableStringBuilder {
         //commented due to development, uncomment again.
         //val detections = translateService.detect(ImmutableList.of(it))
         val response = translateExe(it)
@@ -104,11 +117,14 @@ class YandexTranslationService(context: Context) {
             val responseString = response.body()!!.string()
             val jsonObject = JSONObject(responseString)
             val textNode = jsonObject.getJSONArray("text")
-            val translationText = textNode.getString(0)
-            return SpannableStringBuilder(translationText)
+            var translationText = textNode.getString(0).trim()
+            var prepended = " "
+            if(index == 0){
+                prepended = ""
+            }
+            return SpannableStringBuilder(prepended + translationText)
         }
         return SpannableStringBuilder("")
-
     }
 
 

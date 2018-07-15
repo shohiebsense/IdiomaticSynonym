@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootCoordinatorLayout"
@@ -12,6 +13,33 @@
         android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+
+
+        <eightbitlab.com.blurview.BlurView
+            android:id="@+id/topBlurView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:outlineProvider="bounds"
+            app:blurOverlayColor="#78ffffff"
+            android:visibility="gone"
+            tools:targetApi="lollipop">
+
+
+        <com.hanks.htextview.fade.FadeTextView
+            android:id="@+id/fadeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="center"
+            android:letterSpacing="0.08"
+            android:lineSpacingMultiplier="1.3"
+            android:text="This is FadeTextView"
+            android:textSize="20sp"
+            app:animationDuration="1500"/>
+
+        </eightbitlab.com.blurview.BlurView>
+
 
         <ScrollView
             android:id="@+id/englishScrollView"
@@ -64,6 +92,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dropDownView"
             app:layout_constraintVertical_chainStyle="spread_inside"/>
 
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/idiomRecyclerView"
             android:layout_width="match_parent"
@@ -74,9 +103,6 @@
             app:layout_constraintTop_toBottomOf="@+id/dividerView">
 
         </android.support.v7.widget.RecyclerView>
-
-
-
 
     </android.support.constraint.ConstraintLayout>
 

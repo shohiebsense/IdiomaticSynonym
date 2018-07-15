@@ -1,7 +1,6 @@
 package com.shohiebsense.idiomaticsynonym.services
 
 import android.content.Context
-import android.graphics.Color
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
 import android.view.View
@@ -13,11 +12,8 @@ import com.shohiebsense.idiomaticsynonym.services.yandex.YandexTranslationServic
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.SingleEntityCallback
 import com.shohiebsense.idiomaticsynonym.view.callbacks.WordClickableCallback
-import de.mateware.snacky.Snacky
 import io.reactivex.Observer
-import io.reactivex.Single
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import java.util.*
 import java.util.regex.Pattern
 
@@ -47,7 +43,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
                     combineStrings.add(translatedIdiom.meaning)
                 }
                 AppUtil.makeDebugLog("hoii "+combineStrings.size)
-                wordClickableCallback.onShowingOnlineTranslation(combineStrings)
+                wordClickableCallback.onShowingTranslation(combineStrings)
 
             }
         }
@@ -84,6 +80,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
                             .setUnderlined(false)
                             .setOnClickListener {
                                 //supposed to be select single query
+                                wordClickableCallback.onClickedIdiomText(foundedIdiom)
                                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
                                 currentIdiom = foundedIdiom
                                 AppUtil.makeErrorLog("at least until here")
@@ -119,7 +116,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
 
             override fun onComplete() {
                 AppUtil.makeErrorLog("combine finished "+combineStringMeaning[0])
-                wordClickableCallback.onShowingOnlineTranslation(combineStringMeaning)
+                wordClickableCallback.onShowingTranslation(combineStringMeaning)
             }
 
             override fun onError(e: Throwable) {
@@ -129,7 +126,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
             override fun onNext(t: String) {
                 AppUtil.makeErrorLog("hoi")
                 combineStringMeaning.add(t)
-                wordClickableCallback.onShowingOnlineTranslation(combineStringMeaning)
+                wordClickableCallback.onShowingTranslation(combineStringMeaning)
             }
         }
         val combineStrings = mutableListOf<String>()
@@ -145,6 +142,33 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
         }
         if(isReady)
         translateService?.getSingleTranslate(observer, combineStrings)
+        else{
+            wordClickableCallback.onErrorShowing()
+        }
+    }
+
+    fun getIdiomTranslate(idiom: String){
+
+        val observer = object : Observer<String> {
+            var combineStringMeaning = mutableListOf<String>()
+            override fun onSubscribe(d: Disposable) {
+                //process startup
+            }
+
+            override fun onComplete() {
+            }
+
+            override fun onError(e: Throwable) {
+                AppUtil.makeErrorLog("e singleTranslating "+ e.toString())
+            }
+
+            override fun onNext(t: String) {
+                AppUtil.makeErrorLog("hoi")
+                wordClickableCallback.onShowingIdiomOnlineTranslation(t)
+            }
+        }
+        if(isReady)
+            translateService?.getIdiomTranslate(observer, idiom)
         else{
             wordClickableCallback.onErrorShowing()
         }

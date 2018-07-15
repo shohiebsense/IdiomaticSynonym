@@ -18,6 +18,7 @@ import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.api.ChosenSynonymWord
 import com.shohiebsense.idiomaticsynonym.model.event.BookmarkViewEvent
+import com.shohiebsense.idiomaticsynonym.model.event.UpdatedTranslationEvent
 import com.shohiebsense.idiomaticsynonym.model.event.ViewEvent
 import com.shohiebsense.idiomaticsynonym.services.TranslatedDisplayService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
@@ -69,6 +70,13 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
             return fragment
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdatedTranslation(event : UpdatedTranslationEvent) {
+        AppUtil.makeErrorLog("translation updated?")
+        translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -233,6 +241,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
             val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),(activity as TranslatedDisplayActivity).bookmark.indexedSentences)
             translatedTextView.setText(Html.fromHtml(newlinesentence))
         }*/
+        AppUtil.makeErrorLog("on getting bookmark ")
         translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
     }
 

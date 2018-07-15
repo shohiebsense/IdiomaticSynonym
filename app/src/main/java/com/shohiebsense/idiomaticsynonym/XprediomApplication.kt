@@ -27,7 +27,7 @@ class XprediomApplication : Application() {
         super.onCreate()
         val dbHelper = IdiomDbHelper(this)
         dbHelper.setupDb()
-        MediaManager.init(this);
+        MediaManager.init(this)
         LocaleManager.setLocale(this)
     }
 }

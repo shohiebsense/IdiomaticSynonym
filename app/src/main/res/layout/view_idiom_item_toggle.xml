@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ToggleButton
+        android:id="@+id/toggle_button_translate"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        style="@style/ColoredSquareRedButton"
+        android:textOff="@string/mode_synonym"
+        android:textOn="@string/mode_translate"/>
+
+</android.support.constraint.ConstraintLayout>

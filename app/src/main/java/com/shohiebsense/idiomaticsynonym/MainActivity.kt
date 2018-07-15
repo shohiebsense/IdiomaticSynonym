@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
                 Completable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                         .subscribe(object : CompletableObserver{
                             override fun onComplete() {
-                               // recreate()
+                               recreate()
                             }
 
                             override fun onSubscribe(d: Disposable) {
