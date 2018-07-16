@@ -1,7 +1,8 @@
 package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
 
 
-import android.graphics.Color
+import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,15 +17,14 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.text.method.LinkMovementMethod
 import android.view.*
+import android.widget.PopupWindow
+import android.widget.RelativeLayout
 import com.hanks.htextview.base.AnimationListener
 import com.hanks.htextview.base.HTextView
 import com.klinker.android.link_builder.LinkBuilder
 import com.klinker.android.link_builder.TouchableMovementMethod
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.materialdrawer.AccountHeader
-import com.mikepenz.materialdrawer.Drawer
-import com.mikepenz.materialdrawer.DrawerBuilder
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
@@ -48,7 +48,8 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_translated_display.*
 import kotlinx.android.synthetic.main.fragment_english_result.*
 import kotlinx.android.synthetic.main.fragment_english_result_root.*
-import org.apache.xpath.operations.Bool
+import kotlinx.android.synthetic.main.view_popup_translating.*
+import kotlinx.android.synthetic.main.view_popup_translating.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -107,6 +108,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     var isFirstTimeClickedIdiom = true
     var oldSentence = ""
     var newSentence = ""
+    var mPopupWindow : PopupWindow? = null
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
@@ -191,31 +193,34 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 override fun onAnimationEnd(hTextView: HTextView?) {
                     index++
                     if(index == 1){
-                        fadeTextView.animateText(texts[index])
+                        getDelayedExecution(3).subscribe{
+                            fadeTextView.animateText(texts[index])
+                        }
                     }
                     if(index > 1){
-                        var refresh = Completable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-                        Completable.timer(2, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-                                .subscribe(object : CompletableObserver {
-                                    override fun onComplete() {
-                                       refresh.subscribe{
-                                           (activity as TranslatedDisplayActivity).refresh()
-                                           AppUtil.makeDebugLog("refresh is executedd")
-                                       }
-                                    }
-                                    override fun onSubscribe(d: Disposable) {
-                                        TransitionManager.beginDelayedTransition(layout_constraint)
-                                        topBlurView.visibility = View.GONE
-                                    }
-                                    override fun onError(e: Throwable) {
-                                    }
-                                })
+                        getDelayedExecution(3).subscribe(object : CompletableObserver{
+                            override fun onComplete() {
+                                getDelayedExecution(1).subscribe{
+                                    (activity as TranslatedDisplayActivity).refresh()
+                                }
+                            }
+                            override fun onSubscribe(d: Disposable) {
+                                TransitionManager.beginDelayedTransition(layout_constraint)
+                                topBlurView.visibility = View.GONE
+                            }
+                            override fun onError(e: Throwable) {
+                            }
+                        })
 
                     }
 
                 }
             })
         }
+    }
+
+    fun getDelayedExecution(second : Long) : Completable{
+        return Completable.timer(second, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
     }
 
     override fun onAttemptToReplace(translation: String) {
@@ -245,6 +250,10 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         idiomMeaningItemAdapter.clear()
         idiomMeaningItemAdapter.add(items)
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
+        if(mPopupWindow != null){
+            TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
+            mPopupWindow?.dismiss()
+        }
         toggleBottomSheet()
     }
 
@@ -278,10 +287,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         return inflater.inflate(R.layout.fragment_english_result_root, container, false)
     }
 
-    private var headerResult: AccountHeader? = null
-    private var result: Drawer? = null
-    private var sentenceBuilder : DrawerBuilder? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         AppUtil.makeErrorLog("aku dulu kan?")
@@ -305,7 +310,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         }
 
         englishTextsTextView.movementMethod = LinkMovementMethod()
-
         val toggle = ActionBarDrawerToggle(
                 activity, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -365,6 +369,8 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     fun onClickedIdiomText(idiomEvent: EnglishFragmentIdiomEvent) {
         isFirstTimeClickedIdiom = true
         replaceService.originIdiom = idiomEvent.idiom
+        showPopUpWindow()
+        AppUtil.makeErrorLog("heyy hdoo")
         if(!(activity as TranslatedDisplayActivity).isIdiomSynonymMode){
             (activity as TranslatedDisplayActivity).getTranslation(idiomEvent.idiom)
         }
@@ -393,7 +399,9 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                     idiomMeaningItemAdapter.clear()
                     idiomMeaningItemAdapter.add(items)
                     idiomRecyclerView.adapter = idiomMeaningFastAdapter
-
+                    if(mPopupWindow != null){
+                        mPopupWindow?.dismiss()
+                    }
                     toggleBottomSheet()
                 }
             }
@@ -427,6 +435,32 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     }
 
+    fun showPopUpWindow(){
+         var inflater = activity?.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+                // Inflate the custom layout/view
+        var customView = inflater.inflate(R.layout.view_popup_translating,null)
+        if(mPopupWindow != null){
+            TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
+            mPopupWindow?.dismiss()
+        }
+        mPopupWindow = PopupWindow(
+                customView,
+       350,150
+        );
+
+        if(Build.VERSION.SDK_INT>=21){
+            mPopupWindow?.setElevation(5.0f);
+        }
+
+        customView.button_close.setOnClickListener{
+            TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
+            mPopupWindow?.dismiss();
+        }
+        mPopupWindow?.setAnimationStyle(R.style.popup_window_animation)
+        TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
+        mPopupWindow?.showAtLocation(customView.layout_popup, Gravity.TOP or Gravity.END,40,280)
+    }
 
 
 }// Required empty public constructor

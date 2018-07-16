@@ -260,7 +260,6 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     override fun onFetched(bookmark: BookmarkedEnglish) {
         this.bookmark = bookmark
         EventBus.getDefault().post(BookmarkViewEvent())
-        AppUtil.makeErrorLog("hoiii "+bookmark.id)
     }
 
 

@@ -83,10 +83,6 @@ dependencies {
     implementation 'org.ahocorasick:ahocorasick:0.4.0'
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.klinkerapps:link_builder:2.0.3'
-    //optional
-    implementation("com.mikepenz:materialdrawer:6.0.8@aar") {
-        transitive = true
-    }
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.android.gms:play-services-drive:15.0.1'
     implementation 'com.borjabravo:readmoretextview:2.1.0'
