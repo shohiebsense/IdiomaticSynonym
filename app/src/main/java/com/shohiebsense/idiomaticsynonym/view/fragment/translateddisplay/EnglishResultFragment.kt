@@ -1,6 +1,7 @@
 package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
 
 
+import android.app.Activity
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.os.Build
 import android.os.Bundle
@@ -28,6 +29,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
+import com.shohiebsense.idiomaticsynonym.model.ReplaceHistory
 import com.shohiebsense.idiomaticsynonym.model.ReplacedSentence
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.ReplaceService
@@ -39,6 +41,7 @@ import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
 import com.shohiebsense.idiomaticsynonym.view.items.SentenceItem
 import com.shohiebsense.idiomaticsynonym.view.items.SentenceViewHolder
 import com.transitionseverywhere.TransitionManager
+import de.mateware.snacky.Snacky
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.Observable
@@ -116,18 +119,20 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 currentClickedIdiom = word
                 isFirstTimeClickedIdiom = false
             }
-            AppUtil.makeErrorLog("current clicked idiom  "+currentClickedIdiom)
+            /*if(!currentClickedIdiom.equals(word,true)){
+                currentClickedIdiom = word
+            }*/
+            AppUtil.makeErrorLog("current clicked idiom  "+currentClickedIdiom + "  with clicked word"+word)
             if((activity as TranslatedDisplayActivity).isIdiomSynonymMode){
                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+
                 (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
                 (activity as TranslatedDisplayActivity).getSynonym(word)
             }
             else{
-                AppUtil.makeErrorLog("engga ke mode ini kahh?")
                 replaceService.existingIdiom = currentClickedIdiom
                 replaceService.newIdiom = word
                 replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
-
             }
         }
     }
@@ -142,6 +147,11 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
     override fun onReplacedSentencesExist(foundedSentences: ArrayList<ReplacedSentence>) {
+        if(foundedSentences.isEmpty()){
+            AppUtil.showSnackbar(activity as Activity,AppUtil.SNACKY_INFO,getString(R.string.idiom_not_found))
+            return
+        }
+
         var items = arrayListOf<SentenceItem>()
         for(i in 0 until foundedSentences.size){
             items.add(SentenceItem().withSentence(foundedSentences[i],this))
@@ -169,20 +179,33 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
 
-    override fun onGettingReplacedTranslation(translation: String) {
-        currentClickedIdiom = translation
+    override fun onGettingReplacedTranslation(translation: ReplaceHistory) {
+        currentClickedIdiom = translation.idiom
         replaceService.existingIdiom = currentClickedIdiom
         AppUtil.makeErrorLog("dapatnya apa harusnya udaa "+currentClickedIdiom)
-        replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+        var items = arrayListOf<SentenceItem>()
+        //sentence
+        var translatedSentence = replaceService.getTranslatedBasedInOrder((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),translation.sentenceOrder)
+        items.add(SentenceItem().withSentence(ReplacedSentence(translatedSentence,translation.index,translation.endIndex,-1,-1,translation.sentenceOrder),this))
+        AppUtil.makeErrorLog("new idiom  "+replaceService.newIdiom)
+        sentenceItemAdapter.clear()
+        sentenceItemAdapter.add(items)
+        val layoutManager = LinearLayoutManager(activity)
+        recycler_sentences.layoutManager = layoutManager
+        recycler_sentences.adapter = sentenceFastAdapter
+        val divider = DividerItemDecoration(activity,layoutManager.orientation)
+        recycler_sentences.addItemDecoration(divider)
+        drawer_layout.openDrawer(GravityCompat.START)
+        //replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
     }
 
-    override fun onGettingOriginalTranslation(translation: String) {
+    override fun onGettingOriginalTranslation(translation: ReplaceHistory) {
 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUpdatedTranslation(event : UpdatedTranslationEvent){
-        AppUtil.makeErrorLog("engga ke sini ta?")
+        AppUtil.makeErrorLog("onUpdatedTranslation")
         if(event.isSucceed){
             var index = 0
             TransitionManager.beginDelayedTransition(layout_constraint);
@@ -201,7 +224,9 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                         getDelayedExecution(3).subscribe(object : CompletableObserver{
                             override fun onComplete() {
                                 getDelayedExecution(1).subscribe{
-                                    (activity as TranslatedDisplayActivity).refresh()
+                                    if(activity != null){
+                                        (activity as TranslatedDisplayActivity).refresh()
+                                    }
                                 }
                             }
                             override fun onSubscribe(d: Disposable) {
@@ -227,7 +252,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         (activity as TranslatedDisplayActivity).updateTranslation(translation)
     }
 
-    override fun onEmpty() {
+    override fun onReplacedSentenceEmpty() {
         replaceService.replacedHistoryEmitter.getReplacedTranslation((activity as TranslatedDisplayActivity).bookmark.id,replaceService.originIdiom)
     }
 
@@ -240,7 +265,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         var items = mutableListOf<IdiomMeaningItem>()
 
         AppUtil.makeErrorLog("tapi nyampe sini kannnn "+event.synonyms)
-
         for(synonym in event.synonyms){
             var synonymItem = IdiomMeaningItem().withIdiomMeaning(synonym,idiomItemClickedListener)
             items.add(synonymItem)
@@ -250,10 +274,12 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         idiomMeaningItemAdapter.clear()
         idiomMeaningItemAdapter.add(items)
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
-        if(mPopupWindow != null){
+        /*if(mPopupWindow != null){
             TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
             mPopupWindow?.dismiss()
-        }
+        }*/
+        //idiomRecyclerView.visibility = View.VISIBLE
+        AppUtil.makeErrorLog("is visibllee "+(idiomRecyclerView.visibility == View.VISIBLE))
         toggleBottomSheet()
     }
 
@@ -415,7 +441,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         else{
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
         }
-        //isShowingIdiom = !isShowingIdiom
     }
 
     fun onShowingBottomSheet(){

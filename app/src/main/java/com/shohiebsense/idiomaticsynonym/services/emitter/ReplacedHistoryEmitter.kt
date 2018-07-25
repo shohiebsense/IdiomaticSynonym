@@ -50,7 +50,7 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
             }
 
             override fun onNext(t: ReplaceHistory) {
-                callback.onGettingOriginalTranslation(t.originalTranslation)
+                callback.onGettingOriginalTranslation(t)
             }
 
             override fun onError(e: Throwable) {
@@ -58,6 +58,10 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
             }
         }
         queryService.getOriginalTranslation(bookmarkId,idiom,observer)
+    }
+
+    fun getSentenceOrder(bookmarkId: Int, idiom: String){
+
     }
 
     fun getReplacedTranslation(bookmarkId: Int, idiom: String){
@@ -69,7 +73,7 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
             }
 
             override fun onNext(t: ReplaceHistory) {
-                callback.onGettingReplacedTranslation(t.replacedTranslation)
+                callback.onGettingReplacedTranslation(t)
             }
 
             override fun onError(e: Throwable) {
@@ -84,18 +88,30 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
         queryService.setReplacedTranslation(bookmarkId,idiom,translation)
     }
 
-    fun setOriginalTranslation(bookmarkId : Int, idiom : String, translation : String){
+    fun setOriginalTranslation(bookmarkId: Int, idiom: String, translation: String){
         queryService.setOriginalTranslation(bookmarkId,idiom,translation)
+    }
+
+    fun insertOriginalTranslation(bookmarkId : Int, idiom : String, translation : String){
+        queryService.insertOriginalTranslation(bookmarkId,idiom,translation)
+    }
+
+    fun setSentenceOrder(bookmarkId: Int, idiom: String, order : Int){
+        queryService.setSentenceOrder(bookmarkId,idiom,order)
     }
 
     fun getTable() {
         queryService.getReplacedStories()
     }
 
+    fun setIndexes(id: Int, originIdiom: String, idiomIndex: Int, idiomEndIndex: Int) {
+        queryService.setIndexes(id,originIdiom,idiomIndex,idiomEndIndex)
+    }
+
     interface ReplacedHistoryCallback{
         fun onIdiomNotExists()
         fun onIdiomExists()
-        fun onGettingOriginalTranslation(translation: String)
-        fun onGettingReplacedTranslation(translation: String)
+        fun onGettingOriginalTranslation(translation: ReplaceHistory)
+        fun onGettingReplacedTranslation(translation: ReplaceHistory)
     }
 }

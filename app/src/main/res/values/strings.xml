@@ -196,5 +196,6 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="founded_sentences">Founded Sentences</string>
+    <string name="idiom_not_found">Idiom not found</string>
 </resources>
 

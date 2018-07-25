@@ -1,7 +1,7 @@
 package com.shohiebsense.idiomaticsynonym.services
 
-import android.content.pm.ApplicationInfo
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.model.ReplaceHistory
 import com.shohiebsense.idiomaticsynonym.model.ReplacedSentence
 import com.shohiebsense.idiomaticsynonym.services.emitter.ReplacedHistoryEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
@@ -17,25 +17,31 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
     lateinit var newIdiom: String
     lateinit var existingIdiom: String
     lateinit var originIdiom : String
+    var idiomIndex  = -1
+    var idiomEndIndex = -1
+    var sentenceOrderInText = -1
     var replacedHistoryEmitter = ReplacedHistoryEmitter(activity,this)
 
 
     fun isIdiomTranslationExist(indonesianTranslation : String) {
         val replacedSentences = getSentence(indonesianTranslation,existingIdiom)
         if(replacedSentences.isNotEmpty()){
-            listener.onReplacedSentencesExist(getSentence(indonesianTranslation,existingIdiom))
+            listener.onReplacedSentencesExist(replacedSentences)
         }
         else{
-            listener.onEmpty()
+            listener.onReplacedSentenceEmpty()
         }
     }
 
     fun replaceIdiomInSentence(indonesianTranslation: String, replacedSentence: ReplacedSentence, newIdiom: String){
+        sentenceOrderInText = replacedSentence.sentenceOrderInText
         var oldIdiom = replacedSentence.sentence.substring(replacedSentence.index,replacedSentence.endIndex)
-        replacedHistoryEmitter.isIdiomExists(activity.bookmark.id,oldIdiom)
+        replacedHistoryEmitter.isIdiomExists(activity.bookmark.id,originIdiom)
         AppUtil.makeErrorLog("what is it +"+ replacedSentence.sentence.substring(replacedSentence.index,replacedSentence.endIndex))
         var newSentence = replacedSentence.sentence.replace(oldIdiom,newIdiom)
         var newTranslation = indonesianTranslation.replace(replacedSentence.sentence,newSentence)
+        idiomIndex = newTranslation.indexOf(newIdiom)
+        idiomEndIndex = idiomIndex + newIdiom.length
         listener.onGettingNewSentence(newSentence)
         listener.onAttemptToReplace(newTranslation)
     }
@@ -49,43 +55,52 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
     }
 
 
-    fun getSentence(text: String, word: String):  ArrayList<ReplacedSentence> {
+    fun getSentence(text: String, translationIdiomWord: String):  ArrayList<ReplacedSentence> {
         var index: Int
         var endIndex : Int
         var foundedSentences = arrayListOf<ReplacedSentence>()
-        val lcword = word.toLowerCase()
-        for (sentence in AppUtil.END_OF_SENTENCE.split(text)) {
-            if (sentence.toLowerCase().contains(lcword)) {
+        val lcword = translationIdiomWord.toLowerCase()
+        var sentences = AppUtil.END_OF_SENTENCE.split(text)
+        for (i in 0 .. sentences.lastIndex) {
+            if (sentences[i].toLowerCase().contains(lcword)) {
                 //get index
-                index = sentence.toLowerCase().indexOf(lcword.toLowerCase())
+                index = sentences[i].toLowerCase().indexOf(lcword.toLowerCase())
                 endIndex = index + lcword.length
-                AppUtil.makeErrorLog("indexx "+index+"  endindex"+endIndex+" length "+sentence.length)
-                var sentenceIndex = text.indexOf(sentence)
+                var sentenceIndex = text.indexOf(sentences[i])
                 var sentenceEndIndex = sentenceIndex + text.length
-                foundedSentences.add(ReplacedSentence(sentence,index,endIndex,sentenceIndex,sentenceEndIndex))
+                foundedSentences.add(ReplacedSentence(sentences[i],index,endIndex,sentenceIndex,sentenceEndIndex,i))
             }
         }
         return foundedSentences
+    }
+
+    fun getTranslatedBasedInOrder(text : String, order : Int) : String {
+        return AppUtil.END_OF_SENTENCE.split(text)[order]
     }
 
 
     //ReplacedTranslation
     override fun onIdiomNotExists() {
         //insert
-        AppUtil.makeErrorLog("set originial translation  "+originIdiom+ "   "+existingIdiom+ "   "+newIdiom)
-        replacedHistoryEmitter.setOriginalTranslation(activity.bookmark.id,originIdiom,existingIdiom)
+        AppUtil.makeErrorLog("onIdiomNotExists"+originIdiom+ "   "+existingIdiom+ "   "+newIdiom)
+        replacedHistoryEmitter.insertOriginalTranslation(activity.bookmark.id,originIdiom,existingIdiom)
         replacedHistoryEmitter.setReplacedTranslation(activity.bookmark.id,originIdiom,newIdiom)
+        replacedHistoryEmitter.setIndexes(activity.bookmark.id,originIdiom,idiomIndex,idiomEndIndex)
+        replacedHistoryEmitter.setSentenceOrder(activity.bookmark.id,originIdiom,sentenceOrderInText)
     }
 
     override fun onIdiomExists() {
         replacedHistoryEmitter.setReplacedTranslation(activity.bookmark.id,originIdiom,newIdiom)
+        replacedHistoryEmitter.setOriginalTranslation(activity.bookmark.id,originIdiom,existingIdiom)
+        replacedHistoryEmitter.setIndexes(activity.bookmark.id,originIdiom,idiomIndex,idiomEndIndex)
+        replacedHistoryEmitter.setSentenceOrder(activity.bookmark.id,originIdiom,sentenceOrderInText)
     }
 
-    override fun onGettingOriginalTranslation(translation: String) {
+    override fun onGettingOriginalTranslation(translation: ReplaceHistory) {
         listener.onGettingOriginalTranslation(translation)
     }
 
-    override fun onGettingReplacedTranslation(translation: String) {
+    override fun onGettingReplacedTranslation(translation: ReplaceHistory) {
         listener.onGettingReplacedTranslation(translation)
     }
     //end section
@@ -94,8 +109,8 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
         fun onReplacedSentencesExist(foundedSentences: ArrayList<ReplacedSentence>)
         fun onAttemptToReplace(translation : String)
         fun onGettingNewSentence(newSentence : String)
-        fun onGettingOriginalTranslation(translation: String)
-        fun onGettingReplacedTranslation(translation: String)
-        fun onEmpty()
+        fun onGettingOriginalTranslation(translation: ReplaceHistory)
+        fun onGettingReplacedTranslation(translation: ReplaceHistory)
+        fun onReplacedSentenceEmpty()
     }
 }

@@ -1,12 +1,9 @@
 package com.shohiebsense.idiomaticsynonym.services.dbs
 
 import android.database.sqlite.SQLiteDatabase
-import com.shohiebsense.idiomaticsynonym.db.Bookmark
-import com.shohiebsense.idiomaticsynonym.db.ReplacedHistory
-import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
+import com.shohiebsense.idiomaticsynonym.db.ReplacedHistoryConstant
 import com.shohiebsense.idiomaticsynonym.model.ReplaceHistory
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.utils.StoryExample
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -26,9 +23,9 @@ class ReplacedHistoryQueryService(val db : SQLiteDatabase) {
 
     fun getReplacedStories(){
         Observable.create<ReplaceHistory> { e ->
-            db.select(ReplacedHistory.TABLE_REPLACED_HISTORY).exec {
-                val parser = rowParser { id: Int, bookmarkId: Int, english: String, indonesian : String, idioms : String ->
-                    ReplaceHistory(id,bookmarkId,english,indonesian,idioms)
+            db.select(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY).exec {
+                val parser = rowParser { id: Int, bookmarkId: Int, english: String, indonesian : String, idioms : String, sentenceOrder : Int, startIndex : Int, endIndex : Int ->
+                    ReplaceHistory(id,bookmarkId,english,indonesian,idioms,sentenceOrder,startIndex,endIndex)
                 }
                 asSequence().forEach {
                     row-> AppUtil.makeDebugLog("yoo "+parser.parseRow(row).originalTranslation+"  "+parser.parseRow(row).idiom+"   ")
@@ -41,22 +38,35 @@ class ReplacedHistoryQueryService(val db : SQLiteDatabase) {
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe()
     }
 
-    fun setOriginalTranslation(bookmarkId : Int, idiom : String, translation : String) {
+    fun insertOriginalTranslation(bookmarkId : Int, idiom : String, translation : String) {
         var mCompositeDisposable = CompositeDisposable()
+        AppUtil.makeErrorLog("translation inserted event ")
         mCompositeDisposable.add(Single.fromCallable {
-            db.insert(ReplacedHistory.TABLE_REPLACED_HISTORY,
-                    ReplacedHistory.COLUMN_BOOKMARK_ID to bookmarkId,
-                    ReplacedHistory.COLUMN_IDIOM to idiom,
-                    ReplacedHistory.COLUMN_COLUMN_ORIGINAL_TRANSLATION to translation
+            db.insert(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY,
+                    ReplacedHistoryConstant.COLUMN_BOOKMARK_ID to bookmarkId,
+                    ReplacedHistoryConstant.COLUMN_IDIOM to idiom,
+                    ReplacedHistoryConstant.COLUMN_ORIGINAL_TRANSLATION to translation
             )
         }.subscribeOn(Schedulers.io()).subscribe())
     }
 
+
+    fun setOriginalTranslation(bookmarkId: Int, idiom : String, translation: String){
+        Completable.create {
+            db.update(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY,
+                    ReplacedHistoryConstant.COLUMN_ORIGINAL_TRANSLATION to translation)
+                    .whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
+                            "bookmarkid" to bookmarkId,
+                            "idiom" to idiom)
+                    .exec()
+        }.subscribeOn(Schedulers.io()).subscribe()
+    }
+
     fun setReplacedTranslation(bookmarkId: Int, idiom : String, translation: String){
         Completable.create {
-            db.update(ReplacedHistory.TABLE_REPLACED_HISTORY,
-                    ReplacedHistory.COLUMN_COLUMN_REPLACED_TRANSLATION to translation)
-                    .whereArgs("${ReplacedHistory.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistory.COLUMN_IDIOM} = {idiom} ",
+            db.update(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY,
+                    ReplacedHistoryConstant.COLUMN_REPLACED_TRANSLATION to translation)
+                    .whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
                             "bookmarkid" to bookmarkId,
                             "idiom" to idiom)
                     .exec()
@@ -66,9 +76,11 @@ class ReplacedHistoryQueryService(val db : SQLiteDatabase) {
     fun isIdiomExists(bookmarkId: Int, idiom : String, observer : Observer<Boolean>) {
         AppUtil.makeErrorLog("idiom di exists apa dulus "+idiom)
         Observable.create<Boolean> {
-            db.select(ReplacedHistory.TABLE_REPLACED_HISTORY,ReplacedHistory.COLUMN_IDIOM).whereArgs("${ReplacedHistory.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistory.COLUMN_IDIOM} = {idiom} ",
+            db.select(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY,ReplacedHistoryConstant.COLUMN_IDIOM).whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
                     "bookmarkid" to bookmarkId,
                     "idiom" to idiom).exec {
+
+                AppUtil.makeErrorLog("the size is exists is "+count)
                 it.onNext(count > 0)
                 it.onComplete()
                 close()
@@ -77,13 +89,38 @@ class ReplacedHistoryQueryService(val db : SQLiteDatabase) {
     }
 
 
+    fun setSentenceOrder(bookmarkId: Int, idiom: String, order: Int) {
+        AppUtil.makeErrorLog("updatee sentence order "+order)
+        Completable.create {
+            db.update(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY,
+                    ReplacedHistoryConstant.COLUMN_SENTENCE_ORDER to order)
+                    .whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
+                            "bookmarkid" to bookmarkId,
+                            "idiom" to idiom)
+                    .exec()
+        }.subscribeOn(Schedulers.io()).subscribe()
+    }
+
+    fun setIndexes(bookmarkId: Int, idiom : String, idiomIndex: Int, idiomEndIndex: Int) {
+        Completable.create {
+            db.update(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY,
+                    ReplacedHistoryConstant.COLUMN_IDIOM_INDEX to idiomIndex,
+                    ReplacedHistoryConstant.COLUMN_IDIOM_ENDINDEX to idiomEndIndex
+                    )
+                    .whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
+                            "bookmarkid" to bookmarkId,
+                            "idiom" to idiom)
+                    .exec()
+        }.subscribeOn(Schedulers.io()).subscribe()
+    }
+
     fun getOriginalTranslation(bookmarkId: Int, idiom : String, observer : Observer<ReplaceHistory>) {
         Observable.create<ReplaceHistory> {
-            db.select(ReplacedHistory.TABLE_REPLACED_HISTORY).whereArgs("${ReplacedHistory.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistory.COLUMN_IDIOM} = {idiom} ",
+            db.select(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY).whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
                     "bookmarkid" to bookmarkId,
                     "idiom" to idiom).exec {
-                val parser = rowParser { id: Int, bookmarkId: Int, english: String, indonesian : String, idioms : String ->
-                    ReplaceHistory(id,bookmarkId,english,indonesian,idioms)
+                val parser = rowParser { id: Int, bookmarkId: Int, english: String, indonesian : String, idioms : String, sentenceOrder : Int, idiomStartIndex : Int, idiomEndIndex : Int ->
+                    ReplaceHistory(id,bookmarkId,english,indonesian,idioms,sentenceOrder,idiomStartIndex,idiomEndIndex)
                 }
                 asSequence().forEach {
                     row-> AppUtil.makeDebugLog("getting origtrans "+parser.parseRow(row).originalTranslation+"  "+parser.parseRow(row).idiom+"   ")
@@ -97,11 +134,13 @@ class ReplacedHistoryQueryService(val db : SQLiteDatabase) {
     }
 
     fun getReplacedTranslation(bookmarkId: Int, idiom : String, observer : Observer<ReplaceHistory>) {
-        AppUtil.makeErrorLog("idiomnya apa dulu ?? "+idiom)
         Observable.create<ReplaceHistory> {
-            db.select(ReplacedHistory.TABLE_REPLACED_HISTORY).whereArgs("("+ReplacedHistory.COLUMN_BOOKMARK_ID+"="+bookmarkId+" and "+ReplacedHistory.COLUMN_IDIOM+"='$idiom')").exec {
-                val parser = rowParser { id: Int, bookmarkId: Int, english: String, indonesian : String, idioms : String ->
-                    ReplaceHistory(id,bookmarkId,english,indonesian,idioms)
+            db.select(ReplacedHistoryConstant.TABLE_REPLACED_HISTORY).whereArgs("${ReplacedHistoryConstant.COLUMN_BOOKMARK_ID} = {bookmarkid} and ${ReplacedHistoryConstant.COLUMN_IDIOM} = {idiom} ",
+                    "bookmarkid" to bookmarkId,
+                    "idiom" to idiom)
+                    .exec {
+                val parser = rowParser { id: Int, bookmarkId: Int, idiom : String, originalTranslation: String, replacedTranslation : String, sentenceOrder : Int, startIndex : Int, endIndex : Int ->
+                    ReplaceHistory(id,bookmarkId,idiom,originalTranslation,replacedTranslation,sentenceOrder,startIndex,endIndex)
                 }
                 asSequence().forEach {
                     row-> AppUtil.makeDebugLog("getting replaceTrans "+parser.parseRow(row).originalTranslation+"  "+parser.parseRow(row).idiom+"   ")

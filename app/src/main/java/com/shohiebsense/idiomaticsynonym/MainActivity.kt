@@ -8,7 +8,6 @@ import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
@@ -20,10 +19,8 @@ import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import de.mateware.snacky.Snacky
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.internal.operators.observable.ObservableReplay.observeOn
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.TimeUnit
 
@@ -115,7 +112,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
 
         AppUtil.makeDebugLog("heyy "+AppUtil.getFileUploadedNameEvent(this))
         if(AppUtil.isFileUploadedEvent(this) && AppUtil.getFileUploadedNameEvent(this).isNotBlank()){
-            Snacky.builder().setActivity(this).success().setText(getString(R.string.success_upload,AppUtil.getFileUploadedNameEvent(this))).show()
+            AppUtil.showSnackbar(this, AppUtil.SNACKY_SUCCESS, getString(R.string.success_upload,AppUtil.getFileUploadedNameEvent(this)))
             AppUtil.setFileUploadedEvent(this,false)
             AppUtil.setFileUploadedNameEvent(this,"")
         }
@@ -168,7 +165,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> {
                 AppUtil.setPreDataAskingPreference(this,true)
-                Snacky.builder().setActivity(this).info().setText(getString(R.string.loading)).setDuration(Snacky.LENGTH_INDEFINITE).show()
+                AppUtil.showSnackbar(this,AppUtil.SNACKY_INFO,getString(R.string.loading),Snacky.LENGTH_INDEFINITE)
                 Completable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                         .subscribe(object : CompletableObserver{
                             override fun onComplete() {
@@ -179,6 +176,8 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
                                 AppUtil.setIdiomGuidance(this@MainActivity, false)
                                 AppUtil.setMainGuidance(this@MainActivity,true)
                                 bookmarkEmitter.getPrerequistes(this@MainActivity)
+                                bookmarkEmitter.getPrerequisitesPhrasalVerb(this@MainActivity)
+                                bookmarkEmitter.getPrerequisitesExpression(this@MainActivity)
                             }
 
                             override fun onError(e: Throwable) {
@@ -207,7 +206,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
             TranslatedAndUntranslatedDataEmitter(this,this).getAll()
         }
         if(!AppUtil.getIdiomGuidance(this)){
-            Snacky.builder().setActivity(this@MainActivity).setText(getString(R.string.pre_requisition_message)).success().setDuration(Snacky.LENGTH_LONG).show()
+            AppUtil.showSnackbar(this,AppUtil.SNACKY_SUCCESS,getString(R.string.pre_requisition_message),Snacky.LENGTH_LONG)
         }
     }
 

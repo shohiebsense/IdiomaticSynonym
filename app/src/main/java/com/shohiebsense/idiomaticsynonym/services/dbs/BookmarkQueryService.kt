@@ -113,13 +113,13 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                 .exec()
     }
 
-    fun updateIdioms(idioms: String) {
-        Log.e("shohiebsensenseee ","inserted "+idioms + "  "+selectLastInsertedId())
+    fun updateIdioms(idioms: String,id : Int) {
+        Log.e("shohiebsensenseee ","inserted "+idioms + "  "+id)
 
         Single.fromCallable {
             db.update(Bookmark.TABLE_BOOKMARK_ENGLISH,
                     Bookmark.COLUMN_IDIOM to idioms
-            ) .whereArgs(Bookmark.COLUMN_ID + " = " + selectLastInsertedId())
+            ) .whereArgs(Bookmark.COLUMN_ID + " = " + id)
                     .exec()
         }
                 .subscribeOn(Schedulers.io())

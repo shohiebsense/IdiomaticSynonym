@@ -31,6 +31,7 @@ import com.onegravity.rteditor.api.format.RTFormat
 import com.onegravity.rteditor.media.MediaUtils
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
+import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.utils.FileHelper
 import de.mateware.snacky.Snacky
 import kotlinx.android.synthetic.main.activity_editor.*
@@ -208,7 +209,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
 
 
     override fun onError(message: String) {
-        Snacky.builder().setActivity(this).setText(getString(R.string.failed_update) + " "+message).error().show()
+        AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.failed_update))
     }
 
     override fun onSuccessUpdatingTranslation() {

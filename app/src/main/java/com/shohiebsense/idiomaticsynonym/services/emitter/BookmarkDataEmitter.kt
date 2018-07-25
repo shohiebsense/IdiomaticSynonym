@@ -22,23 +22,23 @@ class BookmarkDataEmitter(val context: Context) {
     lateinit var bookmarkCallback : SingleBookmarkCallback
 
     fun getPrerequistes(mainActivity: Activity) {
-        /*queryService.insertPrerequisites()
+        queryService.insertPrerequisites()
         var underliningService = UnderliningServiceUsingContains(context, StoryExample.getStory())
-        underliningService.underLine(mainActivity)*/
-        insertPhrasalSample(mainActivity)
+        underliningService.underLine(mainActivity,queryService.selectLastInsertedId())
+        //insertPhrasalSample(mainActivity)
     }
 
-    fun insertPhrasalSample(mainActivity: Activity){
+    fun getPrerequisitesPhrasalVerb(mainActivity: Activity){
         queryService.insertPhrasalVerbSample()
         var underliningService2 = UnderliningServiceUsingContains(context, StoryExample.getPhrasalVerbIdiomSample())
-        underliningService2.underLine(mainActivity)
+        underliningService2.underLine(mainActivity,queryService.selectLastInsertedId())
        // insertExpresionSample(mainActivity)
     }
 
-    fun insertExpresionSample(mainActivity: Activity){
+    fun getPrerequisitesExpression(mainActivity: Activity){
         queryService.insertExpressionSample()
         var underliningService3 = UnderliningServiceUsingContains(context,  StoryExample.getExpressionIdiomSample())
-        underliningService3.underLine(mainActivity)
+        underliningService3.underLine(mainActivity,queryService.selectLastInsertedId())
     }
 
     fun insertBookmarkEnglish(fileName: String, wholeText: CharSequence, indonesianText : CharSequence) : Int{
@@ -88,8 +88,8 @@ class BookmarkDataEmitter(val context: Context) {
         queryService.updateIndonesianSentence(observer, wholeText, id)
     }
 
-    fun updateIdioms(idioms : String){
-        queryService.updateIdioms(idioms)
+    fun updateIdioms(idioms: String, id: Int){
+        queryService.updateIdioms(idioms,id)
     }
 
     fun updateUploadId(id : String, uploadId: String){
@@ -125,7 +125,6 @@ class BookmarkDataEmitter(val context: Context) {
         val bookmarks = arrayListOf<BookmarkedEnglish>()
         val observer = object : Observer<List<BookmarkedEnglish>>{
             override fun onNext(t: List<BookmarkedEnglish>) {
-                AppUtil.makeDebugLog("the sizeee "+t.size)
                 bookmarks.addAll(t)
             }
             override fun onSubscribe(d: Disposable) {

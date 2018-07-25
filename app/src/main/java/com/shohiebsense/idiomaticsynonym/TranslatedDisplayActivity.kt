@@ -136,7 +136,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
 
 
         if(!AppUtil.getIdiomGuidance(this)){
-            Snacky.builder().setActivity(this).success().setText(getString(R.string.idiom_guidance)).setDuration(Snacky.LENGTH_LONG).show()
+            AppUtil.showSnackbar(this,AppUtil.SNACKY_SUCCESS,getString(R.string.idiom_guidance),Snacky.LENGTH_INDEFINITE)
             AppUtil.setIdiomGuidance(this,true)
         }
         refresh()
@@ -315,7 +315,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == UPDATE_RESULT) {
             if (resultCode == Activity.RESULT_OK) {
-                Snacky.builder().setActivity(this).setText(getString(R.string.success_update)).success().show()
+                AppUtil.showSnackbar(this,AppUtil.SNACKY_SUCCESS,getString(R.string.success_update))
                 val adapter = TranslatedDisplayPagerAdapter(this, supportFragmentManager, lastId)
                 translatedDisplayViewPager.offscreenPageLimit = 3
                 translatedDisplayViewPager.adapter = adapter
@@ -333,13 +333,13 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
                 isTranslationEmpty = false
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                Snacky.builder().setActivity(this).setText(getString(R.string.failed_docs)).error().show()
+                AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.failed_docs))
             }
         }
     }
 
     override fun onErrorShowing() {
-        Snacky.builder().setActivity(this).error().setText(getString(R.string.error_translate_service_hasnt_ready)).show()
+        AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.error_translate_service_hasnt_ready))
     }
 
     fun getTranslation(idiom : String){
@@ -355,12 +355,12 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     }
 
     override fun onSuccessUpdatingTranslation()  {
-        Snacky.builder().setActivity(this).setText(getString(R.string.success_update)).success().show()
+        AppUtil.showSnackbar(this,AppUtil.SNACKY_SUCCESS,getString(R.string.success_update))
         EventBus.getDefault().post(UpdatedTranslationEvent(true))
     }
 
     override fun onError(message: String) {
-        Snacky.builder().setActivity(this).setText(getString(R.string.failed_update) + " "+message).error().show()
+        AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,message)
     }
 
 }

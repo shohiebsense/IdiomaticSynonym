@@ -232,7 +232,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
             }
         }
 
-        bookmarkDataEmitter.updateIdioms(idioms.toString())
+        bookmarkDataEmitter.updateIdioms(idioms.toString(), bookmarkDataEmitter.getLastId())
         timer.stop()
         val seconds = timer.time/60
         Log.e("shohiebsense ","time ellapsedd seconds "+seconds)
@@ -332,10 +332,9 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
     }
 
 
-    fun underLine(activity: Activity) {
+    fun underLine(activity: Activity, id : Int) {
         if(TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty() ){
             AppUtil.makeErrorLog("error size list 0")
-            underliningCallback.onErrorUnderliningText()
             return
         }
         //Observable.fromIterable(englishSentences).observeOn(Schedulers.computation()).subscribeOn(Schedulers.computation()).subscribe(getObserver2())
@@ -353,12 +352,6 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                         AppUtil.makeDebugLog("tokenize finished")
                         val idioms = StringBuilder()
                         for(i in combinedIdioms.indices){
-
-                            if(combinedIdioms[i].idiom.contains("out of the question")){
-                                if(extractedPdfTexts.contains(combinedIdioms[i].idiom)){
-                                    AppUtil.makeErrorLog("yooo out of the q"+combinedIdioms[i].idiom + " "+extractedPdfTexts)
-                                }
-                            }
                             if(extractedPdfTexts.contains(combinedIdioms[i].idiom)) {
                                 //if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
                                 AppUtil.makeErrorLog("dapatt, not done yet "+combinedIdioms[i].idiom)
@@ -377,7 +370,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                             }
                         }
                         AppUtil.makeErrorLog("overall idioms "+idioms.toString())
-                        bookmarkDataEmitter.updateIdioms(idioms.toString())
+                        bookmarkDataEmitter.updateIdioms(idioms.toString(),id)
                         timer.stop()
                         AppUtil.makeErrorLog("jadi enggak ke sini nihhhh")
                         val seconds = timer.time/60

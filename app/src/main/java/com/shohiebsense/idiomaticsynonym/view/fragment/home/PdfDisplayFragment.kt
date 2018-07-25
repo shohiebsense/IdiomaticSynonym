@@ -1,6 +1,7 @@
 package com.shohiebsense.idiomaticsynonym.view.fragment.home
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
@@ -440,7 +441,8 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 pdfDisplayerService.promptLoadPdfDialog()
             } else {
                 AppUtil.makeErrorLog("deniedd")
-                Snacky.builder().setActivity(activity).setText(getString(R.string.permission_required)).warning().show()
+                if(activity != null)
+                AppUtil.showSnackbar(activity as Activity,AppUtil.SNACKY_WARNING,getString(R.string.permission_required))
             }
         }
     }
@@ -549,7 +551,9 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onConfirmedProcess(from: Int, to : Int) {
-        Snacky.builder().setActivity(activity).setText(getString(R.string.loading)).warning().setDuration(Snacky.LENGTH_INDEFINITE).show()
+        if(activity != null){
+            AppUtil.showSnackbar(activity as Activity,AppUtil.SNACKY_INFO,getString(R.string.loading),Snacky.LENGTH_INDEFINITE)
+        }
         avLoadingIndicatorView.visibility = View.VISIBLE
        // CustomSnackbar.make(view!!.parent as ViewGroup, CustomSnackbar.LENGTH_INDEFINITE).setText("Please Wait ").hidePermissionAction().show()
         pdfDisplayerService.fetchText(from,to)
@@ -571,7 +575,8 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onErrorReadingFile() {
-        Snacky.builder().setActivity(activity).setText(getString(R.string.text_not_valid_pdf)).warning().show()
+        if(activity != null)
+        AppUtil.showSnackbar(activity as Activity, AppUtil.SNACKY_WARNING,getString(R.string.text_not_valid_pdf))
     }
 
 

@@ -266,7 +266,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
 
     override fun onErrorTranslatingText(error : String) {
-        Snacky.builder().error().setText(error).setDuration(Snacky.LENGTH_LONG).show()
+        AppUtil.showSnackbar(activity,AppUtil.SNACKY_ERROR,error)
         toolbar.title = fileName
         addToToolTipView(getString(R.string.error_check_your_connection))
         translated = false

@@ -24,8 +24,8 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger
 import org.apache.commons.lang3.time.StopWatch
 import org.jetbrains.anko.defaultSharedPreferences
 import android.support.design.widget.Snackbar
-
-
+import de.mateware.snacky.Snacky
+import org.jetbrains.anko.doIfSdk
 
 
 /**
@@ -43,6 +43,10 @@ class AppUtil {
         val PREF_IDIOM_GUIDANCE = "idiomGuidance"
         val PREF_IS_FILE_UPLOADED_EVENT = "isfileuploadd"
         val PREF_FILE_UPLOADED_NAME = "fileUploadedName"
+        val SNACKY_SUCCESS = 0
+        val SNACKY_INFO = 1
+        val SNACKY_ERROR = -1
+        val SNACKY_WARNING = 2
 
         fun setFileUploadedNameEvent(context: Context, fileName : String){
             context.defaultSharedPreferences.edit().putString(PREF_FILE_UPLOADED_NAME, fileName).apply()
@@ -553,6 +557,25 @@ class AppUtil {
             return foundedSentences
         }
 
+        fun showSnackbar(activity: Activity, state : Int, message : String, duration : Int){
+            val snackbar = Snacky.builder().setActivity(activity).setText(message)
+            snackbar.setDuration(duration)
+            when(state){
+                SNACKY_SUCCESS -> {
+                    snackbar.success().show()
+                }
+                SNACKY_ERROR -> {
+                    snackbar.error().show()
+                }
+                SNACKY_INFO -> {
+                    snackbar.info().show()
+                }
+            }
+        }
+
+        fun showSnackbar(activity: Activity, state : Int, message : String){
+            showSnackbar(activity,state,message,Snackbar.LENGTH_SHORT)
+        }
     }
 
 
