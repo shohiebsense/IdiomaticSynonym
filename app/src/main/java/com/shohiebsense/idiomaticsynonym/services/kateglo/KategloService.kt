@@ -1,8 +1,5 @@
 package com.shohiebsense.idiomaticsynonym.services.kateglo
 
-import android.text.SpannableStringBuilder
-import com.google.cloud.translate.Translate
-import com.google.gson.GsonBuilder
 import com.shohiebsense.idiomaticsynonym.model.api.Synonym
 import com.shohiebsense.idiomaticsynonym.model.api.SynonymWord
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
@@ -114,7 +111,7 @@ class KategloService {
 
         var observer = object : Observer<MutableList<String>> {
             override fun onNext(t: MutableList<String>) {
-                listener.onGetSyonyms(syonymWordObjects)
+                listener.onGetSynonyms(syonymWordObjects)
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -140,7 +137,7 @@ class KategloService {
 
 
     interface KategloListener {
-        fun onGetSyonyms(syonyms : MutableList<String>)
+        fun onGetSynonyms(syonyms : MutableList<String>)
     }
 
 

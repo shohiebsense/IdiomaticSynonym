@@ -17,11 +17,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cardConstraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_layout_standard"
-        android:layout_marginBottom="@dimen/margin_layout_standard"
-        android:layout_marginStart="@dimen/margin_layout_standard"
-        android:layout_marginEnd="@dimen/margin_layout_standard">
+        android:layout_height="wrap_content">
 
         <com.shohiebsense.idiomaticsynonym.view.custom.AntiSwipeViewPager
             android:id="@+id/cardViewPager"
@@ -47,22 +43,16 @@
                     android:id="@+id/textFetchedTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_layout_standard"
+                    android:layout_marginBottom="@dimen/margin_layout_standard"
+                    android:layout_marginStart="@dimen/margin_layout_standard"
+                    android:layout_marginEnd="@dimen/margin_layout_standard"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     style="@style/ContentText"
                     android:lineSpacingExtra="@dimen/margin_item_standard" />
-
-           <!--     <org.sufficientlysecure.htmltextview.HtmlTextView
-                    android:id="@+id/textFetchedTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    style="@style/ContentText" />-->
 
             </android.support.constraint.ConstraintLayout>
 

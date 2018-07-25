@@ -150,7 +150,6 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
     fun getIdiomTranslate(idiom: String){
 
         val observer = object : Observer<String> {
-            var combineStringMeaning = mutableListOf<String>()
             override fun onSubscribe(d: Disposable) {
                 //process startup
             }

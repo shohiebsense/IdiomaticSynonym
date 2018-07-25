@@ -75,7 +75,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     lateinit var underliningService: UnderliningServiceUsingContains
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
     lateinit var idiomMeaningItemAdapter: ItemAdapter<IdiomMeaningItem>
-    lateinit var indexedSentenceFastAdapter : FastAdapter<IndexedSentenceItem>
     lateinit var indexedSentenceItemAdapter : ItemAdapter<IndexedSentenceItem>
     lateinit var behaviour : BottomSheetBehavior<View>
     lateinit var snackbar : CustomSnackbar
@@ -178,6 +177,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
         onShowingBottomSheet()
+        bottomSheetLayout.setOnClickListener {
+            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        }
         if(KEY_STATE == 0){
             if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
                 underliningService.underLine(behaviour)
@@ -378,17 +380,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     override fun onClickedIdiomText(idiomText: String) {
-        AppUtil.makeErrorLog("is clicked right???")
-        if(idiomText.isBlank()){
-            return;
-        }
         var items = mutableListOf<IdiomMeaningItem>()
         if(idiomText.contains(",")){
-            val regex = ","
-            var idiomList = idiomText.split(regex).toMutableList()
-
+            var idiomList = idiomText.split(",").toMutableList()
             for(meanings in idiomList){
-                AppUtil.makeDebugLog("many choices : "+meanings)
                 var idiomMeaningItem = IdiomMeaningItem().withIdiomMeaning(meanings,idiomItemClickedListener)
                 items.add(idiomMeaningItem)
             }
@@ -400,11 +395,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         Completable.create {
             idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
             idiomMeaningItemAdapter.clear()
-            AppUtil.makeErrorLog("items sizee "+items.size)
             idiomMeaningItemAdapter.add(items)
             idiomRecyclerView.adapter = idiomMeaningFastAdapter
+            toggleBottomSheet()
         }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(AndroidSchedulers.mainThread()).subscribe()
-        toggleBottomSheet()
     }
 
 
@@ -415,7 +409,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         else{
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
         }
-        //isShowingIdiom = !isShowingIdiom
     }
 
     override fun onErrorClickedIdiomText() {
@@ -463,18 +456,16 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         }
     }
 
-    override fun onGetSyonyms(synonyms: MutableList<String>) {
+    override fun onGetSynonyms(synonyms: MutableList<String>) {
         synonyms.add(0,currentClickedWord)
         if(synonyms.isEmpty()){
             return;
         }
         var items = mutableListOf<IdiomMeaningItem>()
-
         for(synonym in synonyms){
             var synonymItem = IdiomMeaningItem().withIdiomMeaning(synonym,idiomItemClickedListener)
             items.add(synonymItem)
         }
-        // selectedIdiomList!!.put(index,idiomList.first())
         Completable.create {
             idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
             idiomMeaningItemAdapter.clear()

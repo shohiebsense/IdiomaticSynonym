@@ -147,7 +147,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
         kategloService.getSynonymStrings(word,this)
     }
 
-    override fun onGetSyonyms(syonyms: MutableList<String>) {
+    override fun onGetSynonyms(syonyms: MutableList<String>) {
         syonyms.add(0,currentSelectedWord)
         AppUtil.makeErrorLog("get synonymss "+syonyms.size)
         if(isFromEnglishFragment){

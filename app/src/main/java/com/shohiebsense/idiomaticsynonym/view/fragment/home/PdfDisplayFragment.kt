@@ -528,15 +528,12 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onEmitted(fetchedText: String, name: String) {
-        AppUtil.makeErrorLog("the name is "+name)
         toggleViews(PdfDisplayerService.STATUS_FETCHED)
         var intent = Intent(activity, UnderliningActivity::class.java)
+        val bookmarkEmitter = BookmarkDataEmitter(context!!)
+        val lastId = bookmarkEmitter.insertBookmarkEnglish(fileName, fetchedText,"")
         intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
         intent.putExtra(UnderliningActivity.INTENT_FILENAME, name)
-        val bookmarkEmitter = BookmarkDataEmitter(context!!)
-        AppUtil.makeErrorLog("fetched textt : \n"+fetchedText)
-        val lastId = bookmarkEmitter.insertBookmarkEnglish(fileName, fetchedText,"")
-        Log.e("SHOHIEBSENSE LAST ID",lastId.toString())
         intent.putExtra(UnderliningActivity.INTENT_ID, lastId)
         startActivity(intent)
     }

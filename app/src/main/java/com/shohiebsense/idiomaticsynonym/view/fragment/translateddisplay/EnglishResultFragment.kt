@@ -258,28 +258,19 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onDisplaySynonyms(event : EnglishFragmentSynonymEvent){
+    fun onGetSynonyms(event : EnglishFragmentSynonymEvent){
         if(event.synonyms.isEmpty()){
             return;
         }
         var items = mutableListOf<IdiomMeaningItem>()
-
-        AppUtil.makeErrorLog("tapi nyampe sini kannnn "+event.synonyms)
         for(synonym in event.synonyms){
             var synonymItem = IdiomMeaningItem().withIdiomMeaning(synonym,idiomItemClickedListener)
             items.add(synonymItem)
         }
-        // selectedIdiomList!!.put(index,idiomList.first())
         idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
         idiomMeaningItemAdapter.clear()
         idiomMeaningItemAdapter.add(items)
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
-        /*if(mPopupWindow != null){
-            TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
-            mPopupWindow?.dismiss()
-        }*/
-        //idiomRecyclerView.visibility = View.VISIBLE
-        AppUtil.makeErrorLog("is visibllee "+(idiomRecyclerView.visibility == View.VISIBLE))
         toggleBottomSheet()
     }
 
@@ -334,7 +325,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         bottomSheetLayout.setOnClickListener {
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
         }
-
         englishTextsTextView.movementMethod = LinkMovementMethod()
         val toggle = ActionBarDrawerToggle(
                 activity, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -396,7 +386,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         isFirstTimeClickedIdiom = true
         replaceService.originIdiom = idiomEvent.idiom
         showPopUpWindow()
-        AppUtil.makeErrorLog("heyy hdoo")
         if(!(activity as TranslatedDisplayActivity).isIdiomSynonymMode){
             (activity as TranslatedDisplayActivity).getTranslation(idiomEvent.idiom)
         }
@@ -461,9 +450,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
     fun showPopUpWindow(){
-         var inflater = activity?.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-                // Inflate the custom layout/view
+        var inflater = activity?.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         var customView = inflater.inflate(R.layout.view_popup_translating,null)
         if(mPopupWindow != null){
             TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
@@ -473,11 +460,9 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 customView,
        350,150
         );
-
         if(Build.VERSION.SDK_INT>=21){
             mPopupWindow?.setElevation(5.0f);
         }
-
         customView.button_close.setOnClickListener{
             TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
             mPopupWindow?.dismiss();

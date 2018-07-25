@@ -222,7 +222,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         translatedTextView.setText(decoratedSpan)
     }
 
-    override fun onGetSyonyms(syonyms: MutableList<String>) {
+    override fun onGetSynonyms(syonyms: MutableList<String>) {
         var items = mutableListOf<KategloItem>()
 
         AppUtil.makeDebugLog("komplittt ")

@@ -67,7 +67,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
 
     fun insertIntoBookmarkEnglish(fileName: String, wholeSentence: String, indonesian : String) : Int{
         var mCompositeDisposable = CompositeDisposable()
-        var lastId = -1
+        var lastId = selectLastInsertedId() + 1
         mCompositeDisposable.add(Single.fromCallable {
             db.insert(Bookmark.TABLE_BOOKMARK_ENGLISH,
                     Bookmark.COLUMN_PDFFILENAME to fileName,
@@ -78,9 +78,6 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                     Bookmark.COLUMN_UPLOAD_ID to ""
             )
         }.subscribeOn(Schedulers.io()).subscribe())
-        mCompositeDisposable.add(Single.fromCallable {
-            lastId = selectLastInsertedId()
-        }.subscribe())
         return lastId
     }
 
