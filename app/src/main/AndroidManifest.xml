@@ -47,7 +47,7 @@
         <activity android:name=".EditorActivity" />
         <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
         <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
-        <activity android:name=".RTEditorActivity" />
+        <activity android:name=".ContentEditorActivity" />
         <activity android:name=".SettingsActivity" />
         <activity
             android:name=".LanguageSettingActivity"

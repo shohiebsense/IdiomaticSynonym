@@ -19,7 +19,6 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
-import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
@@ -50,11 +49,11 @@ import org.greenrobot.eventbus.ThreadMode
  * Mandatory empty constructor for the fragment manager to instantiate the
  * fragment (e.g. upon screen orientation changes).
  */
-class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCallback, BookmarkDataEmitter.SingleBookmarkCallback {
+class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCallback {
 
 
     // TODO: Customize parameters
-    lateinit var idioms: List<String>
+    lateinit var idioms: ArrayList<String>
     lateinit var layoutManager : ScaleLayoutManager
     lateinit var cardLayoutManager : RecyclerView.LayoutManager
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
@@ -138,6 +137,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        idioms = ArrayList()
         lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
 
     }
@@ -171,44 +171,22 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-        //CenterSnapHelper().attachToRecyclerView(idiomsRecyclerView)
-        Observable.create<List<String>> {
-            it.onNext(AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms))
-        }.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
-            if((activity as TranslatedDisplayActivity).bookmark.idioms.isEmpty()){
+        Observable.just(AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms))
+        .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
+            if(it.isEmpty()){
                 emptyTextView.text = "Empty"
             }
-            idioms = it
+            idioms.clear()
+            idioms.addAll(it)
             val adapter = IdiomAdapter(idioms,mListener)
             val cardAdapter = IdiomCardAdapter(idioms,mListener)
             idiomsRecyclerView.layoutManager = layoutManager
             idiomsRecyclerView.adapter = adapter
-            /* idiomsCardRecyclerView.layoutManager = SpannedGridLayoutManager(
-                     orientation = SpannedGridLayoutManager.Orientation.VERTICAL,
-                     spans = 3)*/
             idiomsCardRecyclerView.layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
             idiomsCardRecyclerView.adapter = cardAdapter
         }
-
     }
 
-    override fun onFetched(bookmark: BookmarkedEnglish) {
-        if(bookmark.idioms.isEmpty()){
-            emptyTextView.text = "Empty"
-        }
-        idioms = AppUtil.getListOfIdioms(bookmark.idioms)
-        //CenterSnapHelper().attachToRecyclerView(idiomsRecyclerView)
-        val adapter = IdiomAdapter(idioms,mListener)
-        val cardAdapter = IdiomCardAdapter(idioms,mListener)
-        idiomsRecyclerView.layoutManager = layoutManager
-        idiomsRecyclerView.adapter = adapter
-        /* idiomsCardRecyclerView.layoutManager = SpannedGridLayoutManager(
-                 orientation = SpannedGridLayoutManager.Orientation.VERTICAL,
-                 spans = 3)*/
-        idiomsCardRecyclerView.layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
-        idiomsCardRecyclerView.adapter = cardAdapter
-        AppUtil.makeErrorLog("idioms sizee "+idioms.size)
-    }
 
 
     override fun onFetched(indexedSentences: ArrayList<IndexedSentence>) {
@@ -305,9 +283,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
         }.start()
     }
 
-    override fun onFailedFetched() {
 
-    }
 
     /**
      * This interface must be implemented by activities that contain this

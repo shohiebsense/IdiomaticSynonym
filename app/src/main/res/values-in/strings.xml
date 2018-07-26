@@ -83,5 +83,6 @@
     <string name="remind_me_later">Ingatkan nanti</string>
     <string name="success_upload">upload sukses dengan nama file : %s</string>
     <string name="founded_sentences">Kalimat yang Ditemukan</string>
+    <string name="new_file">Nama File Baru</string>
 
 </resources>

@@ -180,7 +180,7 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="idiom_guidance">You can click the highlited words/phrases and click the meaning to show the synonym if there\'s any</string>
     <string name="success_upload">Upload success with filename : %s</string>
     <string name="label_name">Name</string>
-    <string name="new_file">New File</string>
+    <string name="new_file">New File Name</string>
     <string name="label_save">Save</string>
     <string name="decline">Decline</string>
     <string name="drop_here">Drop_here</string>

@@ -453,16 +453,12 @@ class AppUtil {
         }*/
 
 
-        fun getListOfIdioms(idioms : String) : List<String>{
-
-            var result: List<String> = idioms.split(",").mapIndexed { index, it ->
-
-                it.trim()
-
+        fun getListOfIdioms(idioms : String) : ArrayList<String>{
+            var trimmedResult = arrayListOf<String>()
+            idioms.split(",").mapIndexed { index, it ->
+                trimmedResult.add(it.trim())
             }
-            //result.forEach { println(it) }
-
-            return result
+            return trimmedResult
         }
 
         fun getListOfIndexedSentences(indexedSentences : String) : List<String>{

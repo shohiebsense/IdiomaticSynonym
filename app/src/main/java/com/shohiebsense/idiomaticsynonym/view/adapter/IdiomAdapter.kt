@@ -23,7 +23,6 @@ class IdiomAdapter(val idioms: List<String>, val mListener: IdiomsSummaryFragmen
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val idiom = idioms[position]
-        if(idiom.isBlank()) return
         holder.itemView.itemTextView.text = idiom
         holder.itemView.setOnClickListener {
             mListener.onItemClicked(idiom)

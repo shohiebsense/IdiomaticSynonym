@@ -59,10 +59,10 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
 
     fun generateClickableSpan(texts: String, idioms: String, behaviour: BottomSheetBehavior<View>)  {
         AppUtil.makeErrorLog("started to do")
-        var idioms =  AppUtil.getListOfIdioms(idioms)
+        var idiomsList =  AppUtil.getListOfIdioms(idioms)
         val singleCombinedIdiom = HashSet<String>()
         val links = arrayListOf<Link>()
-        for(foundedIdiom in idioms){
+        for(foundedIdiom in idiomsList){
             if(texts.contains(foundedIdiom) && singleCombinedIdiom.add(foundedIdiom)) {
                 var index = texts.indexOf(foundedIdiom,0,true)
                 var prevIndex : Char
@@ -83,16 +83,11 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
                                 wordClickableCallback.onClickedIdiomText(foundedIdiom)
                                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
                                 currentIdiom = foundedIdiom
-                                AppUtil.makeErrorLog("at least until here")
                                 val emitter = TranslatedAndUntranslatedDataEmitter(context,singleEntityCallback)
                                 emitter.getSingleTranslatedIdiom(foundedIdiom)
-
                             }
-
                     links.add(link)
                 }
-
-
             }
         }
 

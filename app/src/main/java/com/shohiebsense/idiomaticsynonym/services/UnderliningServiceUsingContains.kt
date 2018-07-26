@@ -346,27 +346,28 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.newThread())
                 .map(object : Function<ArrayList<CombinedIdiom>, Unit>{
                     override fun apply(combinedIdioms: ArrayList<CombinedIdiom>) {
-                        val singleCombinedIdiom = HashSet<String>()
                         val timer = StopWatch()
                         timer.start()
                         AppUtil.makeDebugLog("tokenize finished")
                         val idioms = StringBuilder()
                         for(i in combinedIdioms.indices){
                             if(extractedPdfTexts.contains(combinedIdioms[i].idiom)) {
-                                //if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
-                                AppUtil.makeErrorLog("dapatt, not done yet "+combinedIdioms[i].idiom)
-
                                 var index = extractedPdfTexts.toString().indexOf(combinedIdioms[i].idiom,0,true)
-                                val prevIndex = extractedPdfTexts[index-1].toLowerCase()
-                                val afterLastIndex = extractedPdfTexts[index+combinedIdioms[i].idiom.length].toLowerCase()
-                                var bool = prevIndex.isLetterOrDigit()
-                                var boolFinal = afterLastIndex.isLetter()
-                                AppUtil.makeErrorLog("$bool  owww $boolFinal")
-
-                                if(index >= 0 && (!bool && !boolFinal)){
-                                    AppUtil.makeErrorLog("dapatt "+combinedIdioms[i].idiom)
-                                    idioms.append(combinedIdioms[i].idiom+", ")
-                                }
+                                Observable.just(isNextCharacterValid(i,index,combinedIdioms)).subscribeBy (
+                                    onNext = {nextText ->
+                                        if(index >= 0 && (nextText)){
+                                            AppUtil.makeErrorLog("dapatt "+combinedIdioms[i].idiom)
+                                            idioms.append(combinedIdioms[i].idiom+", ")
+                                        }
+                                    },
+                                    onError =  {
+                                        if(index >= 0){
+                                            AppUtil.makeErrorLog("dapatt by onError"+combinedIdioms[i].idiom)
+                                            idioms.append(combinedIdioms[i].idiom+", ")
+                                        }
+                                    },
+                                    onComplete = { }
+                                )
                             }
                         }
                         AppUtil.makeErrorLog("overall idioms "+idioms.toString())
@@ -390,6 +391,15 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                     }
 
                 })
+    }
+
+    fun isNextCharacterValid(i : Int, index : Int, combinedIdioms : ArrayList<CombinedIdiom>) : Boolean{
+        val prevIndex = extractedPdfTexts[index-1].toLowerCase()
+        var bool = prevIndex.isLetterOrDigit()
+        val afterLastIndex = extractedPdfTexts[index+combinedIdioms[i].idiom.length].toLowerCase()
+        var boolFinal = afterLastIndex.isLetter()
+        var nextText = (afterLastIndex.equals(".") || afterLastIndex.equals(",") || afterLastIndex.equals("?") || afterLastIndex.equals("!")) || !boolFinal
+        return !bool && nextText
     }
 
     //Untranslated

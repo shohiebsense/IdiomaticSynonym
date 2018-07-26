@@ -16,7 +16,6 @@ import org.jetbrains.anko.contentView
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.widget.ToggleButton
@@ -76,7 +75,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     var lastId = 0
     var isTranslationEmpty = false
     lateinit var uploadService : UploadService
-    var generateFileOption : MenuItem? = null
+    var generateFileOptionItem : MenuItem? = null
     var toggleEachLineItem : MenuItem? = null
     var toggleIdiomCardItem : MenuItem? = null
     var toggleTranslateItem : MenuItem? = null
@@ -124,6 +123,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
             fileName = intent.getStringExtra(INTENT_FILENAME)
             lastId = intent.getIntExtra(INTENT_LAST_ID,0)
             isTranslationEmpty = intent.getBooleanExtra(INTENT_IS_TRANSLATION_EMPTY,false)
+            AppUtil.makeErrorLog("istranslation empty ?? "+isTranslationEmpty)
             isFromBookmarkItem = intent.getBooleanExtra(INTENT_IS_FROM_BOOKMARK_ITEM, false)
             invalidateOptionsMenu()
             toolbar.title = AppUtil.getOnlyFileName(fileName)
@@ -223,16 +223,11 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        generateFileOption = menu?.findItem(R.id.generateFileOption)
+        generateFileOptionItem = menu?.findItem(R.id.generateFileOption)
         toggleEachLineItem = menu?.findItem(R.id.toggleEachLineOption)
         toggleIdiomCardItem = menu?.findItem(R.id.toggleIdiomCardOption)
         toggleTranslateItem = menu?.findItem(R.id.toggleTranslateOption)
-        if(!isTranslationEmpty){
-            generateFileOption?.setVisible(true)
-        }
-        else{
-            generateFileOption?.setVisible(false)
-        }
+        generateFileOptionItem?.isVisible = !isTranslationEmpty
         toggleEachLineItem?.isVisible = isToggleVisible
         toggleIdiomCardItem?.isVisible = isToggleCardVisible
         toggleTranslateItem?.isVisible = !isToggleVisible && !isToggleCardVisible
@@ -271,15 +266,13 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.generateFileOption -> {
-                /*val bookmarkDataEmitter = BookmarkDataEmitter(this!!)
-                bookmarkDataEmitter.getEnglishBookmark(lastId,this)*/
                 val intent = Intent(this,CreateFileActivity::class.java)
                 intent.putExtra(CreateFileActivity.INTENT_ID,lastId)
                 startActivity(intent)
             }
             R.id.updateIndonesianOption ->{
-                val intent = Intent(this,RTEditorActivity::class.java)
-                intent.putExtra(RTEditorActivity.INTENT_ID,lastId)
+                val intent = Intent(this,ContentEditorActivity::class.java)
+                intent.putExtra(ContentEditorActivity.INTENT_ID,lastId)
                 startActivityForResult(intent, UPDATE_RESULT)
             }
             R.id.toggleEachLineOption ->{
@@ -330,7 +323,6 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
         if(requestCode == DOCS_VIEW_RESULT){
             if (resultCode == Activity.RESULT_OK) {
                 // Snacky.builder().setActivity(this).setText(getString(R.string.success_update)).success().show()
-                isTranslationEmpty = false
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.failed_docs))

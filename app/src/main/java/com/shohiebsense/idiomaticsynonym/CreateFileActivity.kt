@@ -35,10 +35,10 @@ class CreateFileActivity : AppCompatActivity(), BookmarkDataEmitter.SingleBookma
 
     private var mTreeSteps = 0
     var bookmarkEmitter : BookmarkDataEmitter? = null
-    lateinit var mBroadcastReceiver: BroadcastReceiver
     lateinit var fileName : String
     lateinit var mFilesAdapter : FilesAdapter
     lateinit var createFileService: CreateFileService
+    lateinit var bookmark : BookmarkedEnglish
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +64,7 @@ class CreateFileActivity : AppCompatActivity(), BookmarkDataEmitter.SingleBookma
 
 
     override fun onFetched(bookmark: BookmarkedEnglish) {
+        this.bookmark = bookmark
         val layoutManager = LinearLayoutManager(this)
         recycler_file.setLayoutManager(layoutManager)
         mFilesAdapter = FilesAdapter(applicationContext)
@@ -151,6 +152,6 @@ class CreateFileActivity : AppCompatActivity(), BookmarkDataEmitter.SingleBookma
     }
 
     override fun onNewFile(name: String) {
-        createFileService.create(getCurrentPath(), name,"kebusukan hakiki")
+        createFileService.create(getCurrentPath(), name,bookmark.indonesian!!)
     }
 }

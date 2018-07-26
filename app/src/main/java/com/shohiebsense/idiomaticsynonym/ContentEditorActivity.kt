@@ -33,13 +33,12 @@ import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.utils.FileHelper
-import de.mateware.snacky.Snacky
 import kotlinx.android.synthetic.main.activity_editor.*
 import kotlinx.android.synthetic.main.view_editor_content.*
 
 import java.io.File
 
-class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookmarkCallback, BookmarkDataEmitter.UpdateBookmarkCallback {
+class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookmarkCallback, BookmarkDataEmitter.UpdateBookmarkCallback {
 
     private var mRTManager: RTManager? = null
 
@@ -92,9 +91,9 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
 
 
         // register message editor
-        mRTManager!!.registerEditor(rtEditText_1!!, true)
+        mRTManager!!.registerEditor(edit_content!!, true)
         if (message != null) {
-            rtEditText_1!!.setRichTextEditing(true, message)
+            edit_content!!.setRichTextEditing(true, message)
         }
 
         bookmarkDataEmitter.getEnglishBookmark(id,this)
@@ -104,7 +103,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
 
 
 
-        rtEditText_1!!.requestFocus()
+        edit_content!!.requestFocus()
     }
 
     public override fun onDestroy() {
@@ -141,7 +140,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
 
                 // write message
                 targetFile = File(targetFile.absolutePath.replace("subject_", "message_"))
-                FileHelper.save(this, targetFile, rtEditText_1!!.getText(RTFormat.HTML))
+                FileHelper.save(this, targetFile, edit_content!!.getText(RTFormat.HTML))
 
                 // write signature
                 targetFile = File(targetFile.absolutePath.replace("message_", "signature_"))
@@ -167,7 +166,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
                     // load message
                     filePath = filePath.replace("subject_", "message_")
                     s = FileHelper.load(this, filePath)
-                    rtEditText_1!!.setRichTextEditing(true, s)
+                    edit_content!!.setRichTextEditing(true, s)
 
                     // load signature
                     filePath = filePath.replace("message_", "signature_")
@@ -182,7 +181,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
 
     override fun onFetched(bookmark: BookmarkedEnglish) {
 
-        rtEditText_1!!.setRichTextEditing(true, bookmark.indonesian.toString())
+        edit_content!!.setRichTextEditing(true, bookmark.indonesian.toString())
 
     }
 
@@ -199,7 +198,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.updateIndonesianOption -> {
-                bookmarkDataEmitter.updateTranslation(rtEditText_1.getText(RTFormat.SPANNED),id.toString(),this)
+                bookmarkDataEmitter.updateTranslation(edit_content.getText(RTFormat.SPANNED),id.toString(),this)
             }
 
 
@@ -225,7 +224,7 @@ class RTEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.SingleBookm
     }
 
     private fun startAndFinish(clazz: Class<out Activity>) {
-        val message = rtEditText_1.getText(RTFormat.HTML)
+        val message = edit_content.getText(RTFormat.HTML)
         val intent = Intent(this, clazz)
                 .putExtra(RTEditorBaseActivity.PARAM_DARK_THEME, mUseDarkTheme)
                 .putExtra(RTEditorBaseActivity.PARAM_SPLIT_TOOLBAR, mSplitToolbar)
