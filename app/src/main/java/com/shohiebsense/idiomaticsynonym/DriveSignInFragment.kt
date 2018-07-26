@@ -7,10 +7,17 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+/*import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInResult
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.drive.*
+import com.google.android.gms.tasks.Task*/
 import org.jetbrains.anko.act
 import android.content.Intent
 import android.graphics.Bitmap
@@ -19,13 +26,6 @@ import android.os.AsyncTask
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInResult
-import com.google.android.gms.common.SignInButton
-import com.google.android.gms.common.api.ResultCallback
-import com.google.android.gms.common.api.Status
-import com.google.android.gms.drive.*
-import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.fragment_gplus.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -35,12 +35,12 @@ import java.io.IOException
  * Created by Shohiebsense on 31/05/2018
  */
 
-class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListener {
+class DriveSignInFragment : Fragment() /*GoogleApiClient.OnConnectionFailedListener*/ {
 
     private val TAG = "GPlusFragent"
     private val RC_SIGN_IN = 0
-    private var mGoogleApiClient: GoogleApiClient? = null
-    private var signInButton: SignInButton? = null
+   /* private var mGoogleApiClient: GoogleApiClient? = null
+    private var signInButton: SignInButton? = null*/
     private var signOutButton: Button? = null
     private val disconnectButton: Button? = null
     private val signOutView: LinearLayout? = null
@@ -49,8 +49,8 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
     private var imgProfilePic: ImageView? = null
 
 
-    private var mDriveClient: DriveClient? = null
-    private var mDriveResourceClient: DriveResourceClient? = null
+    //private var mDriveClient: DriveClient? = null
+    //private var mDriveResourceClient: DriveResourceClient? = null
     private var mBitmapToSave: Bitmap? = null
 
     private val REQUEST_CODE_CAPTURE_IMAGE = 1
@@ -74,7 +74,7 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
         super.onCreate(savedInstanceState)
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        /*val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(Drive.SCOPE_FILE)
                 .build()
 
@@ -84,10 +84,10 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
         // Build a GoogleApiClient with access to the Google Sign-In API and the
         // options specified by gso.
         mGoogleApiClient = GoogleApiClient.Builder(activity!!)
-                .enableAutoManage(activity!! /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(activity!! *//* FragmentActivity *//*, this *//* OnConnectionFailedListener *//*)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build()
-
+*/
 
     }
 
@@ -95,8 +95,8 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
     override fun onStart() {
         super.onStart()
 
-        val opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient)
-        if (opr.isDone) {
+       // val opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient)
+        /*if (opr.isDone) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
             // and the GoogleSignInResult will be available instantly.
             Log.d(TAG, "Got cached sign-in")
@@ -111,14 +111,14 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
                 hideProgressDialog()
                 handleSignInResult(googleSignInResult)
             }
-        }
+        }*/
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, parent: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gplus, parent, false)
 
-        signInButton = v.findViewById<View>(R.id.sign_in_button) as SignInButton
+       /* signInButton = v.findViewById<View>(R.id.sign_in_button) as SignInButton
         signOutButton = v.findViewById<View>(R.id.sign_out_button) as Button
         imgProfilePic = v.findViewById<View>(R.id.img_profile_pic) as ImageView
 
@@ -130,7 +130,7 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
 
 
         signOutButton!!.setOnClickListener { Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback { updateUI(false) } }
-
+*/
         return v
     }
 
@@ -140,7 +140,7 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
 
         Log.e("shohiebsenseee ","equest codee "+requestCode)
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        /*if (requestCode == RC_SIGN_IN) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             handleSignInResult(result)
             mDriveClient = Drive.getDriveClient(activity!!, GoogleSignIn.getLastSignedInAccount(activity!!)!!)
@@ -150,14 +150,14 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
             intent.putExtra(DriveCreateFileActivity.INTENT_ID,bookmarkId)
             activity?.startActivity(intent)
             activity?.finish()
-        }
+        }*/
 
     }
 
 
 
-    private fun handleSignInResult(result: GoogleSignInResult) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess + "  " + result.signInAccount + result.status)
+    private fun handleSignInResult(/*result: GoogleSignInResult*/) {
+        /*Log.d(TAG, "handleSignInResult:" + result.isSuccess + "  " + result.signInAccount + result.status)
         if (result.isSuccess) {
             // Signed in successfully, show authenticated UI.
             val acct = result.signInAccount
@@ -170,27 +170,27 @@ class DriveSignInFragment : Fragment(), GoogleApiClient.OnConnectionFailedListen
         } else {
             // Signed out, show unauthenticated UI.
             updateUI(false)
-        }
+        }*/
     }
 
 
     private fun updateUI(signedIn: Boolean) {
-        if (signedIn) {
+       /* if (signedIn) {
             signInButton!!.visibility = View.GONE
             signOutButton!!.visibility = View.VISIBLE
         } else {
             mStatusTextView!!.setText(R.string.signed_out)
             signInButton!!.visibility = View.VISIBLE
             signOutButton!!.visibility = View.GONE
-        }
+        }*/
     }
 
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+    /*override fun onConnectionFailed(connectionResult: ConnectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:$connectionResult")
     }
-
+*/
     private fun showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = ProgressBar(activity)

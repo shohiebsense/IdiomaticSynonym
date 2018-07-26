@@ -18,7 +18,7 @@ import android.content.IntentSender;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+/*import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -33,7 +33,7 @@ import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.SearchableField;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.TaskCompletionSource;*/
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,17 +57,17 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
     /**
      * Handles high-level drive functions like sync
      */
-    private DriveClient mDriveClient;
+    //private DriveClient mDriveClient;
 
     /**
      * Handle access to Drive resources/files.
      */
-    private DriveResourceClient mDriveResourceClient;
+    //private DriveResourceClient mDriveResourceClient;
 
     /**
      * Tracks completion of the drive picker
      */
-    private TaskCompletionSource<DriveId> mOpenItemTaskSource;
+    //private TaskCompletionSource<DriveId> mOpenItemTaskSource;
 
     @Override
     protected void onStart() {
@@ -92,23 +92,23 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
                     return;
                 }
 
-                Task<GoogleSignInAccount> getAccountTask =
+               /* Task<GoogleSignInAccount> getAccountTask =
                     GoogleSignIn.getSignedInAccountFromIntent(data);
                 if (getAccountTask.isSuccessful()) {
                     initializeDriveClient(getAccountTask.getResult());
                 } else {
                     Log.e(TAG, "Sign-in failed.");
                     finish();
-                }
+                }*/
                 break;
             case REQUEST_CODE_OPEN_ITEM:
-                if (resultCode == RESULT_OK) {
+                /*if (resultCode == RESULT_OK) {
                     DriveId driveId = data.getParcelableExtra(
                             OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID);
                     mOpenItemTaskSource.setResult(driveId);
                 } else {
                     mOpenItemTaskSource.setException(new RuntimeException("Unable to open file"));
-                }
+                }*/
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -118,7 +118,7 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
      * Starts the sign-in process and initializes the Drive client.
      */
     protected void signIn() {
-        Set<Scope> requiredScopes = new HashSet<>(2);
+       /* Set<Scope> requiredScopes = new HashSet<>(2);
         requiredScopes.add(Drive.SCOPE_FILE);
         requiredScopes.add(Drive.SCOPE_APPFOLDER);
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -132,17 +132,17 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
                       .build();
             GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, signInOptions);
             startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN);
-        }
+        }*/
     }
 
     /**
      * Continues the sign-in process, initializing the Drive clients with the current
      * user's account.
      */
-    private void initializeDriveClient(GoogleSignInAccount signInAccount) {
-        mDriveClient = Drive.getDriveClient(getApplicationContext(), signInAccount);
+    private void initializeDriveClient(/*GoogleSignInAccount signInAccount*/) {
+       /* mDriveClient = Drive.getDriveClient(getApplicationContext(), signInAccount);
         mDriveResourceClient = Drive.getDriveResourceClient(getApplicationContext(), signInAccount);
-        onDriveClientReady();
+        onDriveClientReady();*/
     }
 
     /**
@@ -150,21 +150,21 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
      *
      * @return Task that resolves with the selected item's ID.
      */
-    protected Task<DriveId> pickTextFile() {
-        OpenFileActivityOptions openOptions =
+   /* protected Task<DriveId> pickTextFile() {
+       *//* OpenFileActivityOptions openOptions =
                 new OpenFileActivityOptions.Builder()
                         .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                         .setActivityTitle(getString(R.string.select_file))
-                        .build();
+                        .build();*//*
         return pickItem(openOptions);
-    }
+    }*/
 
     /**
      * Prompts the user to select a folder using OpenFileActivity.
      *
      * @return Task that resolves with the selected item's ID.
      */
-    protected Task<DriveId> pickFolder() {
+    /*protected Task<DriveId> pickFolder() {
         OpenFileActivityOptions openOptions =
                 new OpenFileActivityOptions.Builder()
                         .setSelectionFilter(
@@ -172,7 +172,7 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
                         .setActivityTitle(getString(R.string.select_folder))
                         .build();
         return pickItem(openOptions);
-    }
+    }*/
 
     /**
      * Prompts the user to select a folder using OpenFileActivity.
@@ -180,7 +180,7 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
      * @param openOptions Filter that should be applied to the selection
      * @return Task that resolves with the selected item's ID.
      */
-    private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
+ /*   private Task<DriveId> pickItem(OpenFileActivityOptions openOptions) {
         mOpenItemTaskSource = new TaskCompletionSource<>();
         getDriveClient()
                 .newOpenFileActivityIntentSender(openOptions)
@@ -190,7 +190,7 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
                     return null;
                 });
         return mOpenItemTaskSource.getTask();
-    }
+    }*/
 
     /**
      * Shows a toast message.
@@ -204,11 +204,11 @@ public abstract class BaseDemoActivity extends AppCompatActivity {
      */
     protected abstract void onDriveClientReady();
 
-    protected DriveClient getDriveClient() {
+  /*  protected DriveClient getDriveClient() {
         return mDriveClient;
     }
 
     protected DriveResourceClient getDriveResourceClient() {
         return mDriveResourceClient;
-    }
+    }*/
 }

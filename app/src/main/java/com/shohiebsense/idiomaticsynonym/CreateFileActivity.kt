@@ -3,7 +3,6 @@ package com.shohiebsense.idiomaticsynonym
 import android.content.BroadcastReceiver
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.google.android.gms.drive.events.ListenerToken
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.CreateFileService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
@@ -30,7 +29,6 @@ class CreateFileActivity : AppCompatActivity(), BookmarkDataEmitter.SingleBookma
 
     private val TAG = "CreateFileActivity"
     var bookmarkId = 0
-    private var mChangeListenerToken: ListenerToken? = null
     companion object {
         val INTENT_ID = "id"
     }

@@ -1,25 +1,21 @@
 package com.shohiebsense.idiomaticsynonym
 
 import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
-import com.google.android.gms.drive.DriveFile
+/*import com.google.android.gms.drive.DriveFile
 import com.google.android.gms.drive.MetadataChangeSet
 import com.google.android.gms.tasks.Tasks
-import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
-import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
-import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import java.io.OutputStreamWriter
+
 import com.google.android.gms.drive.Drive
 import com.google.android.gms.drive.events.ChangeEvent
 import com.google.android.gms.drive.events.OnChangeListener
 import com.google.android.gms.drive.events.ListenerToken
-import com.google.android.gms.tasks.OnSuccessListener
-import com.shohiebsense.idiomaticsynonym.model.event.MyDriveEventService
+import com.google.android.gms.tasks.OnSuccessListener*/
+import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
+import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
+import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import kotlinx.android.synthetic.main.activity_splash.*
 
 
@@ -28,7 +24,7 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
 
     private val TAG = "CreateFileActivity"
     var bookmarkId = 0
-    private var mChangeListenerToken: ListenerToken? = null
+    //private var mChangeListenerToken: ListenerToken? = null
     companion object {
         val INTENT_ID = "id"
     }
@@ -40,20 +36,18 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
         super.onCreate(savedInstanceState)
 
         bookmarkId = intent.getIntExtra(INTENT_ID,0)
-        mBroadcastReceiver = object : BroadcastReceiver() {
+       /* mBroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val event = intent.getParcelableExtra<ChangeEvent>("event")
                 AppUtil.makeErrorLog("got an eventt "+event.driveId.resourceId)
             }
-        }
+        }*/
         setContentView(R.layout.activity_splash)
         loadingDescTextView.setText("uploading ....")
     }
 
     override fun onStart() {
         super.onStart()
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                mBroadcastReceiver, IntentFilter(MyDriveEventService.CHANGE_EVENT))
     }
 
     override fun onStop() {
@@ -71,7 +65,7 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
 
     private fun createFile(id: Int, onlyFileName: String, indonesian: CharSequence?) {
         // [START create_file]
-        val rootFolderTask = getDriveResourceClient().getRootFolder()
+       /* val rootFolderTask = getDriveResourceClient().getRootFolder()
         val createContentsTask = getDriveResourceClient().createContents()
         Tasks.whenAll(rootFolderTask, createContentsTask)
                 .continueWithTask<DriveFile> { task ->
@@ -97,11 +91,11 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
                     AppUtil.makeErrorLog("hoiii "+e.toString())
                     showMessage(getString(R.string.file_create_error))
                     //()
-                }
+                }*/
         // [END create_file]
     }
 
-    private val changeListener = object : OnChangeListener {
+   /* private val changeListener = object : OnChangeListener {
         override fun onChange(event: ChangeEvent) {
 
             AppUtil.makeErrorLog("got a resource idd "+event.driveId.resourceId)
@@ -114,7 +108,7 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
             finish()
         }
     }
-
+*/
 
     override fun onFetched(bookmark: BookmarkedEnglish) {
         createFile(bookmark.id,AppUtil.getOnlyFileName(bookmark.fileName),bookmark.indonesian)
@@ -123,9 +117,9 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
     override fun onFailedFetched() {
     }
 
-    override fun onDestroy() {
+  /*  override fun onDestroy() {
         getDriveResourceClient().removeChangeListener(mChangeListenerToken!!);
         super.onDestroy()
 
-    }
+    }*/
 }

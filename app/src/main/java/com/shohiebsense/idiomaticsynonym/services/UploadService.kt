@@ -3,6 +3,7 @@ package com.shohiebsense.idiomaticsynonym.services
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
+/*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -10,13 +11,15 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.gms.drive.*
 import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.android.gms.tasks.Tasks
+import com.google.android.gms.drive.ExecutionOptions
+*/
+
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import de.mateware.snacky.Snacky
 import java.io.OutputStreamWriter
 import java.util.HashSet
-import com.google.android.gms.drive.ExecutionOptions
 
 
 
@@ -40,24 +43,24 @@ class UploadService(val activity: Activity) {
     /**
      * Handles high-level drive functions like sync
      */
-    private var mDriveClient: DriveClient? = null
+    //private var mDriveClient: DriveClient? = null
 
     /**
      * Handle access to Drive resources/files.
      */
-    private var mDriveResourceClient: DriveResourceClient? = null
+   // private var mDriveResourceClient: DriveResourceClient? = null
 
     /**
      * Tracks completion of the drive picker
      */
-    private var mOpenItemTaskSource: TaskCompletionSource<DriveId>? = null
+    //private var mOpenItemTaskSource: TaskCompletionSource<DriveId>? = null
 
     init {
         signIn()
     }
 
     protected fun signIn() {
-        val requiredScopes = HashSet<Scope>(2)
+       /* val requiredScopes = HashSet<Scope>(2)
         requiredScopes.add(Drive.SCOPE_FILE)
         requiredScopes.add(Drive.SCOPE_APPFOLDER)
         val signInAccount = GoogleSignIn.getLastSignedInAccount(activity)
@@ -70,13 +73,13 @@ class UploadService(val activity: Activity) {
                     .build()
             val googleSignInClient = GoogleSignIn.getClient(activity, signInOptions)
             activity.startActivityForResult(googleSignInClient.signInIntent, REQUEST_CODE_SIGN_IN)
-        }
+        }*/
     }
 
-    private fun initializeDriveClient(signInAccount: GoogleSignInAccount) {
-        mDriveClient = Drive.getDriveClient(activity.applicationContext, signInAccount)
+    private fun initializeDriveClient(/*signInAccount: GoogleSignInAccount*/) {
+       /* mDriveClient = Drive.getDriveClient(activity.applicationContext, signInAccount)
         mDriveResourceClient = Drive.getDriveResourceClient(activity.applicationContext, signInAccount)
-        onDriveClientReady()
+        onDriveClientReady()*/
     }
 
   fun onDriveClientReady(){
@@ -85,7 +88,7 @@ class UploadService(val activity: Activity) {
 
     private fun createFile(id: Int, name: String, content : String) {
         // [START create_file]
-        val rootFolderTask = mDriveResourceClient?.getRootFolder()
+      /*  val rootFolderTask = mDriveResourceClient?.getRootFolder()
         val createContentsTask = mDriveResourceClient?.createContents()
         Tasks.whenAll(rootFolderTask, createContentsTask)
                 .continueWithTask<DriveFile> { task ->
@@ -118,7 +121,7 @@ class UploadService(val activity: Activity) {
                     showMessage(activity.getString(R.string.file_create_error))
                     //finish()
                 })
-        // [END create_file]
+        // [END create_file]*/
     }
 
 

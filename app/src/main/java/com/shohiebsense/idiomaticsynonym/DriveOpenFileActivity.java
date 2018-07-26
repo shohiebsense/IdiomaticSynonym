@@ -25,10 +25,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.drive.DriveContents;
+/*import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.events.OpenFileCallback;
+import com.google.android.gms.drive.events.OpenFileCallback;*/
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish;
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter;
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil;
@@ -105,7 +105,7 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
                 });*/
         if(bookmarkedEnglish != null && !bookmarkedEnglish.getUploadId().isEmpty()){
             fileRetrieved = true;
-            retrieveContents(DriveId.decodeFromString(bookmarkedEnglish.getUploadId()).asDriveFile());
+          //  retrieveContents(DriveId.decodeFromString(bookmarkedEnglish.getUploadId()).asDriveFile());
         }
         else{
             finish();
@@ -123,9 +123,9 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
         toolbar.setTitle(AppUtil.Companion.getOnlyFileName(bookmark.getFileName()));
     }
 
-    private void retrieveContents(DriveFile file) {
+    private void retrieveContents(/*DriveFile file*/) {
         // [START read_with_progress_listener]
-
+/*
         String resourceId = file.getDriveId().getResourceId();
         AppUtil.Companion.makeErrorLog("resource idd "+file.getDriveId().encodeToString());
         AppUtil.Companion.makeErrorLog("yoww "+file.getDriveId().encodeToString());
@@ -146,13 +146,13 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
                 mProgressBar.setProgress(100);
                 // Read contents
                 // [START_EXCLUDE]
-                    /*try (BufferedReader reader = new BufferedReader(
+                    *//*try (BufferedReader reader = new BufferedReader(
                                  new InputStreamReader(driveContents.getInputStream()))) {
                         StringBuilder builder = new StringBuilder();
                         String line;
                         while ((line = reader.readLine()) != null) {
                             builder.append(line);
-                        }*/
+                        }*//*
                 //mFileContents.setText(builder.toString());
 
 
@@ -182,7 +182,7 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
 
         //getDriveResourceClient().openFile(DriveId.decodeFromString("CAESITF5NWwxZlo4cUd5M2x6SjZkbThSYVU1MGU4MjVlR05FcBjgUSDanavYgFcoAA").asDriveFile(), DriveFile.MODE_READ_ONLY, openCallback);
         // [END read_with_progress_listener]
-        getDriveResourceClient().openFile(file, DriveFile.MODE_READ_WRITE, openCallback);
+        getDriveResourceClient().openFile(file, DriveFile.MODE_READ_WRITE, openCallback);*/
 
     }
 
