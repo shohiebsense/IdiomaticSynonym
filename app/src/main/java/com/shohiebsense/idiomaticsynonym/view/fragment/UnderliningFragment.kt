@@ -1,6 +1,5 @@
 package com.shohiebsense.idiomaticsynonym.view.fragment
 
-import android.animation.Animator
 import android.app.AlertDialog
 import android.app.Fragment
 import android.content.DialogInterface
@@ -16,14 +15,12 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableStringBuilder
 import android.view.*
-import android.widget.TextView
 import com.klinker.android.link_builder.Link
 import com.klinker.android.link_builder.LinkBuilder
 import com.klinker.android.link_builder.TouchableMovementMethod
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.utils.CircleAnimationUtil
 import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
 import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
 import com.shohiebsense.idiomaticsynonym.UnderliningActivity
@@ -45,7 +42,6 @@ import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceItem
 import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
-import de.mateware.snacky.Snacky
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_underlining.*
@@ -131,7 +127,35 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         return view
     }
 
-
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        toolbar = (activity as UnderliningActivity).toolbar
+        toolbar.title = getString(R.string.process_finding_idiom)
+        activity.invalidateOptionsMenu()
+        snackbar = CustomSnackbar.make(rootCoordinatorLayout,
+                CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
+        snackbar.show()
+        behaviour = BottomSheetBehavior.from(bottomSheetLayout)
+        tooltips = ToolTipManager(act)
+        var snackbarView = snackbar.view
+        snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryLightColor))
+        idiomMeaningItemAdapter = ItemAdapter.items()
+        idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
+        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
+        idiomRecyclerView.adapter = idiomMeaningFastAdapter
+        initBottomSheet()
+        bottomSheetLayout.setOnClickListener {
+            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        if(KEY_STATE == 0){
+            if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
+                underliningService.underLine(behaviour)
+            }
+            else{
+                TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
+            }
+        }
+    }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -160,35 +184,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        toolbar = (activity as UnderliningActivity).toolbar
-        toolbar.title = getString(R.string.process_finding_idiom)
-        activity.invalidateOptionsMenu()
-        snackbar = CustomSnackbar.make(rootCoordinatorLayout,
-                CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
-        snackbar.show()
-        behaviour = BottomSheetBehavior.from(bottomSheetLayout)
-        tooltips = ToolTipManager(act)
-        var snackbarView = snackbar.view
-        snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryLightColor))
-        idiomMeaningItemAdapter = ItemAdapter.items()
-        idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
-        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
-        idiomRecyclerView.adapter = idiomMeaningFastAdapter
-        onShowingBottomSheet()
-        bottomSheetLayout.setOnClickListener {
-            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
-        }
-        if(KEY_STATE == 0){
-            if(!TranslatedAndUntranslatedDataEmitter.idiomsList.isEmpty()){
-                underliningService.underLine(behaviour)
-            }
-            else{
-                TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
-            }
-        }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -210,7 +205,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
     }
 
-    fun onShowingBottomSheet(){
+    fun initBottomSheet(){
         behaviour.state = BottomSheetBehavior.STATE_HIDDEN
         behaviour.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(@NonNull bottomSheet: View, newState: Int) {
@@ -251,7 +246,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             override fun start() {
                 Handler(Looper.getMainLooper()).post {
                     activity.title = fileName
-                    showMessageDialog()
+                    showSuccessfulMessageDialog()
                     toolbar.title = getString(R.string.done)
                     addToToolTipView(getString(R.string.explore_idioms))
                     translated = true
@@ -283,33 +278,18 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     override fun onFinishedUnderliningText(decoratedSpan: ArrayList<Link>) {
-
-
         object : Thread(){
             override fun start() {
                 Handler(Looper.getMainLooper()).post {
-
                     AppUtil.makeDebugLog("underlining process finished "+decoratedSpan.size)
-
                     cardViewPager.visibility = View.GONE
                     textFetchedTextView.visibility = View.VISIBLE
                     activity.title = fileName
                     var spannableString  : CharSequence = ""
-                    /*  decoratedSpan.forEach {
-                        spannableString = TextUtils.concat(spannableString,it.sentence)
-                      }*/
-
                     val charSequence = LinkBuilder.from(act,extractedPdfTexts.toString()).addLinks(decoratedSpan).build()
-                    textFetchedTextView.setText (charSequence)
-
+                    textFetchedTextView.setText(charSequence)
                     textFetchedTextView.movementMethod = TouchableMovementMethod.instance
-
-                    //commented
-                    // underliningService.bookmarkDataEmitter.updateEnglishText(AppUtil.toHtml(act, charSequence!!))
                     snackbar.dismiss()
-                    /*     if(decoratedSpan.isEmpty()){
-                             showEmptyResultDialog()
-                         }*/
                     addToToolTipView(getString(R.string.dialog_find_idioms_and_replaced_it))
                     toolbar.title = getString(R.string.translating)
                     underlined = true
@@ -319,7 +299,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                         KEY_STATE = 2
                         goToTranslatedDisplayMenuItem?.isVisible = true
                         act.invalidateOptionsMenu()
-
                     }
                 }
             }
@@ -485,36 +464,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         tooltips!!.showToolTip(toolTip, toolTipsView);
     }
 
-    private fun makeFlyAnimation(targetView: TextView) {
-        CircleAnimationUtil().attachActivity(activity).setTargetView(targetView).setMoveDuration(1000).setDestView(toolTipsView).setAnimationListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
 
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-                //addItem()
-                /// replaceSentenceButton.text =  idiomCounter.toString()
-                targetView.setVisibility(View.VISIBLE)
-
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-
-            }
-        }).startAnimation()
-
-
-    }
-
-    fun showMessageDialog(){
-        /* var dialog = FindIdiomsDialogFragment()
-         dialog.setTargetFragment(this, 1)
-         dialog.show(fragmentManager, FindIdiomsDialogFragment::class.java.simpleName)
- */
+    fun showSuccessfulMessageDialog(){
         val builder: AlertDialog.Builder
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = AlertDialog.Builder(act, R.style.MyDialogTheme)

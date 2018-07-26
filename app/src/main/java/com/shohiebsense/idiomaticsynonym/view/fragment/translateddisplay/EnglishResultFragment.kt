@@ -113,15 +113,75 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     var newSentence = ""
     var mPopupWindow : PopupWindow? = null
 
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
+        EventBus.getDefault().post(FragmentEvent())
+        if (arguments != null) {
+            lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_english_result_root, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        AppUtil.makeErrorLog("aku dulu kan?")
+        behaviour = BottomSheetBehavior.from(bottomSheetLayout)
+        replaceService = ReplaceService(activity as TranslatedDisplayActivity, this@EnglishResultFragment)
+
+        initBlurView()
+
+
+        idiomMeaningItemAdapter = ItemAdapter.items()
+        idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
+        sentenceItemAdapter = ItemAdapter.items()
+        sentenceFastAdapter = FastAdapter.with(sentenceItemAdapter)
+        recycler_sentences.layoutManager = LinearLayoutManager(activity)
+        recycler_sentences.adapter = sentenceFastAdapter
+        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
+        idiomRecyclerView.adapter = idiomMeaningFastAdapter
+        onShowingBottomSheet()
+        bottomSheetLayout.setOnClickListener {
+            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        englishTextsTextView.movementMethod = LinkMovementMethod()
+        val toggle = ActionBarDrawerToggle(
+                activity, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    fun initBlurView(){
+        var radius = 25f;
+        var minBlurRadius = 10f;
+        var step = 4f;
+
+        //set background, if your root layout doesn't have one
+        var  windowBackground = activity?.window!!.getDecorView().getBackground();
+
+
+        topBlurView.setupWith(rootCoordinatorLayout)
+                .windowBackground(windowBackground)
+                .blurRadius(radius)
+                .setHasFixedTransformationMatrix(true)
+
+    }
+
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
             if(isFirstTimeClickedIdiom){
                 currentClickedIdiom = word
                 isFirstTimeClickedIdiom = false
             }
-            /*if(!currentClickedIdiom.equals(word,true)){
-                currentClickedIdiom = word
-            }*/
             AppUtil.makeErrorLog("current clicked idiom  "+currentClickedIdiom + "  with clicked word"+word)
             if((activity as TranslatedDisplayActivity).isIdiomSynonymMode){
                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
@@ -135,15 +195,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
             }
         }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return true
-    }
-
-    override fun onResume() {
-        super.onResume()
-
     }
 
     override fun onReplacedSentencesExist(foundedSentences: ArrayList<ReplacedSentence>) {
@@ -274,81 +325,10 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         toggleBottomSheet()
     }
 
-
-    override fun onStart() {
-        super.onStart()
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        return true
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        AppUtil.makeErrorLog("destroyeddd")
-        super.onDestroy()
-        EventBus.getDefault().unregister(this)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        EventBus.getDefault().register(this)
-        EventBus.getDefault().post(FragmentEvent())
-        if (arguments != null) {
-            lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
-        }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_english_result_root, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        AppUtil.makeErrorLog("aku dulu kan?")
-        behaviour = BottomSheetBehavior.from(bottomSheetLayout)
-        replaceService = ReplaceService(activity as TranslatedDisplayActivity, this@EnglishResultFragment)
-
-        initBlurView()
-
-
-        idiomMeaningItemAdapter = ItemAdapter.items()
-        idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
-        sentenceItemAdapter = ItemAdapter.items()
-        sentenceFastAdapter = FastAdapter.with(sentenceItemAdapter)
-        recycler_sentences.layoutManager = LinearLayoutManager(activity)
-        recycler_sentences.adapter = sentenceFastAdapter
-        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
-        idiomRecyclerView.adapter = idiomMeaningFastAdapter
-        onShowingBottomSheet()
-        bottomSheetLayout.setOnClickListener {
-            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
-        }
-        englishTextsTextView.movementMethod = LinkMovementMethod()
-        val toggle = ActionBarDrawerToggle(
-                activity, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        nav_view.setNavigationItemSelectedListener(this)
-    }
-
-    fun initBlurView(){
-        var radius = 25f;
-        var minBlurRadius = 10f;
-        var step = 4f;
-
-        //set background, if your root layout doesn't have one
-        var  windowBackground = activity?.window!!.getDecorView().getBackground();
-
-
-        topBlurView.setupWith(rootCoordinatorLayout)
-                .windowBackground(windowBackground)
-                .blurRadius(radius)
-                .setHasFixedTransformationMatrix(true)
-
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
@@ -473,4 +453,10 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
 
+
+    override fun onDestroy() {
+        AppUtil.makeErrorLog("destroyeddd")
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 }// Required empty public constructor

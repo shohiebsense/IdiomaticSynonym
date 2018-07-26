@@ -71,26 +71,11 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onUpdatedTranslation(event : UpdatedTranslationEvent) {
-        AppUtil.makeErrorLog("translation updated?")
-        translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
-        //translatedTextList = arguments.getStringArrayList(MainActivity.INTENT_TRANSLATED_TEXT)
-       // AppUtil.makeDebugLog("translatedTextList SIZEE "+translatedTextList.size)
-        //idiomsList = arguments.getSerializable(MainActivity.INTENT_IDIOM_LIST) as HashMap<Int, String>
-       // translatedSpannable = SpannableString("")
         lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
-
-        //DEVELOPMENT ONLY
-        //translatedTextList = arrayListOf<String>()
-        //translatedTextList.add(AppUtil.translateExample)
-        //idiomsList = AppUtil.translatedIdioms.split(",").toMutableList()
         setHasOptionsMenu(true)
     }
 
@@ -102,35 +87,12 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         itemAdapter = ItemAdapter.items()
         fastAdapter = FastAdapter.with(itemAdapter)
         tooltips = ToolTipManager(activity)
-
         kategloItemRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
         kategloItemRecyclerView.adapter = fastAdapter
         onShowingBottomSheet()
-
-        //development only
-        //  translatedDisplayService = TranslatedDisplayService(context, translatedTextList, idiomsList, this)
         translatedDisplayService = TranslatedDisplayService(context!!, this)
-        //translatedDisplayService.extract()
-
-        var spannable :CharSequence="adf aew"
-        var threetimes = 0
-/*
-        for(sentence in translatedTextList){
-           spannable = TextUtils.concat(spannable,sentence)
-        }
-
-
-
-        AppUtil.makeDebugLog("this is "+spannable)
-        translatedTextView.text = ""+spannable*/
-
-        //translatedTextView.text = "pada hari minggu ku turut ayah ke kotaaa "+getString(R.string.dialog_message_find_idioms)
-
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
 
     override fun onStop() {
         EventBus.getDefault().unregister(this)
@@ -149,6 +111,12 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
                 // React to dragging events
             }
         })
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUpdatedTranslation(event : UpdatedTranslationEvent) {
+        AppUtil.makeErrorLog("translation updated?")
+        translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
     }
 
     fun fetchKateglo(meanings: String, index: Int){
@@ -237,10 +205,6 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-       /* if((activity as TranslatedDisplayActivity).bookmark.indonesian.toString().isNotBlank()){
-            val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),(activity as TranslatedDisplayActivity).bookmark.indexedSentences)
-            translatedTextView.setText(Html.fromHtml(newlinesentence))
-        }*/
         AppUtil.makeErrorLog("on getting bookmark ")
         translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
     }
