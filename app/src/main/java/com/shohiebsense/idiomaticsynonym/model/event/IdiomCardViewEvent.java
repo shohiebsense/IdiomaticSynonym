@@ -2,18 +2,17 @@ package com.shohiebsense.idiomaticsynonym.model.event;
 
 public class IdiomCardViewEvent {
 
-    private boolean isSlideShow;
+    public static final int LAYOUT_LINEAR = 0;
+    public static final int LAYOUT_CARD = 1;
+    public static final int LAYOUT_SLIDE = 2;
+    private int layout;
 
-    public IdiomCardViewEvent(boolean isSlideShow) {
-        this.isSlideShow = isSlideShow;
+    public IdiomCardViewEvent(int layout) {
+        this.layout = layout;
     }
 
-    public boolean isSlideShow() {
-        return isSlideShow;
-    }
-
-    public void setSlideShow(boolean isSlideShow) {
-        this.isSlideShow = isSlideShow;
+    public int getLayout() {
+        return layout;
     }
 }
 

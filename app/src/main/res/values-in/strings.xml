@@ -84,5 +84,7 @@
     <string name="success_upload">upload sukses dengan nama file : %s</string>
     <string name="founded_sentences">Kalimat yang Ditemukan</string>
     <string name="new_file">Nama File Baru</string>
-
+    <string name="menuOptions_idiom_linear">Tampilkan Idiom List secara Linear</string>
+    <string name="menuOptions_idiom_slide">Tampilkan Idiom List secara Slide</string>
+    <string name="menuOptions_idiom_card">Tampilkan Idiom List secara Card</string>
 </resources>

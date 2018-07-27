@@ -79,10 +79,12 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     var toggleEachLineItem : MenuItem? = null
     var toggleIdiomCardItem : MenuItem? = null
     var toggleTranslateItem : MenuItem? = null
+    var toggleIdiomSlideItem: MenuItem? = null
+    var toggleIdiomLinearItem : MenuItem? = null
+
     var isWrapped = true
-    var isSlideShow = true
-    var isToggleVisible = false
-    var isToggleCardVisible = false
+    var isTranslationFragmentVisible = false
+    var isIdiomFragmentVisible = false
     var isFromEnglishFragment = true
     var isFromBookmarkItem = false
     var isFetched = false
@@ -92,6 +94,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     lateinit var kategloService : KategloService
     var currentSelectedWord = ""
     lateinit var bookmarkDataEmitter : BookmarkDataEmitter
+    var currentToggle = 1
 
 
 
@@ -193,8 +196,8 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
             }
 
             override fun onPageSelected(position: Int) {
-                isToggleVisible = position == 1
-                isToggleCardVisible = position == 2
+                isTranslationFragmentVisible = position == 1
+                isIdiomFragmentVisible = position == 2
                 if(toggleTranslateButton != null){
                     toggleTranslateButton?.isChecked = !isIdiomSynonymMode
                 }
@@ -221,15 +224,25 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
         return true
     }
 
+
+    fun listIdiomMenus(menu : Menu?){
+        toggleIdiomCardItem = menu?.findItem(R.id.toggleIdiomCardOption)
+        toggleIdiomSlideItem = menu?.findItem(R.id.toggleIdiomSlideOption)
+        toggleIdiomLinearItem = menu?.findItem(R.id.toggleIdiomLinearOption)
+
+        toggleIdiomCardItem?.isVisible = isIdiomFragmentVisible
+        toggleIdiomSlideItem?.isVisible = isIdiomFragmentVisible
+        toggleIdiomLinearItem?.isVisible = isIdiomFragmentVisible
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         generateFileOptionItem = menu?.findItem(R.id.generateFileOption)
         toggleEachLineItem = menu?.findItem(R.id.toggleEachLineOption)
-        toggleIdiomCardItem = menu?.findItem(R.id.toggleIdiomCardOption)
         toggleTranslateItem = menu?.findItem(R.id.toggleTranslateOption)
+        listIdiomMenus(menu)
         generateFileOptionItem?.isVisible = !isTranslationEmpty
-        toggleEachLineItem?.isVisible = isToggleVisible
-        toggleIdiomCardItem?.isVisible = isToggleCardVisible
-        toggleTranslateItem?.isVisible = !isToggleVisible && !isToggleCardVisible
+        toggleEachLineItem?.isVisible = isTranslationFragmentVisible
+        toggleTranslateItem?.isVisible = !isTranslationFragmentVisible && !isIdiomFragmentVisible
         toggleTranslateButton = toggleTranslateItem?.actionView!!.toggle_button_translate
         toggleTranslateButton!!.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
@@ -285,16 +298,14 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
                 isWrapped = !isWrapped
             }
             R.id.toggleIdiomCardOption ->{
-                if(isSlideShow){
-                    toggleIdiomCardItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_view_comfy_white_24))
-                }
-                else{
-                    toggleIdiomCardItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_style_white_24))
-                }
-                EventBus.getDefault().post(IdiomCardViewEvent(isSlideShow))
-                isSlideShow = !isSlideShow
+                EventBus.getDefault().post(IdiomCardViewEvent(IdiomCardViewEvent.LAYOUT_CARD))
             }
-
+            R.id.toggleIdiomSlideOption ->{
+                EventBus.getDefault().post(IdiomCardViewEvent(IdiomCardViewEvent.LAYOUT_SLIDE))
+            }
+            R.id.toggleIdiomLinearOption ->{
+                EventBus.getDefault().post(IdiomCardViewEvent(IdiomCardViewEvent.LAYOUT_LINEAR))
+            }
         }
         return super.onOptionsItemSelected(item)
     }

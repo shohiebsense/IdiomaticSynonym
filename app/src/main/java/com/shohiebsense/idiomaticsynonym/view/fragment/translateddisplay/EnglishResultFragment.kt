@@ -33,7 +33,6 @@ import com.shohiebsense.idiomaticsynonym.model.ReplacedSentence
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.ReplaceService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
-import com.shohiebsense.idiomaticsynonym.services.emitter.ReplacedHistoryEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
@@ -50,6 +49,7 @@ import kotlinx.android.synthetic.main.activity_translated_display.*
 import kotlinx.android.synthetic.main.fragment_english_result.*
 import kotlinx.android.synthetic.main.fragment_english_result_root.*
 import kotlinx.android.synthetic.main.view_popup_translating.view.*
+import org.apache.xpath.operations.Bool
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -109,7 +109,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     var oldSentence = ""
     var newSentence = ""
     var mPopupWindow : PopupWindow? = null
-
+    var onlineTranslationAttempt = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -232,7 +232,15 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     override fun onNotFoundInSentence() {
         AppUtil.makeErrorLog("NOT FOUND IN SENTENCE")
         isNotFoundInSentence = true
-        (activity as TranslatedDisplayActivity).wordClickableService.getSingleTranslate(replaceService.originIdiom)
+        if(onlineTranslationAttempt < 3){
+            (activity as TranslatedDisplayActivity).wordClickableService.getSingleTranslate(replaceService.originIdiom)
+            onlineTranslationAttempt++
+        }
+        else{
+            AppUtil.makeErrorLog("resett")
+            showPopUpWindow(getString(R.string.idiom_not_found),false)
+            onlineTranslationAttempt = 0
+        }
     }
 
 
@@ -315,7 +323,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-        AppUtil.makeErrorLog("ongettingbookmark")
         englishTextsTextView.text = (activity as TranslatedDisplayActivity).bookmark.english
         idioms = AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms)
         (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
@@ -409,8 +416,13 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
     fun showPopUpWindow(){
+        showPopUpWindow(getString(R.string.translating),true)
+    }
+
+    fun showPopUpWindow(message : String, indefinite : Boolean){
         var inflater = activity?.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         var customView = inflater.inflate(R.layout.view_popup_translating,null)
+        customView.tv.setText(message)
         if(mPopupWindow != null){
             TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
             mPopupWindow?.dismiss()
@@ -429,6 +441,11 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         mPopupWindow?.setAnimationStyle(R.style.popup_window_animation)
         TransitionManager.beginDelayedTransition(rootCoordinatorLayout)
         mPopupWindow?.showAtLocation(customView.layout_popup, Gravity.TOP or Gravity.END,40,280)
+        if(!indefinite){
+            getDelayedExecution(3).subscribe{
+                mPopupWindow?.dismiss()
+            }
+        }
     }
 
 
@@ -462,6 +479,12 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         return true
     }
 
+    override fun onResume() {
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+        super.onResume()
+    }
 
     override fun onDestroy() {
         AppUtil.makeErrorLog("destroyeddd")

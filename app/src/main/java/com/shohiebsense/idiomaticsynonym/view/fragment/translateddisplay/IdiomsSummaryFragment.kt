@@ -59,6 +59,8 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
     lateinit var idiomMeaningFastAdapter: FastAdapter<IdiomMeaningItem>
     lateinit var idiomMeaningItemAdapter: ItemAdapter<IdiomMeaningItem>
     lateinit var behaviour : BottomSheetBehavior<View>
+    lateinit var staggeredGridLayoutManager : StaggeredGridLayoutManager
+    lateinit var linearLayoutManager : LinearLayoutManager
 
     var lastId = 0
     private var mListener: OnClickedItemListener = object : OnClickedItemListener {
@@ -109,34 +111,33 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        EventBus.getDefault().unregister(this)
-        super.onDestroy()
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onChangeOrientation(e: IdiomCardViewEvent) {
-        if(!e.isSlideShow){
-            idiomsCardRecyclerView.visibility = View.VISIBLE
-            idiomsRecyclerView.visibility = View.GONE
-        }
-        else{
-            idiomsCardRecyclerView.visibility = View.GONE
-            idiomsRecyclerView.visibility = View.VISIBLE
+        when(e.layout){
+            IdiomCardViewEvent.LAYOUT_CARD -> {
+                idiomsCardRecyclerView.visibility = View.VISIBLE
+                idiomsCardRecyclerView.layoutManager = staggeredGridLayoutManager
+                idiomsRecyclerView.visibility = View.GONE
+                idiomRecyclerView.adapter = idiomMeaningFastAdapter
+            }
+            IdiomCardViewEvent.LAYOUT_LINEAR -> {
+                idiomsCardRecyclerView.visibility = View.VISIBLE
+                idiomsCardRecyclerView.layoutManager = linearLayoutManager
+                idiomsRecyclerView.visibility = View.GONE
+                idiomRecyclerView.adapter = idiomMeaningFastAdapter
+            }
+            IdiomCardViewEvent.LAYOUT_SLIDE -> {
+                idiomsCardRecyclerView.visibility = View.GONE
+                idiomsRecyclerView.visibility = View.VISIBLE
+            }
         }
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
         idioms = ArrayList()
         lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
 
@@ -152,7 +153,8 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        EventBus.getDefault().register(this)
+        linearLayoutManager = LinearLayoutManager(activity)
+        staggeredGridLayoutManager =  StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
         layoutManager = ScaleLayoutManager.Builder(activity,AppUtil.dp2Px(activity, 5f))
                 .setMinScale(0.95f)
                 .build()
@@ -182,7 +184,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
             val cardAdapter = IdiomCardAdapter(idioms,mListener)
             idiomsRecyclerView.layoutManager = layoutManager
             idiomsRecyclerView.adapter = adapter
-            idiomsCardRecyclerView.layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
+            idiomsCardRecyclerView.layoutManager = staggeredGridLayoutManager
             idiomsCardRecyclerView.adapter = cardAdapter
         }
     }
@@ -284,6 +286,17 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
     }
 
 
+    override fun onResume() {
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+        super.onResume()
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
+    }
 
     /**
      * This interface must be implemented by activities that contain this

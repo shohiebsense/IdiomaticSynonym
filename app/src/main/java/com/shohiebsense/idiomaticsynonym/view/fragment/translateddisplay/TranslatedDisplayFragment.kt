@@ -93,12 +93,6 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         translatedDisplayService = TranslatedDisplayService(context!!, this)
     }
 
-
-    override fun onStop() {
-        EventBus.getDefault().unregister(this)
-        super.onStop()
-    }
-
     fun onShowingBottomSheet(){
         behaviour = BottomSheetBehavior.from(bottomSheetLayout)
         behaviour.state = BottomSheetBehavior.STATE_HIDDEN
@@ -168,6 +162,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onChangeOrientation(e: ViewEvent) {
+        AppUtil.makeErrorLog("on orientation changed")
         if(!e.isWrapped){
             val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),(activity as TranslatedDisplayActivity).bookmark.indexedSentences)
             translatedTextView.setText(Html.fromHtml(newlinesentence))
@@ -205,7 +200,6 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-        AppUtil.makeErrorLog("on getting bookmark ")
         translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
     }
 
@@ -221,5 +215,17 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     }
 
 
+    override fun onResume() {
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+        super.onResume()
+    }
+
+    override fun onDestroy() {
+        AppUtil.makeErrorLog("destroyeddd")
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 
 }

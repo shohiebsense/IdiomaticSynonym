@@ -23,8 +23,14 @@
         app:showAsAction="always"
         />
     <item
+        android:id="@+id/toggleIdiomLinearOption"
+        android:title="@string/menuOptions_idiom_linear" />
+    <item
+        android:id="@+id/toggleIdiomSlideOption"
+        android:title="@string/menuOptions_idiom_slide"
+        />
+    <item
         android:id="@+id/toggleIdiomCardOption"
-        android:title=""
-        android:icon="@drawable/baseline_style_white_24"
-        app:showAsAction="always"/>
+        android:title="@string/menuOptions_idiom_card"
+        />
 </menu>
