@@ -35,15 +35,12 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
 
     fun replaceIdiomInSentence(indonesianTranslation: String, replacedSentence: ReplacedSentence, newIdiom: String){
         sentenceOrderInText = replacedSentence.sentenceOrderInText
-        AppUtil.makeErrorLog("replaced sentencee "+replacedSentence.sentence)
         var oldIdiom = replacedSentence.sentence.substring(replacedSentence.index,replacedSentence.endIndex)
-        replacedHistoryEmitter.isIdiomExists(activity.bookmark.id,originIdiom)
-        AppUtil.makeErrorLog("what is it +"+ oldIdiom)
-        AppUtil.makeErrorLog("new idiom "+ newIdiom)
         var newSentence = replacedSentence.sentence.replace(oldIdiom,newIdiom)
         var newTranslation = indonesianTranslation.replace(replacedSentence.sentence,newSentence)
-        idiomIndex = newTranslation.indexOf(newIdiom)
+        idiomIndex = newSentence.indexOf(newIdiom)
         idiomEndIndex = idiomIndex + newIdiom.length
+        replacedHistoryEmitter.isIdiomExists(activity.bookmark.id,originIdiom)
         listener.onGettingNewSentence(newSentence)
         listener.onAttemptToReplace(newTranslation)
     }

@@ -19,7 +19,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.PopupWindow
-import android.widget.RelativeLayout
 import com.hanks.htextview.base.AnimationListener
 import com.hanks.htextview.base.HTextView
 import com.klinker.android.link_builder.LinkBuilder
@@ -41,7 +40,6 @@ import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
 import com.shohiebsense.idiomaticsynonym.view.items.SentenceItem
 import com.shohiebsense.idiomaticsynonym.view.items.SentenceViewHolder
 import com.transitionseverywhere.TransitionManager
-import de.mateware.snacky.Snacky
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.Observable
@@ -51,7 +49,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_translated_display.*
 import kotlinx.android.synthetic.main.fragment_english_result.*
 import kotlinx.android.synthetic.main.fragment_english_result_root.*
-import kotlinx.android.synthetic.main.view_popup_translating.*
 import kotlinx.android.synthetic.main.view_popup_translating.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -106,8 +103,8 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     lateinit var sentenceFastAdapter : FastAdapter<SentenceItem>
     lateinit var sentenceItemAdapter : ItemAdapter<SentenceItem>
     lateinit var behaviour : BottomSheetBehavior<View>
-    lateinit var replacedHistoryEmitter: ReplacedHistoryEmitter
-    var currentClickedIdiom : String = ""
+    var isNotFoundInSentence = false
+    var currentClickedIdiomTranslation : String = ""
     var isFirstTimeClickedIdiom = true
     var oldSentence = ""
     var newSentence = ""
@@ -160,29 +157,14 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         nav_view.setNavigationItemSelectedListener(this)
     }
 
-    fun initBlurView(){
-        var radius = 25f;
-        var minBlurRadius = 10f;
-        var step = 4f;
-
-        //set background, if your root layout doesn't have one
-        var  windowBackground = activity?.window!!.getDecorView().getBackground();
-
-
-        topBlurView.setupWith(rootCoordinatorLayout)
-                .windowBackground(windowBackground)
-                .blurRadius(radius)
-                .setHasFixedTransformationMatrix(true)
-
-    }
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
             if(isFirstTimeClickedIdiom){
-                currentClickedIdiom = word
+                currentClickedIdiomTranslation = word
                 isFirstTimeClickedIdiom = false
             }
-            AppUtil.makeErrorLog("current clicked idiom  "+currentClickedIdiom + "  with clicked word"+word)
+            AppUtil.makeErrorLog("current clicked idiom  "+currentClickedIdiomTranslation + "  with clicked word"+word)
             if((activity as TranslatedDisplayActivity).isIdiomSynonymMode){
                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -190,11 +172,20 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 (activity as TranslatedDisplayActivity).getSynonym(word)
             }
             else{
-                replaceService.existingIdiom = currentClickedIdiom
+                replaceService.existingIdiom = currentClickedIdiomTranslation
                 replaceService.newIdiom = word
                 replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
             }
         }
+    }
+
+    fun refreshSentenceAdapter(){
+        val layoutManager = LinearLayoutManager(activity)
+        recycler_sentences.layoutManager = layoutManager
+        recycler_sentences.adapter = sentenceFastAdapter
+        val divider = DividerItemDecoration(activity,layoutManager.orientation)
+        recycler_sentences.addItemDecoration(divider)
+        drawer_layout.openDrawer(GravityCompat.START)
     }
 
     override fun onReplacedSentencesExist(foundedSentences: ArrayList<ReplacedSentence>) {
@@ -210,12 +201,18 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         AppUtil.makeErrorLog("new idiom  "+replaceService.newIdiom)
         sentenceItemAdapter.clear()
         sentenceItemAdapter.add(items)
-        val layoutManager = LinearLayoutManager(activity)
-        recycler_sentences.layoutManager = layoutManager
-        recycler_sentences.adapter = sentenceFastAdapter
-        val divider = DividerItemDecoration(activity,layoutManager.orientation)
-        recycler_sentences.addItemDecoration(divider)
-        drawer_layout.openDrawer(GravityCompat.START)
+        refreshSentenceAdapter()
+    }
+
+    override fun onGettingReplacedTranslation(translation: ReplaceHistory) {
+        currentClickedIdiomTranslation = translation.idiom
+        replaceService.existingIdiom = currentClickedIdiomTranslation
+        var items = arrayListOf<SentenceItem>()
+        var translatedSentence = replaceService.getTranslatedBasedInOrder((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),translation.sentenceOrder)
+        items.add(SentenceItem().withSentence(ReplacedSentence(translatedSentence,translation.index,translation.endIndex,-1,-1,translation.sentenceOrder),this))
+        sentenceItemAdapter.clear()
+        sentenceItemAdapter.add(items)
+        refreshSentenceAdapter()
     }
 
     override fun onSentenceClick(sentence: ReplacedSentence) {
@@ -230,28 +227,12 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
 
-    override fun onGettingReplacedTranslation(translation: ReplaceHistory) {
-        currentClickedIdiom = translation.idiom
-        replaceService.existingIdiom = currentClickedIdiom
-        AppUtil.makeErrorLog("dapatnya apa harusnya udaa "+currentClickedIdiom)
-        var items = arrayListOf<SentenceItem>()
-        //sentence
-        var translatedSentence = replaceService.getTranslatedBasedInOrder((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),translation.sentenceOrder)
-        items.add(SentenceItem().withSentence(ReplacedSentence(translatedSentence,translation.index,translation.endIndex,-1,-1,translation.sentenceOrder),this))
-        AppUtil.makeErrorLog("new idiom  "+replaceService.newIdiom)
-        sentenceItemAdapter.clear()
-        sentenceItemAdapter.add(items)
-        val layoutManager = LinearLayoutManager(activity)
-        recycler_sentences.layoutManager = layoutManager
-        recycler_sentences.adapter = sentenceFastAdapter
-        val divider = DividerItemDecoration(activity,layoutManager.orientation)
-        recycler_sentences.addItemDecoration(divider)
-        drawer_layout.openDrawer(GravityCompat.START)
-        //replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
-    }
+
 
     override fun onNotFoundInSentence() {
-
+        AppUtil.makeErrorLog("NOT FOUND IN SENTENCE")
+        isNotFoundInSentence = true
+        (activity as TranslatedDisplayActivity).wordClickableService.getSingleTranslate(replaceService.originIdiom)
     }
 
 
@@ -330,9 +311,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         toggleBottomSheet()
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return true
-    }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -342,16 +320,6 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         idioms = AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms)
         (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
         (activity as TranslatedDisplayActivity).wordClickableService.generateClickableSpan((activity as TranslatedDisplayActivity).bookmark.english.toString(),(activity as TranslatedDisplayActivity).bookmark.idioms,behaviour)
-    }
-
-
-
-    override fun onFetched(bookmark: BookmarkedEnglish) {
-        englishTextsTextView.text = bookmark.english
-        AppUtil.makeErrorLog("hello new world "+bookmark.idioms)
-        idioms = AppUtil.getListOfIdioms(bookmark.idioms)
-        (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
-        (activity as TranslatedDisplayActivity).wordClickableService.generateClickableSpan(bookmark.english.toString(),bookmark.idioms,behaviour)
     }
 
 
@@ -378,8 +346,14 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onShowingIdiomTranslation(idiomTranslationEvent: IdiomTranslationEvent){
-        currentClickedIdiom = idiomTranslationEvent.translation
-        AppUtil.makeErrorLog("haiii cantikk "+currentClickedIdiom)
+        currentClickedIdiomTranslation = idiomTranslationEvent.translation
+        if(isNotFoundInSentence){
+            replaceService.existingIdiom = idiomTranslationEvent.translation
+            replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+        }
+        else{
+            currentClickedIdiomTranslation = idiomTranslationEvent.translation
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -457,6 +431,36 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         mPopupWindow?.showAtLocation(customView.layout_popup, Gravity.TOP or Gravity.END,40,280)
     }
 
+
+
+    override fun onFetched(bookmark: BookmarkedEnglish) {
+        englishTextsTextView.text = bookmark.english
+        AppUtil.makeErrorLog("hello new world "+bookmark.idioms)
+        idioms = AppUtil.getListOfIdioms(bookmark.idioms)
+        (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
+        (activity as TranslatedDisplayActivity).wordClickableService.generateClickableSpan(bookmark.english.toString(),bookmark.idioms,behaviour)
+    }
+
+
+    fun initBlurView(){
+        var radius = 25f;
+        var minBlurRadius = 10f;
+        var step = 4f;
+
+        //set background, if your root layout doesn't have one
+        var  windowBackground = activity?.window!!.getDecorView().getBackground();
+
+
+        topBlurView.setupWith(rootCoordinatorLayout)
+                .windowBackground(windowBackground)
+                .blurRadius(radius)
+                .setHasFixedTransformationMatrix(true)
+
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        return true
+    }
 
 
     override fun onDestroy() {

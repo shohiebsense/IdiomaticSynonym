@@ -77,7 +77,7 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
             }
 
             override fun onError(e: Throwable) {
-                AppUtil.makeErrorLog("error getting replacedTranslation Transl "+e.toString())
+                AppUtil.makeErrorLog("error not found in Sentence or "+e.toString())
                 callback.onNotFoundInTheSentence()
             }
         }
