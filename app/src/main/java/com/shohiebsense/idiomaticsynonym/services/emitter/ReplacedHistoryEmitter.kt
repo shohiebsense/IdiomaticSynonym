@@ -78,7 +78,7 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
 
             override fun onError(e: Throwable) {
                 AppUtil.makeErrorLog("error getting replacedTranslation Transl "+e.toString())
-                //getTable()
+                callback.onNotFoundInTheSentence()
             }
         }
         queryService.getReplacedTranslation(bookmarkId,idiom,observer)
@@ -113,5 +113,6 @@ class ReplacedHistoryEmitter(val context: Context, val callback : ReplacedHistor
         fun onIdiomExists()
         fun onGettingOriginalTranslation(translation: ReplaceHistory)
         fun onGettingReplacedTranslation(translation: ReplaceHistory)
+        fun onNotFoundInTheSentence()
     }
 }

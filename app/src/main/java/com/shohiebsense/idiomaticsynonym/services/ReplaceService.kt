@@ -35,9 +35,11 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
 
     fun replaceIdiomInSentence(indonesianTranslation: String, replacedSentence: ReplacedSentence, newIdiom: String){
         sentenceOrderInText = replacedSentence.sentenceOrderInText
+        AppUtil.makeErrorLog("replaced sentencee "+replacedSentence.sentence)
         var oldIdiom = replacedSentence.sentence.substring(replacedSentence.index,replacedSentence.endIndex)
         replacedHistoryEmitter.isIdiomExists(activity.bookmark.id,originIdiom)
-        AppUtil.makeErrorLog("what is it +"+ replacedSentence.sentence.substring(replacedSentence.index,replacedSentence.endIndex))
+        AppUtil.makeErrorLog("what is it +"+ oldIdiom)
+        AppUtil.makeErrorLog("new idiom "+ newIdiom)
         var newSentence = replacedSentence.sentence.replace(oldIdiom,newIdiom)
         var newTranslation = indonesianTranslation.replace(replacedSentence.sentence,newSentence)
         idiomIndex = newTranslation.indexOf(newIdiom)
@@ -103,6 +105,11 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
     override fun onGettingReplacedTranslation(translation: ReplaceHistory) {
         listener.onGettingReplacedTranslation(translation)
     }
+
+    override fun onNotFoundInTheSentence() {
+        listener.onNotFoundInSentence()
+    }
+
     //end section
 
     interface ReplaceListener{
@@ -112,5 +119,6 @@ class ReplaceService(val activity: TranslatedDisplayActivity, val listener : Rep
         fun onGettingOriginalTranslation(translation: ReplaceHistory)
         fun onGettingReplacedTranslation(translation: ReplaceHistory)
         fun onReplacedSentenceEmpty()
+        fun onNotFoundInSentence()
     }
 }

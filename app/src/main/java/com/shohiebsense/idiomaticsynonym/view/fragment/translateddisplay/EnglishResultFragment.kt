@@ -250,6 +250,11 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         //replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
     }
 
+    override fun onNotFoundInSentence() {
+
+    }
+
+
     override fun onGettingOriginalTranslation(translation: ReplaceHistory) {
 
     }

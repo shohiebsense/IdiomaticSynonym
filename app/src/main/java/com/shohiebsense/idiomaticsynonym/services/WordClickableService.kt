@@ -50,7 +50,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
 
         override fun onError() {
             //service
-            getSingleTranslate(0, "")
+            getSingleTranslate()
         }
 
 
@@ -101,8 +101,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
         emitter.getSingleTranslatedIdiom(idiom)
     }
 
-    fun getSingleTranslate(sentenceIndex: Int, sentence: String){
-
+    fun getSingleTranslate(){
         val observer = object : Observer<String> {
             var combineStringMeaning = mutableListOf<String>()
             override fun onSubscribe(d: Disposable) {
@@ -142,8 +141,7 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
         }
     }
 
-    fun getIdiomTranslate(idiom: String){
-
+    fun getSingleTranslate(idiom : String){
         val observer = object : Observer<String> {
             override fun onSubscribe(d: Disposable) {
                 //process startup
@@ -158,6 +156,30 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
 
             override fun onNext(t: String) {
                 AppUtil.makeErrorLog("hoi")
+                wordClickableCallback.onShowingIdiomOnlineTranslation(t)
+            }
+        }
+        if(isReady)
+            translateService?.getIdiomTranslate(observer, idiom)
+        else{
+            wordClickableCallback.onErrorShowing()
+        }
+    }
+
+    fun getIdiomTranslate(idiom: String){
+        val observer = object : Observer<String> {
+            override fun onSubscribe(d: Disposable) {
+                //process startup
+            }
+
+            override fun onComplete() {
+            }
+
+            override fun onError(e: Throwable) {
+                AppUtil.makeErrorLog("e singleTranslating "+ e.toString())
+            }
+
+            override fun onNext(t: String) {
                 wordClickableCallback.onShowingIdiomOnlineTranslation(t)
             }
         }

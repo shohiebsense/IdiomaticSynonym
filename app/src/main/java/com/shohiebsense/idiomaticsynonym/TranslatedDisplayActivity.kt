@@ -136,7 +136,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
 
 
         if(!AppUtil.getIdiomGuidance(this)){
-            AppUtil.showSnackbar(this,AppUtil.SNACKY_SUCCESS,getString(R.string.idiom_guidance),Snacky.LENGTH_INDEFINITE)
+            AppUtil.showSnackbar(this,AppUtil.SNACKY_SUCCESS,getString(R.string.idiom_guidance),Snacky.LENGTH_LONG)
             AppUtil.setIdiomGuidance(this,true)
         }
         refresh()
@@ -149,7 +149,6 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
 
     override fun onGetSynonyms(syonyms: MutableList<String>) {
         syonyms.add(0,currentSelectedWord)
-        AppUtil.makeErrorLog("get synonymss "+syonyms.size)
         if(isFromEnglishFragment){
             EventBus.getDefault().post(EnglishFragmentSynonymEvent(syonyms))
         }

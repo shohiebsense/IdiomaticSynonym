@@ -28,9 +28,11 @@ class YandexTranslationService(context: Context) {
 
     fun translateExe(word : String): Response? {
         AppUtil.makeErrorLog("trabskate executedd")
-        var client = OkHttpClient()
+        var client = OkHttpClient.Builder().retryOnConnectionFailure(true)
+                .build()
         var request = Request.Builder()
                 .url(BASE_URL + "key=$API_KEY&lang=en-id&text=$word")
+                .addHeader("Connection","close")
                 .get()
                 .build()
 

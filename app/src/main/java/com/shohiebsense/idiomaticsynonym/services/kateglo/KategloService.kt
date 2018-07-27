@@ -99,7 +99,6 @@ class KategloService {
                     for (i in 0..sumOfRelation) {
                         val synonymWordObject = synonymObject.getJSONObject(i.toString())
                         val synonymWord = synonymWordObject.getString("related_phrase")
-                        AppUtil.makeDebugLog("syonym : " + synonymWord)
                         syonymWordObjects.add(synonymWord)
                     }
                 }
