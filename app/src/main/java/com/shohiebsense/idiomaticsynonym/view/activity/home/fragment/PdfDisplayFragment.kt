@@ -10,8 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
@@ -159,39 +157,9 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
             }
 
         }
-
-        //AppUtil.isExists(activity, "4.png")
         onTouchTextViewFunctionality()
-        /*  AppUtil.makeDebugLog("my Url "+ MediaManager.get().url().generate("2.png"))
-
-          AppUtil.makeDebugLog("loaded")
-  */
-
-
-        //var bitmap = BitmapFactory.decodeFile(AppUtil.getImageString(context, "1.png").absolutePath)
-
-        var imageInSD = ""
-
-        /* try {
-             imageInSD = AppUtil.getImageString(context, "1.png").canonicalPath
-             AppUtil.makeDebugLog("lolosss")
-             val options = BitmapFactory.Options()
-             options.inPreferredConfig = Bitmap.Config.ARGB_8888
-             var bitmap = BitmapFactory.decodeFile(imageInSD)
-             uploadButton.visibility = View.VISIBLE
-             uploadButton.setImageBitmap(bitmap)
-             } catch(e: Exception) {
-                 AppUtil.makeDebugLog (e.toString());
-         }*/
-
-        //.setImageDrawable(AppUtil.getFileFromAssets(context))
-
-
-
         var adapter = CardPagerAdapter(activity!!)
         fragmentFetchCardViewPager.adapter = adapter
-        //fragmentFetchViewPagerIndicator.setupWithViewPager(fragmentFetchCardViewPager)
-        //fragmentFetchViewPagerIndicator.addOnPageChangeListener(mOnPageChangeListener)
         adapter.notifyDataSetChanged()
         performAutomaticSlide()
         AppUtil.makeDebugLog("lhoo ke sini kan?")
@@ -322,52 +290,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 .subscribe {textFetchedScrollView ->
                     textFetchedScrollView.scrollTo(textFetchedScrollView.scrollX, textLoadedTextView.bottom + AppUtil.getHeightOfWindow(activity!!))
                 }
-
     }
-
-
-
-
-    fun getFileName(uri: Uri): String {
-        var result: String = ""
-        if (uri.scheme == "content") {
-            val cursor = context!!.getContentResolver().query(uri, null, null, null, null)
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close()
-                }
-            }
-        }
-        if (result == null) {
-            result = uri.lastPathSegment
-        }
-        return result
-    }
-
-
-    fun getPath(uri: Uri): String {
-
-        var path: String? = null
-        val projection = arrayOf(MediaStore.Files.FileColumns.DATA)
-        val cursor = context!!.contentResolver.query(uri, projection, null, null, null)
-
-        if (cursor == null) {
-            path = uri.path
-        } else {
-            cursor.moveToFirst()
-            val column_index = cursor.getColumnIndexOrThrow(projection[0])
-            path = cursor.getString(column_index)
-            cursor.close()
-        }
-
-        return if (path == null || path.isEmpty()) uri.path else path
-    }
-
-
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.options_fetch_fragment, menu)
@@ -391,42 +314,36 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     }
 
-    fun isReadAndWritePermissionGranted() : Boolean {
+    fun loadPdf() : Boolean {
+        return checkFilePermission()
+    }
+
+    fun checkFilePermission() : Boolean{
         AppUtil.makeErrorLog("ke sini kan??")
         if (Build.VERSION.SDK_INT >= 23) {
             if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                     activity?.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-
-                //FOR DEVELOPMENT PURPOSES UNCOMMENTED IT
                 pdfDisplayerService.promptLoadPdfDialog()
-
-
-                Log.e("shohiebsense ", "truee")
-
-
                 return true
             } else {
-                Log.e("shohiebsense ", "read write permission not granted, requesting ..")
-
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
                 return false
             }
         } else {
             pdfDisplayerService.promptLoadPdfDialog()
-            //permission is automatically granted on sdk<23 upon installation
             return true
         }
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.translateTextMenuOptions -> {
-                showInputDialog()
+                showInputPageDialog()
             }
             R.id.loadPdfMenuOptions -> {
-                isReadAndWritePermissionGranted()
+                loadPdf()
             }
             R.id.settingMenuOption -> {
                 startActivity(Intent(activity, SettingsActivity::class.java))
@@ -540,7 +457,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
 
 
-    fun showInputDialog(){
+    fun showInputPageDialog(){
         var dialog = InputDocumentPageDialogFragment.newInstance(pageCount)
         dialog.setTargetFragment(this, 1)
         dialog.show(fragmentManager, InputDocumentPageDialogFragment::class.java.simpleName)

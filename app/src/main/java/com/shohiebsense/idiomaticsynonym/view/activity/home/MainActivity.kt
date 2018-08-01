@@ -157,12 +157,12 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
 
         if(!AppUtil.getPreDataAskingPreference(this) && AppUtil.getMainGuidance(this) ){
             val builder = AlertDialog.Builder(this)
-            builder.setMessage(getString(R.string.ask_pre_data)).setPositiveButton(getString(R.string.yes), dialogClickListener)
-                    .setNegativeButton(getString(R.string.no), dialogClickListener).setNeutralButton(getString(R.string.remind_me_later),dialogClickListener).show()
+            builder.setMessage(getString(R.string.ask_pre_data)).setPositiveButton(getString(R.string.yes), sampleDataDialogListener)
+                    .setNegativeButton(getString(R.string.no), sampleDataDialogListener).setNeutralButton(getString(R.string.remind_me_later),sampleDataDialogListener).show()
         }
     }
 
-    var dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
+    var sampleDataDialogListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> {
                 AppUtil.setPreDataAskingPreference(this,true)

@@ -72,9 +72,6 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
         dialog.setDialogSelectionListener {
             //handle selected files
             files ->
-
-            AppUtil.makeDebugLog("filename size " + files.size)
-
             files.forEach { fileString ->
                 pdfValid = AppUtil.isPdfDocument(fileString)
                 if (pdfValid) {

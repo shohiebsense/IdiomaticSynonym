@@ -51,7 +51,6 @@ class CreateFileActivity : AppCompatActivity(), BookmarkDataEmitter.SingleBookma
         bookmarkEmitter = BookmarkDataEmitter(this)
         bookmarkEmitter!!.getEnglishBookmark(bookmarkId,this)
 
-
         fab.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
                 CreateFileDialogFragment.newInstance().show(fragmentManager,CreateFileDialogFragment::class.simpleName)
