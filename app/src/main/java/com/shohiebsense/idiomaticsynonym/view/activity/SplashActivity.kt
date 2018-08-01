@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity
 
 import android.Manifest
 import android.content.Intent
@@ -6,13 +6,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.db.IdiomDbHelper
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
+import com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity
 import kotlinx.android.synthetic.main.activity_splash.*
 
 

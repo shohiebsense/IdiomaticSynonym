@@ -5,7 +5,7 @@
     android:id="@+id/rootCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment">
+    tools:context=".view.activity.detail.fragment.EnglishResultFragment">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

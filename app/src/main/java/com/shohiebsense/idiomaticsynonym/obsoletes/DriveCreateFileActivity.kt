@@ -1,9 +1,9 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.obsoletes
 
 import android.content.BroadcastReceiver
-import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
+import com.shohiebsense.idiomaticsynonym.R
 /*import com.google.android.gms.drive.DriveFile
 import com.google.android.gms.drive.MetadataChangeSet
 import com.google.android.gms.tasks.Tasks

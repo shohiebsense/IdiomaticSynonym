@@ -4,7 +4,7 @@ import android.content.Intent
 import android.text.Html
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
-import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import kotlinx.android.synthetic.main.item_bookmark.view.*
 
@@ -29,11 +29,11 @@ class BookmarkViewHolder(val v : View) : FastAdapter.ViewHolder<BookmarkItem>(v)
     }
 
     fun navigateToTranslationDetail(item : BookmarkItem){
-        val intent = Intent(Intent(v.context, TranslatedDisplayActivity::class.java))
-        intent.putExtra(TranslatedDisplayActivity.INTENT_LAST_ID, item.bookmark.id)
-        intent.putExtra(TranslatedDisplayActivity.INTENT_FILENAME, item.bookmark.fileName)
-        intent.putExtra(TranslatedDisplayActivity.INTENT_IS_TRANSLATION_EMPTY, item.bookmark.indonesian?.isBlank())
-        intent.putExtra(TranslatedDisplayActivity.INTENT_IS_FROM_BOOKMARK_ITEM,true)
+        val intent = Intent(Intent(v.context, DetailActivity::class.java))
+        intent.putExtra(DetailActivity.INTENT_LAST_ID, item.bookmark.id)
+        intent.putExtra(DetailActivity.INTENT_FILENAME, item.bookmark.fileName)
+        intent.putExtra(DetailActivity.INTENT_IS_TRANSLATION_EMPTY, item.bookmark.indonesian?.isBlank())
+        intent.putExtra(DetailActivity.INTENT_IS_FROM_BOOKMARK_ITEM,true)
         v.context.startActivity(intent)
     }
 

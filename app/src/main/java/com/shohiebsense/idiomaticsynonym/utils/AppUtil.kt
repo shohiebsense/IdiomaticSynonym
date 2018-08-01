@@ -12,8 +12,8 @@ import android.text.Spanned
 import android.util.Log
 import android.widget.Toast
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.SplashActivity
-import com.shohiebsense.idiomaticsynonym.UnderliningActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.SplashActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.underlining.UnderliningActivity
 import edu.stanford.nlp.ling.Sentence
 import org.jetbrains.anko.bundleOf
 import java.io.*
@@ -25,7 +25,6 @@ import org.apache.commons.lang3.time.StopWatch
 import org.jetbrains.anko.defaultSharedPreferences
 import android.support.design.widget.Snackbar
 import de.mateware.snacky.Snacky
-import org.jetbrains.anko.doIfSdk
 
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity.editor
 
 import android.app.Activity
 import android.content.Intent
@@ -29,6 +29,7 @@ import com.onegravity.rteditor.api.RTMediaFactoryImpl
 import com.onegravity.rteditor.api.RTProxyImpl
 import com.onegravity.rteditor.api.format.RTFormat
 import com.onegravity.rteditor.media.MediaUtils
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
@@ -53,13 +54,13 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
         var message: String? = null
         if (savedInstanceState == null) {
             val intent = intent
-            message = getStringExtra(intent, RTEditorBaseActivity.PARAM_MESSAGE)
-            mUseDarkTheme = intent.getBooleanExtra(RTEditorBaseActivity.PARAM_DARK_THEME, false)
-            mSplitToolbar = intent.getBooleanExtra(RTEditorBaseActivity.PARAM_SPLIT_TOOLBAR, false)
+            message = getStringExtra(intent, PARAM_MESSAGE)
+            mUseDarkTheme = intent.getBooleanExtra(PARAM_DARK_THEME, false)
+            mSplitToolbar = intent.getBooleanExtra(PARAM_SPLIT_TOOLBAR, false)
 
         } else {
-            mUseDarkTheme = savedInstanceState.getBoolean(RTEditorBaseActivity.PARAM_DARK_THEME, false)
-            mSplitToolbar = savedInstanceState.getBoolean(RTEditorBaseActivity.PARAM_SPLIT_TOOLBAR, false)
+            mUseDarkTheme = savedInstanceState.getBoolean(PARAM_DARK_THEME, false)
+            mSplitToolbar = savedInstanceState.getBoolean(PARAM_SPLIT_TOOLBAR, false)
         }
 
         // set theme
@@ -119,8 +120,8 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
         mRTManager!!.onSaveInstanceState(outState)
 
 
-        outState.putBoolean(RTEditorBaseActivity.PARAM_DARK_THEME, mUseDarkTheme)
-        outState.putBoolean(RTEditorBaseActivity.PARAM_SPLIT_TOOLBAR, mSplitToolbar)
+        outState.putBoolean(PARAM_DARK_THEME, mUseDarkTheme)
+        outState.putBoolean(PARAM_SPLIT_TOOLBAR, mSplitToolbar)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -226,9 +227,9 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
     private fun startAndFinish(clazz: Class<out Activity>) {
         val message = edit_content.getText(RTFormat.HTML)
         val intent = Intent(this, clazz)
-                .putExtra(RTEditorBaseActivity.PARAM_DARK_THEME, mUseDarkTheme)
-                .putExtra(RTEditorBaseActivity.PARAM_SPLIT_TOOLBAR, mSplitToolbar)
-                .putExtra(RTEditorBaseActivity.PARAM_MESSAGE, message)
+                .putExtra(PARAM_DARK_THEME, mUseDarkTheme)
+                .putExtra(PARAM_SPLIT_TOOLBAR, mSplitToolbar)
+                .putExtra(PARAM_MESSAGE, message)
         startActivity(intent)
         finish()
     }

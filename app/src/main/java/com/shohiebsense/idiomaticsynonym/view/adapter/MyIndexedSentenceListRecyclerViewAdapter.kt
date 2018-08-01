@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IdiomsSummaryFragment.OnClickedItemListener
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment.IdiomsSummaryFragment.OnClickedItemListener
 import kotlinx.android.synthetic.main.obsolete_item_indexed_sentence.view.*
 
 /**

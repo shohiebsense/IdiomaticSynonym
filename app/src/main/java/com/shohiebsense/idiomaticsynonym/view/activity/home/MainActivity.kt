@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity.home
 
 import android.app.*
 import android.content.DialogInterface
@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.services.emitter.TranslatedAndUntranslatedDataEmitter

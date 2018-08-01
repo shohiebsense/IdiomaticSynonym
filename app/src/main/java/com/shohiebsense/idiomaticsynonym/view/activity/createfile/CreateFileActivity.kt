@@ -1,16 +1,13 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity.createfile
 
-import android.content.BroadcastReceiver
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.services.CreateFileService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.onegravity.colorpicker.SetColorPickerListenerEvent.setListener
 import com.shohiebsense.idiomaticsynonym.view.adapter.FilesAdapter
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.shohiebsense.idiomaticsynonym.view.custom.CreateFileDialogFragment
 import kotlinx.android.synthetic.main.activity_create_file.*
@@ -21,6 +18,7 @@ import com.snatik.storage.helpers.SizeUnit
 import android.content.ActivityNotFoundException
 import android.support.v4.content.FileProvider
 import android.webkit.MimeTypeMap
+import com.shohiebsense.idiomaticsynonym.R
 import com.snatik.storage.helpers.OrderType
 import java.util.*
 
@@ -43,7 +41,7 @@ class CreateFileActivity : AppCompatActivity(), BookmarkDataEmitter.SingleBookma
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bookmarkId = intent.getIntExtra(CreateFileActivity.INTENT_ID,0)
+        bookmarkId = intent.getIntExtra(INTENT_ID,0)
 
         setContentView(R.layout.activity_create_file_root)
         setSupportActionBar(toolbar)

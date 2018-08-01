@@ -3,7 +3,6 @@ package com.shohiebsense.idiomaticsynonym.view.items
 import android.content.Intent
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
-import com.shohiebsense.idiomaticsynonym.LanguageSettingActivity
 import kotlinx.android.synthetic.main.item_language.view.*
 
 

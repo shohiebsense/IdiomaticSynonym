@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity.underlining
 
 import android.app.AlertDialog
 import android.app.Fragment
@@ -7,8 +7,10 @@ import android.app.FragmentTransaction
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
+import com.shohiebsense.idiomaticsynonym.view.activity.underlining.fragment.UnderliningFragment
 import android.content.DialogInterface
+import com.shohiebsense.idiomaticsynonym.R
+import com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity
 import kotlinx.android.synthetic.main.activity_underlining.*
 
 
@@ -27,7 +29,7 @@ class UnderliningActivity : AppCompatActivity() {
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> {
                 finish()
-                startActivity(Intent(this,MainActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
             }
 
             DialogInterface.BUTTON_NEGATIVE -> {

@@ -8,12 +8,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.CheckBox
-import android.widget.EditText
-import android.view.ViewGroup
-import android.view.LayoutInflater
 import android.os.Bundle
-import com.shohiebsense.idiomaticsynonym.CreateFileActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.createfile.CreateFileActivity
 import com.shohiebsense.idiomaticsynonym.R
 import kotlinx.android.synthetic.main.fragment_dialog_create_file.view.*
 

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IdiomsSummaryFragment
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment.IdiomsSummaryFragment
 import kotlinx.android.synthetic.main.item_idioms.view.*
 
 

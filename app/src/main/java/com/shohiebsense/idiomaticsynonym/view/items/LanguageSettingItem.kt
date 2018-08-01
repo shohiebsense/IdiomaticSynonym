@@ -2,7 +2,6 @@ package com.shohiebsense.idiomaticsynonym.view.items
 
 import android.view.View
 import com.mikepenz.fastadapter.items.AbstractItem
-import com.shohiebsense.idiomaticsynonym.LanguageSettingActivity
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.ChosenLanguage
 

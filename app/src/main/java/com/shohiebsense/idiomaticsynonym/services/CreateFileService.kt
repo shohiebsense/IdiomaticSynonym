@@ -3,12 +3,11 @@ package com.shohiebsense.idiomaticsynonym.services
 import android.app.Activity
 import android.content.Intent
 import android.media.MediaScannerConnection
-import com.shohiebsense.idiomaticsynonym.MainActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.snatik.storage.Storage
 import io.reactivex.Observable
 import io.reactivex.Observer
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

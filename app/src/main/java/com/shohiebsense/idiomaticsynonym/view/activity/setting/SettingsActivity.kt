@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity.setting
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -8,7 +8,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.view.items.SettingItem
 import kotlinx.android.synthetic.main.activity_settings.*
 import android.support.v7.widget.DividerItemDecoration
-
+import com.shohiebsense.idiomaticsynonym.R
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val itemAdapter = ItemAdapter.items<SettingItem>()
         fastAdapter = FastAdapter.with(itemAdapter)
-        val settingsLanguage = SettingItem().withSetting(getString(R.string.language_setting),LanguageSettingActivity::class.java.name)
+        val settingsLanguage = SettingItem().withSetting(getString(R.string.language_setting), LanguageSettingActivity::class.java.name)
         itemAdapter.add(settingsLanguage)
         val layoutManager = LinearLayoutManager(this)
         recycler_setting.layoutManager = layoutManager

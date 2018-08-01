@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
+package com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment
 
 
 import android.app.Activity
@@ -26,7 +26,7 @@ import com.klinker.android.link_builder.TouchableMovementMethod
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.ReplaceHistory
 import com.shohiebsense.idiomaticsynonym.model.ReplacedSentence
@@ -49,7 +49,6 @@ import kotlinx.android.synthetic.main.activity_translated_display.*
 import kotlinx.android.synthetic.main.fragment_english_result.*
 import kotlinx.android.synthetic.main.fragment_english_result_root.*
 import kotlinx.android.synthetic.main.view_popup_translating.view.*
-import org.apache.xpath.operations.Bool
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -77,7 +76,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         fun newInstance(lastId: Int): EnglishResultFragment {
             val fragment = EnglishResultFragment()
             val args = Bundle()
-            args.putInt(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
+            args.putInt(DetailActivity.INTENT_LAST_ID, lastId)
             fragment.arguments = args
             return fragment
         }
@@ -117,7 +116,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         EventBus.getDefault().register(this)
         EventBus.getDefault().post(FragmentEvent())
         if (arguments != null) {
-            lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
+            lastId = arguments!!.getInt(DetailActivity.INTENT_LAST_ID)
         }
     }
 
@@ -131,7 +130,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         super.onViewCreated(view, savedInstanceState)
         AppUtil.makeErrorLog("aku dulu kan?")
         behaviour = BottomSheetBehavior.from(bottomSheetLayout)
-        replaceService = ReplaceService(activity as TranslatedDisplayActivity, this@EnglishResultFragment)
+        replaceService = ReplaceService(activity as DetailActivity, this@EnglishResultFragment)
 
         initBlurView()
 
@@ -165,16 +164,16 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 isFirstTimeClickedIdiom = false
             }
             AppUtil.makeErrorLog("current clicked idiom  "+currentClickedIdiomTranslation + "  with clicked word"+word)
-            if((activity as TranslatedDisplayActivity).isIdiomSynonymMode){
+            if((activity as DetailActivity).isIdiomSynonymMode){
                 behaviour.state = BottomSheetBehavior.STATE_HIDDEN
 
-                (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
-                (activity as TranslatedDisplayActivity).getSynonym(word)
+                (activity as DetailActivity).isFromEnglishFragment = true
+                (activity as DetailActivity).getSynonym(word)
             }
             else{
                 replaceService.existingIdiom = currentClickedIdiomTranslation
                 replaceService.newIdiom = word
-                replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+                replaceService.isIdiomTranslationExist((activity as DetailActivity).bookmark.indonesian.toString())
             }
         }
     }
@@ -208,7 +207,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         currentClickedIdiomTranslation = translation.idiom
         replaceService.existingIdiom = currentClickedIdiomTranslation
         var items = arrayListOf<SentenceItem>()
-        var translatedSentence = replaceService.getTranslatedBasedInOrder((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),translation.sentenceOrder)
+        var translatedSentence = replaceService.getTranslatedBasedInOrder((activity as DetailActivity).bookmark.indonesian.toString(),translation.sentenceOrder)
         items.add(SentenceItem().withSentence(ReplacedSentence(translatedSentence,translation.index,translation.endIndex,-1,-1,translation.sentenceOrder),this))
         sentenceItemAdapter.clear()
         sentenceItemAdapter.add(items)
@@ -218,7 +217,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     override fun onSentenceClick(sentence: ReplacedSentence) {
         oldSentence = sentence.sentence
         drawer_layout.closeDrawer(GravityCompat.START)
-        replaceService.replaceIdiomInSentence((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),sentence,replaceService.newIdiom)
+        replaceService.replaceIdiomInSentence((activity as DetailActivity).bookmark.indonesian.toString(),sentence,replaceService.newIdiom)
     }
 
 
@@ -233,7 +232,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         AppUtil.makeErrorLog("NOT FOUND IN SENTENCE")
         isNotFoundInSentence = true
         if(onlineTranslationAttempt < 3){
-            (activity as TranslatedDisplayActivity).wordClickableService.getSingleTranslate(replaceService.originIdiom)
+            (activity as DetailActivity).wordClickableService.getSingleTranslate(replaceService.originIdiom)
             onlineTranslationAttempt++
         }
         else{
@@ -270,7 +269,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                             override fun onComplete() {
                                 getDelayedExecution(1).subscribe{
                                     if(activity != null){
-                                        (activity as TranslatedDisplayActivity).refresh()
+                                        (activity as DetailActivity).refresh()
                                     }
                                 }
                             }
@@ -294,11 +293,11 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     }
 
     override fun onAttemptToReplace(translation: String) {
-        (activity as TranslatedDisplayActivity).updateTranslation(translation)
+        (activity as DetailActivity).updateTranslation(translation)
     }
 
     override fun onReplacedSentenceEmpty() {
-        replaceService.replacedHistoryEmitter.getReplacedTranslation((activity as TranslatedDisplayActivity).bookmark.id,replaceService.originIdiom)
+        replaceService.replacedHistoryEmitter.getReplacedTranslation((activity as DetailActivity).bookmark.id,replaceService.originIdiom)
     }
 
 
@@ -323,10 +322,10 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-        englishTextsTextView.text = (activity as TranslatedDisplayActivity).bookmark.english
-        idioms = AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms)
-        (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
-        (activity as TranslatedDisplayActivity).wordClickableService.generateClickableSpan((activity as TranslatedDisplayActivity).bookmark.english.toString(),(activity as TranslatedDisplayActivity).bookmark.idioms,behaviour)
+        englishTextsTextView.text = (activity as DetailActivity).bookmark.english
+        idioms = AppUtil.getListOfIdioms((activity as DetailActivity).bookmark.idioms)
+        (activity as DetailActivity).isFromEnglishFragment = true
+        (activity as DetailActivity).wordClickableService.generateClickableSpan((activity as DetailActivity).bookmark.english.toString(),(activity as DetailActivity).bookmark.idioms,behaviour)
     }
 
 
@@ -334,7 +333,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
     fun onCompleted(linksEvent : EnglishFragmentLinksEvent) {
         AppUtil.makeErrorLog("sampaiiii kawan")
 
-        Observable.just(LinkBuilder.from(activity!!,(activity as TranslatedDisplayActivity).bookmark.english.toString()).addLinks(linksEvent.links).build()
+        Observable.just(LinkBuilder.from(activity!!,(activity as DetailActivity).bookmark.english.toString()).addLinks(linksEvent.links).build()
         ).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
             englishTextsTextView.setText(it)
             englishTextsTextView.movementMethod = TouchableMovementMethod.instance
@@ -346,8 +345,8 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         isFirstTimeClickedIdiom = true
         replaceService.originIdiom = idiomEvent.idiom
         showPopUpWindow()
-        if(!(activity as TranslatedDisplayActivity).isIdiomSynonymMode){
-            (activity as TranslatedDisplayActivity).getTranslation(idiomEvent.idiom)
+        if(!(activity as DetailActivity).isIdiomSynonymMode){
+            (activity as DetailActivity).getTranslation(idiomEvent.idiom)
         }
     }
 
@@ -356,7 +355,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         currentClickedIdiomTranslation = idiomTranslationEvent.translation
         if(isNotFoundInSentence){
             replaceService.existingIdiom = idiomTranslationEvent.translation
-            replaceService.isIdiomTranslationExist((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+            replaceService.isIdiomTranslationExist((activity as DetailActivity).bookmark.indonesian.toString())
         }
         else{
             currentClickedIdiomTranslation = idiomTranslationEvent.translation
@@ -454,8 +453,8 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
         englishTextsTextView.text = bookmark.english
         AppUtil.makeErrorLog("hello new world "+bookmark.idioms)
         idioms = AppUtil.getListOfIdioms(bookmark.idioms)
-        (activity as TranslatedDisplayActivity).isFromEnglishFragment = true
-        (activity as TranslatedDisplayActivity).wordClickableService.generateClickableSpan(bookmark.english.toString(),bookmark.idioms,behaviour)
+        (activity as DetailActivity).isFromEnglishFragment = true
+        (activity as DetailActivity).wordClickableService.generateClickableSpan(bookmark.english.toString(),bookmark.idioms,behaviour)
     }
 
 

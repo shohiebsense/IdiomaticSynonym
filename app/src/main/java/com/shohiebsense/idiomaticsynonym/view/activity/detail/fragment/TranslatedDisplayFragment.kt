@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
+package com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment
 
 import android.os.Bundle
 import android.support.annotation.NonNull
@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.api.ChosenSynonymWord
 import com.shohiebsense.idiomaticsynonym.model.event.BookmarkViewEvent
@@ -64,7 +64,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     companion object {
         fun newInstance(lastId: Int) : TranslatedDisplayFragment {
             val args = Bundle()
-            args.putInt(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
+            args.putInt(DetailActivity.INTENT_LAST_ID, lastId)
             val fragment = TranslatedDisplayFragment()
             fragment.arguments = args
             return fragment
@@ -75,7 +75,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
-        lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
+        lastId = arguments!!.getInt(DetailActivity.INTENT_LAST_ID)
         setHasOptionsMenu(true)
     }
 
@@ -110,7 +110,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onUpdatedTranslation(event : UpdatedTranslationEvent) {
         AppUtil.makeErrorLog("translation updated?")
-        translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+        translatedTextView.text = Html.fromHtml((activity as DetailActivity).bookmark.indonesian.toString())
     }
 
     fun fetchKateglo(meanings: String, index: Int){
@@ -164,11 +164,11 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
     fun onChangeOrientation(e: ViewEvent) {
         AppUtil.makeErrorLog("on orientation changed")
         if(!e.isWrapped){
-            val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as TranslatedDisplayActivity).bookmark.indonesian.toString(),(activity as TranslatedDisplayActivity).bookmark.indexedSentences)
+            val newlinesentence = AppUtil.separateParagraphIntoEachLine((activity as DetailActivity).bookmark.indonesian.toString(),(activity as DetailActivity).bookmark.indexedSentences)
             translatedTextView.setText(Html.fromHtml(newlinesentence))
         }
         else{
-            translatedTextView.setText(Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString()))
+            translatedTextView.setText(Html.fromHtml((activity as DetailActivity).bookmark.indonesian.toString()))
         }
     }
 
@@ -200,7 +200,7 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-        translatedTextView.text = Html.fromHtml((activity as TranslatedDisplayActivity).bookmark.indonesian.toString())
+        translatedTextView.text = Html.fromHtml((activity as DetailActivity).bookmark.indonesian.toString())
     }
 
     override fun onFetched(bookmark: BookmarkedEnglish) {

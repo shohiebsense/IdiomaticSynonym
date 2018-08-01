@@ -1,8 +1,9 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.obsoletes
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import com.shohiebsense.idiomaticsynonym.R
 
 class DriveSignInActivity : AppCompatActivity() {
 

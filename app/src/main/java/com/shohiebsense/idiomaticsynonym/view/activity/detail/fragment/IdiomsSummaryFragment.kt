@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay
+package com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment
 
 import android.os.Bundle
 import android.os.Handler
@@ -18,7 +18,7 @@ import com.leochuan.ScaleLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
@@ -66,8 +66,8 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
     private var mListener: OnClickedItemListener = object : OnClickedItemListener {
         override fun onItemClicked(item: String) {
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
-            (activity as TranslatedDisplayActivity).isFromEnglishFragment = false
-            (activity as TranslatedDisplayActivity).wordClickableService.getMeaningFromIdiom(item)
+            (activity as DetailActivity).isFromEnglishFragment = false
+            (activity as DetailActivity).wordClickableService.getMeaningFromIdiom(item)
         }
     }
 
@@ -75,8 +75,8 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
         override fun onIdiomItemClick(word: String) {
 
             behaviour.state = BottomSheetBehavior.STATE_HIDDEN
-            (activity as TranslatedDisplayActivity).isFromEnglishFragment = false
-            (activity as TranslatedDisplayActivity).getSynonym(word)
+            (activity as DetailActivity).isFromEnglishFragment = false
+            (activity as DetailActivity).getSynonym(word)
         }
     }
 
@@ -105,7 +105,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
         fun newInstance(lastId : Int): IdiomsSummaryFragment {
             val fragment = IdiomsSummaryFragment()
             val args = Bundle()
-            args.putInt(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
+            args.putInt(DetailActivity.INTENT_LAST_ID, lastId)
             fragment.arguments = args
             return fragment
         }
@@ -139,7 +139,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
         idioms = ArrayList()
-        lastId = arguments!!.getInt(TranslatedDisplayActivity.INTENT_LAST_ID)
+        lastId = arguments!!.getInt(DetailActivity.INTENT_LAST_ID)
 
     }
 
@@ -173,7 +173,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onGettingBookmark(event : BookmarkViewEvent){
-        Observable.just(AppUtil.getListOfIdioms((activity as TranslatedDisplayActivity).bookmark.idioms))
+        Observable.just(AppUtil.getListOfIdioms((activity as DetailActivity).bookmark.idioms))
         .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
             if(it.isEmpty()){
                 emptyTextView.text = "Empty"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shohiebsense.idiomaticsynonym;
+package com.shohiebsense.idiomaticsynonym.view.activity.editor;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -27,6 +27,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+
+import com.shohiebsense.idiomaticsynonym.R;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;

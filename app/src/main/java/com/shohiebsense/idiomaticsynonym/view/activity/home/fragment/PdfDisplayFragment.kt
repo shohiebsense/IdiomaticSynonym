@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.home
+package com.shohiebsense.idiomaticsynonym.view.activity.home.fragment
 
 import android.Manifest
 import android.app.Activity
@@ -26,15 +26,15 @@ import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.SettingsActivity
-import com.shohiebsense.idiomaticsynonym.UnderliningActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.setting.SettingsActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.underlining.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.services.PdfDisplayerService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.custom.InputDocumentPageDialogFragment
 import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
-import com.shohiebsense.idiomaticsynonym.view.fragment.UnderliningFragment
+import com.shohiebsense.idiomaticsynonym.view.activity.underlining.fragment.UnderliningFragment
 import de.mateware.snacky.Snacky
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.UnderliningActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.underlining.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import kotlinx.android.synthetic.main.obsolete_fragment_read.*

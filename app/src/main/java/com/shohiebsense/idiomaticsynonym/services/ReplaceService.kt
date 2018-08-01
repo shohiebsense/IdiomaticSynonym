@@ -1,6 +1,6 @@
 package com.shohiebsense.idiomaticsynonym.services
 
-import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity
 import com.shohiebsense.idiomaticsynonym.model.ReplaceHistory
 import com.shohiebsense.idiomaticsynonym.model.ReplacedSentence
 import com.shohiebsense.idiomaticsynonym.services.emitter.ReplacedHistoryEmitter
@@ -11,7 +11,7 @@ import com.shohiebsense.idiomaticsynonym.utils.AppUtil
  * Created by Shohiebsense on 11/07/2018
  */
 
-class ReplaceService(val activity: TranslatedDisplayActivity, val listener : ReplaceService.ReplaceListener) : ReplacedHistoryEmitter.ReplacedHistoryCallback {
+class ReplaceService(val activity: DetailActivity, val listener : ReplaceService.ReplaceListener) : ReplacedHistoryEmitter.ReplacedHistoryCallback {
 
 
     lateinit var newIdiom: String

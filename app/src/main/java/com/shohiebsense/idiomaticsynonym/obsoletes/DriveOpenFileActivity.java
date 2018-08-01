@@ -11,16 +11,13 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shohiebsense.idiomaticsynonym;
+package com.shohiebsense.idiomaticsynonym.obsoletes;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,6 +26,8 @@ import android.widget.TextView;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.events.OpenFileCallback;*/
+import com.shohiebsense.idiomaticsynonym.R;
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity;
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish;
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter;
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil;
@@ -190,7 +189,7 @@ public class DriveOpenFileActivity extends BaseDemoActivity implements BookmarkD
     @Override
     public void onFailedFetched() {
         AppUtil.Companion.makeErrorLog("unik, errornya malah ke sini");
-        Intent intent = new Intent(this,TranslatedDisplayActivity.class);
+        Intent intent = new Intent(this, DetailActivity.class);
         setResult(Activity.RESULT_CANCELED,intent);
         finish();
     }

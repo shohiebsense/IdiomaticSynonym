@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.view.activity.detail
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,11 +20,15 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.widget.ToggleButton
 import com.klinker.android.link_builder.Link
+import com.shohiebsense.idiomaticsynonym.view.activity.editor.ContentEditorActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.createfile.CreateFileActivity
+import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.model.BookmarkedEnglish
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.WordClickableService
 import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService
 import com.shohiebsense.idiomaticsynonym.view.callbacks.WordClickableCallback
+import com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity
 import de.mateware.snacky.Snacky
 import kotlinx.android.synthetic.main.activity_translated_display.*
 import kotlinx.android.synthetic.main.view_idiom_item_toggle.view.*
@@ -33,7 +37,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransactionListener, WordClickableCallback, KategloService.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback, BookmarkDataEmitter.UpdateBookmarkCallback {
+class DetailActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransactionListener, WordClickableCallback, KategloService.KategloListener, BookmarkDataEmitter.SingleBookmarkCallback, BookmarkDataEmitter.UpdateBookmarkCallback {
 
     override fun onCompleted(links: ArrayList<Link>) {
         AppUtil.makeErrorLog("hii this is from english fragment ")
@@ -163,7 +167,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     var dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
         when (which) {
             DialogInterface.BUTTON_POSITIVE -> {
-                startActivity(Intent(this,MainActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }
 
@@ -180,7 +184,7 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
                     .setNegativeButton(getString(R.string.no), dialogClickListener).show()
             return
         }
-        startActivity(Intent(this,MainActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
@@ -246,19 +250,19 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
         toggleTranslateButton = toggleTranslateItem?.actionView!!.toggle_button_translate
         toggleTranslateButton!!.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
-                toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this,R.color.soft_white))
+                toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this, R.color.soft_white))
             }
             else{
-                toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this,R.color.moreYellowColor))
+                toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this, R.color.moreYellowColor))
             }
             isIdiomSynonymMode = !isIdiomSynonymMode
             AppUtil.makeDebugLog("is in what mode, idiom mode? "+isIdiomSynonymMode)
         }
         if(toggleTranslateButton!!.isChecked){
-            toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this,R.color.soft_white))
+            toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this, R.color.soft_white))
         }
         else{
-            toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this,R.color.moreYellowColor))
+            toggleTranslateButton!!.setTextColor(ContextCompat.getColor(this, R.color.moreYellowColor))
         }
         return super.onPrepareOptionsMenu(menu)
     }
@@ -278,21 +282,21 @@ class TranslatedDisplayActivity : AppCompatActivity(), BookmarkQueryService.Comp
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.generateFileOption -> {
-                val intent = Intent(this,CreateFileActivity::class.java)
+                val intent = Intent(this, CreateFileActivity::class.java)
                 intent.putExtra(CreateFileActivity.INTENT_ID,lastId)
                 startActivity(intent)
             }
             R.id.updateIndonesianOption ->{
-                val intent = Intent(this,ContentEditorActivity::class.java)
+                val intent = Intent(this, ContentEditorActivity::class.java)
                 intent.putExtra(ContentEditorActivity.INTENT_ID,lastId)
                 startActivityForResult(intent, UPDATE_RESULT)
             }
             R.id.toggleEachLineOption ->{
                 if(isWrapped){
-                    toggleEachLineItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_sort_white_24))
+                    toggleEachLineItem?.setIcon(ContextCompat.getDrawable(this, R.drawable.baseline_sort_white_24))
                 }
                 else{
-                    toggleEachLineItem?.setIcon(ContextCompat.getDrawable(this,R.drawable.baseline_wrap_text_white_24))
+                    toggleEachLineItem?.setIcon(ContextCompat.getDrawable(this, R.drawable.baseline_wrap_text_white_24))
                 }
                 EventBus.getDefault().post(ViewEvent(isWrapped))
                 isWrapped = !isWrapped

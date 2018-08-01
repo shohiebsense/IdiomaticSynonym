@@ -1,13 +1,10 @@
 package com.shohiebsense.idiomaticsynonym.view.items
 
-import android.content.Intent
 import android.support.v4.content.ContextCompat
 import android.view.View
 import com.mikepenz.fastadapter.FastAdapter
-import com.shohiebsense.idiomaticsynonym.LanguageSettingActivity
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.LocaleManager
-import kotlinx.android.synthetic.main.fragment_indexedsentencelist.view.*
 import kotlinx.android.synthetic.main.item_language.view.*
 
 

@@ -28,31 +28,30 @@
 
 
 
-        <activity android:name=".SplashActivity">
+        <activity android:name=".view.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".TranslatedDisplayActivity" />
-        <activity android:name=".BookmarkedActivity" />
-        <activity android:name=".UnderliningActivity" />
-        <activity android:name=".DriveSignInActivity" />
+        <activity android:name="com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity" />
+        <activity android:name="com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity" />
+        <activity android:name=".obsoletes.BookmarkedActivity" />
+        <activity android:name=".view.activity.underlining.UnderliningActivity" />
+        <activity android:name=".obsoletes.DriveSignInActivity" />
         <activity
-            android:name=".DriveCreateFileActivity"
+            android:name=".obsoletes.DriveCreateFileActivity"
             android:noHistory="true" />
-        <activity android:name=".DriveOpenFileActivity" />
-        <activity android:name=".EditorActivity" />
+        <activity android:name=".obsoletes.DriveOpenFileActivity" />
         <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
         <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
-        <activity android:name=".ContentEditorActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".view.activity.editor.ContentEditorActivity" />
+        <activity android:name=".view.activity.setting.SettingsActivity" />
         <activity
-            android:name=".LanguageSettingActivity"
+            android:name=".view.activity.setting.LanguageSettingActivity"
             android:noHistory="true" />
-        <activity android:name=".CreateFileActivity"></activity>
+        <activity android:name=".view.activity.createfile.CreateFileActivity"></activity>
 
     </application>
 

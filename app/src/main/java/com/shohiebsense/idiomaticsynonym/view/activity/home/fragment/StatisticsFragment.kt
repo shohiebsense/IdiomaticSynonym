@@ -1,16 +1,14 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment.home
+package com.shohiebsense.idiomaticsynonym.view.activity.home.fragment
 
 import android.content.Intent
-import android.media.audiofx.BassBoost
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.SettingsActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.setting.SettingsActivity
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.view.items.StatisticItem
 import kotlinx.android.synthetic.main.fragment_statistics.*

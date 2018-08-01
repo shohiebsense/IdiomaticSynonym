@@ -1,7 +1,5 @@
-package com.shohiebsense.idiomaticsynonym
+package com.shohiebsense.idiomaticsynonym.obsoletes
 
-import android.app.Activity
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -18,17 +16,12 @@ import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.drive.*
 import com.google.android.gms.tasks.Task*/
-import org.jetbrains.anko.act
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.AsyncTask
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.*
+import com.shohiebsense.idiomaticsynonym.R
 import kotlinx.android.synthetic.main.fragment_gplus.*
-import java.io.ByteArrayOutputStream
-import java.io.IOException
 
 
 /**
@@ -60,7 +53,7 @@ class DriveSignInFragment : Fragment() /*GoogleApiClient.OnConnectionFailedListe
 
     companion object {
 
-        fun newInstance(id : Int) : DriveSignInFragment{
+        fun newInstance(id : Int) : DriveSignInFragment {
             val fragment = DriveSignInFragment()
             val args = Bundle()
             args.putInt(DriveSignInActivity.INTENT_ID,id)

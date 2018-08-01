@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import com.shohiebsense.idiomaticsynonym.R
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.EnglishResultFragment
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.IdiomsSummaryFragment
-import com.shohiebsense.idiomaticsynonym.view.fragment.translateddisplay.TranslatedDisplayFragment
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment.EnglishResultFragment
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment.IdiomsSummaryFragment
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.fragment.TranslatedDisplayFragment
 
 /**
  * Created by Shohiebsense on 10/01/2018.

@@ -1,4 +1,4 @@
-package com.shohiebsense.idiomaticsynonym.view.fragment
+package com.shohiebsense.idiomaticsynonym.view.activity.underlining.fragment
 
 import android.app.AlertDialog
 import android.app.Fragment
@@ -22,8 +22,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.view.custom.CustomSnackbar
-import com.shohiebsense.idiomaticsynonym.TranslatedDisplayActivity
-import com.shohiebsense.idiomaticsynonym.UnderliningActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity
+import com.shohiebsense.idiomaticsynonym.view.activity.underlining.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
@@ -171,12 +171,12 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.goToTranslatedDisplayOption -> {
-                val intent = Intent(activity, TranslatedDisplayActivity::class.java)
+                val intent = Intent(activity, DetailActivity::class.java)
                 AppUtil.makeDebugLog("filenamee is ? "+fileName)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_LAST_ID, lastId)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_FILENAME, fileName)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_IS_TRANSLATION_EMPTY,false)
-                intent.putExtra(TranslatedDisplayActivity.INTENT_IS_FROM_BOOKMARK_ITEM,false)
+                intent.putExtra(DetailActivity.INTENT_LAST_ID, lastId)
+                intent.putExtra(DetailActivity.INTENT_FILENAME, fileName)
+                intent.putExtra(DetailActivity.INTENT_IS_TRANSLATION_EMPTY,false)
+                intent.putExtra(DetailActivity.INTENT_IS_FROM_BOOKMARK_ITEM,false)
                 startActivity(intent)
                 activity.finish()
             }
