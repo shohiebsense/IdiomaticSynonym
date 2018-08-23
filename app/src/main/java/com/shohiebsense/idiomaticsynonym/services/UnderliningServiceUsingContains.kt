@@ -32,7 +32,6 @@ import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
-import org.apache.commons.lang3.time.StopWatch
 import java.io.IOException
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
@@ -165,8 +164,6 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
             AppUtil.makeErrorLog("check your connection")
         }
         val singleCombinedIdiom = HashSet<String>()
-        val timer = StopWatch()
-        timer.start()
         //MaxentTagger.tokenizeText(StringReader(extractedPdfTexts.toString())).forEachIndexed { sentenceIndex, sentenceChar ->
         AppUtil.makeDebugLog("tokenize finished")
         // var sentence = Sentence.listToString(sentenceChar)
@@ -206,9 +203,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         }
 
         bookmarkDataEmitter.updateIdioms(idioms.toString(), bookmarkDataEmitter.getLastId())
-        timer.stop()
-        val seconds = timer.time/60
-        Log.e("shohiebsense ","time ellapsedd seconds "+seconds)
+
         Log.e("shohiebsenseeee ","linkss size "+clickableIdioms.size)
         return clickableIdioms
     }
@@ -347,8 +342,6 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.newThread())
                 .map(object : Function<ArrayList<CombinedIdiom>, Unit>{
                     override fun apply(combinedIdioms: ArrayList<CombinedIdiom>) {
-                        val timer = StopWatch()
-                        timer.start()
                         AppUtil.makeDebugLog("tokenize finished")
                         val idioms = StringBuilder()
                         for(i in combinedIdioms.indices){
@@ -373,9 +366,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                         }
                         AppUtil.makeErrorLog("overall idioms "+idioms.toString())
                         bookmarkDataEmitter.updateIdioms(idioms.toString(),id)
-                        timer.stop()
-                        AppUtil.makeErrorLog("jadi enggak ke sini nihhhh")
-                        val seconds = timer.time/60
+
                     }
                 }).subscribe(object : Observer<Unit>{
                     override fun onComplete() {

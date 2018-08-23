@@ -11,7 +11,6 @@ import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 /*import com.google.cloud.translate.Translate
 import com.google.cloud.translate.TranslateOptions*/
-import com.google.common.collect.ImmutableList
 import com.klinker.android.link_builder.Link
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
