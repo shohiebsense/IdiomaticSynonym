@@ -21,7 +21,7 @@ import java.util.concurrent.Callable
  * Created by Shohiebsense on 24/12/2017.
  */
 
-class YandexTranslationService(context: Context) {
+class YandexTranslationService(val context: Context, val listener: YandexListener) {
     var BASE_URL = "https://translate.yandex.net/api/v1.5/tr.json/translate?"
     var API_KEY = "trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f"
     val JSON = MediaType.parse("application/json; charset=utf-8")
@@ -35,22 +35,29 @@ class YandexTranslationService(context: Context) {
                 .addHeader("Connection","close")
                 .get()
                 .build()
-
-        var response = client.newCall(request).execute()
-        return response
+        if(AppUtil.checkInternetConnection(context)){
+            return client.newCall(request).execute()
+        }
+        else{
+            AppUtil.makeErrorLog("error connection")
+            listener.onErrorConnection()
+            return null
+        }
     }
 
-    fun getSingleTranslate(word : String, listener : YandexListener) {
+    fun getSingleTranslate(word : String) {
         var callable = object : Callable<String>{
             override fun call(): String? {
-                val response = translateExe(word)
-                if (response!!.isSuccessful) {
-                    val responseString = response.body()!!.string()
-                    val jsonObject = JSONObject(responseString)
-                    AppUtil.makeErrorLog("jsonobjecttt "+jsonObject.toString())
-                    val textNode = jsonObject.getJSONArray("text")
-                    val translationText = textNode.getString(0)
-                    return translationText
+                var response = translateExe(word)
+                if(response != null){
+                    if (response.isSuccessful) {
+                        val responseString = response.body()!!.string()
+                        val jsonObject = JSONObject(responseString)
+                        AppUtil.makeErrorLog("jsonobjecttt "+jsonObject.toString())
+                        val textNode = jsonObject.getJSONArray("text")
+                        val translationText = textNode.getString(0)
+                        return translationText
+                    }
                 }
                 return ""
             }
@@ -81,52 +88,72 @@ class YandexTranslationService(context: Context) {
     fun getSingleTranslate(observer: Observer<String>, text: MutableList<String>) {
         text.toObservable().subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe{
             val response = translateExe(it)
-            if (response!!.isSuccessful) {
-                val responseString = response.body()!!.string()
-                val jsonObject = JSONObject(responseString)
-                AppUtil.makeErrorLog("dapet gaa nya "+jsonObject.toString()+ "  lang"+jsonObject.getString("lang"))
-                val textNode = jsonObject.getJSONArray("text")
-                val translationText = textNode.getString(0)
-                AppUtil.makeErrorLog("dapet ga oyyy "+translationText)
-                observer.onNext(translationText)
+            if(response != null){
+                if (response.isSuccessful) {
+                    val responseString = response.body()!!.string()
+                    val jsonObject = JSONObject(responseString)
+                    AppUtil.makeErrorLog("dapet gaa nya "+jsonObject.toString()+ "  lang"+jsonObject.getString("lang"))
+                    val textNode = jsonObject.getJSONArray("text")
+                    val translationText = textNode.getString(0)
+                    AppUtil.makeErrorLog("dapet ga oyyy "+translationText)
+                    observer.onNext(translationText)
+                }
             }
+
         }
         //Observable.fromCallable(callable).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer)
     }
 
     fun getIdiomTranslate(observer: Observer<String>, text: String) {
         Observable.create<String> {
-            val response = translateExe(text)
-            if (response!!.isSuccessful) {
-                val responseString = response.body()!!.string()
-                val jsonObject = JSONObject(responseString)
-                AppUtil.makeErrorLog("dapet gaa nya "+jsonObject.toString()+ "  lang"+jsonObject.getString("lang"))
-                val textNode = jsonObject.getJSONArray("text")
-                val translationText = textNode.getString(0)
-                AppUtil.makeErrorLog("dapet ga oyyy "+translationText)
-                observer.onNext(translationText)
+                val response = translateExe(text)
+            if(response != null){
+                if (response.isSuccessful) {
+                    val responseString = response.body()!!.string()
+                    val jsonObject = JSONObject(responseString)
+                    AppUtil.makeErrorLog("dapet gaa nya "+jsonObject.toString()+ "  lang"+jsonObject.getString("lang"))
+                    val textNode = jsonObject.getJSONArray("text")
+                    val translationText = textNode.getString(0)
+                    AppUtil.makeErrorLog("dapet ga oyyy "+translationText)
+                    observer.onNext(translationText)
+                }
             }
         }.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe()
     }
 
+    fun bulkTranslate(pdfText : String) : String{
+        val response = translateExe(pdfText)
+        if(response != null){
+            if (response.isSuccessful) {
+                val responseString = response.body()!!.string()
+                val jsonObject = JSONObject(responseString)
+                val textNode = jsonObject.getJSONArray("text")
+                var translationText = textNode.getString(0).trim()
+
+                return translationText
+            }
+        }
+
+        return ""
+    }
 
 
-    fun translate(it: String, index: Int) : SpannableStringBuilder {
+
+    fun translate(it: String, index: Int) : String {
         //commented due to development, uncomment again.
         //val detections = translateService.detect(ImmutableList.of(it))
         val response = translateExe(it)
-        if (response!!.isSuccessful) {
-            val responseString = response.body()!!.string()
-            val jsonObject = JSONObject(responseString)
-            val textNode = jsonObject.getJSONArray("text")
-            var translationText = textNode.getString(0).trim()
-            var prepended = " "
-            if(index == 0){
-                prepended = ""
+        if(response != null){
+            if (response.isSuccessful) {
+                val responseString = response.body()!!.string()
+                val jsonObject = JSONObject(responseString)
+                val textNode = jsonObject.getJSONArray("text")
+                var translationText = textNode.getString(0).trim()
+
+                return  translationText
             }
-            return SpannableStringBuilder(prepended + translationText)
         }
-        return SpannableStringBuilder("")
+        return ""
     }
 
 
@@ -135,6 +162,7 @@ class YandexTranslationService(context: Context) {
 
     interface YandexListener {
         fun onGetTranslation(text : String)
+        fun onErrorConnection()
     }
 
 

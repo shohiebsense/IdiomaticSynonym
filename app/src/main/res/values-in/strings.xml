@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">EXprediom</string>
-    <string name="translate_api">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
 
     <!-- titles, subtitles -->
     <string name="subtitle_upload">Mohon unggah berkas pdf</string>
@@ -45,9 +44,6 @@
     <string name="confirmation_back_no_upload">Anda yakin kembali tanpa melakukan penghasilan text?</string>
     <string name="yes">Ya</string>
     <string name="no">Tidak</string>
-    <string name="signed_in_fmt">Login sebagai: %s</string>
-    <string name="signed_in">Login</string>
-    <string name="loading">Loading</string>
     <string name="contacts_permission_rationale">Contact access diperlukan</string>
     <string name="select_file">Pilih file</string>
     <string name="select_folder">Pilih Folder</string>
@@ -87,4 +83,20 @@
     <string name="menuOptions_idiom_linear">Tampilkan Idiom List secara Linear</string>
     <string name="menuOptions_idiom_slide">Tampilkan Idiom List secara Slide</string>
     <string name="menuOptions_idiom_card">Tampilkan Idiom List secara Card</string>
+    <string name="save_as">Simpan</string>
+    <string name="language_setting">Setelan Bahasa</string>
+    <string name="english">Inggris</string>
+    <string name="indonesian">Bahasa Indonesia</string>
+    <string name="number_of_pages">Jumlah halaman</string>
+    <string name="error_check_your_connection">Error : Periksa Koneksi Internet</string>
+    <string name="label_name">Nama</string>
+    <string name="label_save">Simpan</string>
+    <string name="decline">Batal</string>
+    <string name="mode_synonym">Sinonim</string>
+    <string name="mode_translate">Translasi</string>
+    <string name="action_settings">Setelan</string>
+    <string name="idiom_not_found">Idiom tidak ditemukan</string>
+    <string name="options">Pilihan</string>
+    <string name="navigation_drawer_open">open navigation</string>
+    <string name="navigation_drawer_close">close navigation</string>
 </resources>

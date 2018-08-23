@@ -29,4 +29,5 @@ interface UnderliningCallback {
     fun onTranslatingIdiomOneByOne()
     fun onFinishedTranslatingIdiomOneByOne(combineStringMeaning: MutableList<String>)
     fun onErrorTranslatingIdiomOneByOne()
+    fun onErrorTranslating()
 }

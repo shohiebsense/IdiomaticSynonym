@@ -24,10 +24,6 @@
             android:id="@+id/translatedDisplayLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_layout_standard"
-            android:layout_marginBottom="@dimen/margin_layout_standard"
-            android:layout_marginStart="@dimen/margin_layout_standard"
-            android:layout_marginEnd="@dimen/margin_layout_standard"
             >
 
             <TextView
@@ -35,6 +31,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="@dimen/margin_item_standard"
+                android:layout_marginTop="@dimen/margin_layout_standard"
+                android:layout_marginBottom="@dimen/margin_layout_standard"
+                android:layout_marginStart="@dimen/margin_layout_standard"
+                android:layout_marginEnd="@dimen/margin_layout_standard"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

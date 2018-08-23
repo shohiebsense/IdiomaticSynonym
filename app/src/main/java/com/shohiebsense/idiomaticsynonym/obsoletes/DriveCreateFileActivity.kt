@@ -43,7 +43,6 @@ class DriveCreateFileActivity  : BaseDemoActivity(), BookmarkDataEmitter.SingleB
             }
         }*/
         setContentView(R.layout.activity_splash)
-        loadingDescTextView.setText("uploading ....")
     }
 
     override fun onStart() {

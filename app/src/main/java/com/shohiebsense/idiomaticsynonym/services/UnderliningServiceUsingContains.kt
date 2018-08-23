@@ -54,9 +54,10 @@ class UnderliningService(val context : Context, val uri : Uri) {
 */
 class UnderliningServiceUsingContains constructor (val context: Context) : YandexTranslationService.YandexListener {
 
+
     var translatedIdiomText : String = ""
     lateinit var underliningCallback: UnderliningCallback
-    var translatedFetchedPdfText = arrayListOf<SpannableStringBuilder>()
+    var translatedFetchedPdfText = arrayListOf<String>()
     //lateinit var translateService : TranslateService
     lateinit var translateService : YandexTranslationService
     var clickableIdioms = arrayListOf<Link>()
@@ -145,51 +146,23 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
             override fun onComplete() {
                 AppUtil.makeDebugLog("completed !!!")
                 underliningCallback.onFinishedUnderliningText(clickableIdioms)
-                translate()
-            }
-        }
-    }
-
-    private fun getTranslationObserver(): Observer<SpannableStringBuilder> {
-        return object : Observer<SpannableStringBuilder> {
-            override fun onSubscribe(d: Disposable) {
-                AppUtil.makeDebugLog("Underlining Begins ")
-            }
-
-
-            override fun onNext(translationSpannable : SpannableStringBuilder) {
-                this@UnderliningServiceUsingContains.translationSpannable = translationSpannable
-            }
-
-            override fun onError(e: Throwable) {
-                AppUtil.makeDebugLog("error underlining :  "+e.toString())
-
-            }
-
-            override fun onComplete() {
-                AppUtil.makeDebugLog("completed !!!")
-                underliningCallback.onFinishedUnderliningText(clickableIdioms)
-                translate()
+                if(extractedPdfTexts.length <= 2183){
+                    bulkTranslate()
+                }
+                else{
+                    translate()
+                }
             }
         }
     }
 
 
-    fun getSentence(text: String, word: String): String? {
-        val END_OF_SENTENCE = Pattern.compile("\\s+[^.!?]*[.!?]")
-        val lcword = word.toLowerCase()
-        for (sentence in END_OF_SENTENCE.split(text)) {
-            if (sentence.toLowerCase().contains(lcword)) {
-                return sentence
-            }
-        }
-        return null
-    }
+
 
     fun convertToCharSequence(combinedIdioms: ArrayList<CombinedIdiom>, behaviour: BottomSheetBehavior<View>): ArrayList<Link> {
-
         if(AppUtil.checkInternetConnection(context)){
-            translateService = YandexTranslationService(context)
+            translateService = YandexTranslationService(context,this)
+            AppUtil.makeErrorLog("check your connection")
         }
         val singleCombinedIdiom = HashSet<String>()
         val timer = StopWatch()
@@ -258,21 +231,49 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         translatedFetchedPdfText.forEach {
             spannableStringBuilder.append(it)
         }
-
         AppUtil.makeErrorLog("finished the indonesian  "+spannableStringBuilder.toString())
         bookmarkDataEmitter.updateTranslation(spannableStringBuilder,sentenceIndex)
         underliningCallback.onFinishedTranslatingText()
     }
 
+    fun bulkTranslate(){
+        if(!this::translateService.isInitialized){
+            underliningCallback.onErrorTranslating()
+            return
+        }
+        Observable.create<String>{
+            it.onNext(translateService.bulkTranslate(extractedPdfTexts.toString()))
+            it.onComplete()
+        }.observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribeBy  (
+                onNext = {
+                    AppUtil.makeErrorLog("onNext Bulk "+it)
+                    translatedFetchedPdfText.add(it)
+                },
+                onError =  {
+                    AppUtil.makeErrorLog("error bulk translate : "+it.message)
+                    translate()
+                },
+                onComplete = {
+                    translateCompletion()
+                }
+        )
+    }
+
     fun translate(){
         var index = 0
-        sentences.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribeBy  (
+        if(!this::translateService.isInitialized){
+            underliningCallback.onErrorTranslating()
+            return
+        }
+        sentences.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).onErrorReturn {
+          "unkniwn "+it.message
+        } .subscribeBy  (
                 onNext = {
                     extractTranslation(it,index)
                     index++
                 },
                 onError =  {
-
+                    AppUtil.makeErrorLog("yoo "+it)
                     getError( it.toString())
                 },
                 onComplete = { translateCompletion() }
@@ -491,7 +492,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         else{
             combineStrings.add(idiom)
         }
-        translateService.getSingleTranslate(idiom, this)
+        translateService.getSingleTranslate(idiom)
     }
 
     override fun onGetTranslation(text: String) {
@@ -514,4 +515,48 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
 
         return images
     }
+
+    override fun onErrorConnection() {
+        underliningCallback.onErrorTranslating()
+    }
+
+
+    //UNUSED
+    fun getSentence(text: String, word: String): String? {
+        val END_OF_SENTENCE = Pattern.compile("\\s+[^.!?]*[.!?]")
+        val lcword = word.toLowerCase()
+        for (sentence in END_OF_SENTENCE.split(text)) {
+            if (sentence.toLowerCase().contains(lcword)) {
+                return sentence
+            }
+        }
+        return null
+    }
+
+
+    private fun getTranslationObserver(): Observer<SpannableStringBuilder> {
+        return object : Observer<SpannableStringBuilder> {
+            override fun onSubscribe(d: Disposable) {
+                AppUtil.makeDebugLog("Underlining Begins ")
+            }
+
+
+            override fun onNext(translationSpannable : SpannableStringBuilder) {
+                this@UnderliningServiceUsingContains.translationSpannable = translationSpannable
+            }
+
+            override fun onError(e: Throwable) {
+                AppUtil.makeDebugLog("error underlining :  "+e.toString())
+
+            }
+
+            override fun onComplete() {
+                AppUtil.makeDebugLog("completed !!!")
+                underliningCallback.onFinishedUnderliningText(clickableIdioms)
+                translate()
+            }
+        }
+    }
+
+    //ENDUNUSED
 }

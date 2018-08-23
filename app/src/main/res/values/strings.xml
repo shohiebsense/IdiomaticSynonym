@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">EXprediom</string>
-    <string name="translate_api">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
-    <string name="API_TRANSLATE_KEY">AIzaSyCQFyokRMIoC4JtMD4i5mWDbMTOrOmg6sM</string>
-    <string name="YANDEX_TRANSLATE_API">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
+    <string name="translate_api" translatable="false">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
+    <string name="YANDEX_TRANSLATE_API" translatable="false">trnsl.1.1.20170624T065148Z.2b459b88c8430b8f.6f17fd682b21e183634a4346b6065199184c589f</string>
     <!-- titles, subtitles -->
-    <string name="subtitle_upload">Please upload the pdf file</string>
+    <string name="subtitle_upload" >Please upload the pdf file</string>
 
     <!-- menus -->
     <string name="menuOptions_fetch">Fetch pdf</string>
@@ -32,8 +31,9 @@
 
     <string name="text_error_loading_queries">Error loading Queries</string>
 
+    <string name="make_sure_connect">Make sure you connect to Internet.</string>
 
-    <string name="lipsum">
+    <string name="lipsum" translatable="false">
         Lorem ipsum dolor sit amet, congue id facilisis, quis tincidunt fusce venenatis montes eos. Tincidunt est eget, neque dapibus ipsum maecenas nonummy sodales, quisque eget imperdiet. Pellentesque tempor at blandit vel ullamcorper, luctus sit, in ultricies neque ipsum. Posuere odio urna augue, faucibus sed dapibus pellentesque tincidunt volutpat magna, vel dictum tincidunt, pretium luctus felis, vivamus massa. Orci massa arcu feugiat a, consectetuer mauris non taciti nemo porttitor quis. In tortor eget duis nunc, vel id ultricies sed ligula, fusce a, ante sit, sit tenetur scelerisque sagittis sit.
 Sed id taciti morbi parturient metus, nec sed ut ullamcorper. At sit, natoque sollicitudin viverra. Ultricies vestibulum purus, non dictum auctor sit, lacinia fusce. Lectus velit lorem cras. Nec id faucibus praesent placerat viverra, rutrum neque tristique varius in eu, metus fringilla egestas, in lacinia justo vel lectus eu vivamus. Urna sed feugiat, donec sed. Dolor dolor adipiscing magna, dui nascetur nostra tellus, ligula cras sunt aliquam convallis ipsum suspendisse. Suspendisse morbi montes nisl, amet arcu justo ipsum enim, tortor suspendisse eget dis vel sem ligula, ante sed luctus id, justo convallis at excepturi et aenean. Ut ullamcorper erat, facilisis egestas nunc ac pellentesque augue vel, felis vestibulum mauris, accumsan lacus ac aperiam fringilla ipsum sit, tincidunt felis malesuada torquent rutrum accumsan. Soluta nonummy erat eget blandit dolor egestas, amet mauris molestie nulla malesuada. Lobortis sed, leo semper augue ac et donec lorem, nullam pede malesuada faucibus, duis lectus sociosqu vitae massa. Proin neque pellentesque, ligula diam eros fermentum in vitae, vitae volutpat sit maecenas, ultrices aliquam vel libero vitae blandit.
 Suspendisse imperdiet, et curabitur amet, nulla nulla congue vitae et. At amet pellentesque, ut quisque. Non in lectus, tincidunt suspendisse, dui sed, in pellentesque, erat amet urna arcu dolorem mi. Sit rhoncus, lectus dui torquent mi sed donec, volutpat in, id amet eget id ipsum, wisi luctus ornare ipsum mauris risus. Mauris adipiscing, sollicitudin turpis, lobortis posuere mi in at sodales, consectetuer velit ultrices interdum amet. Blandit suscipit nulla.
@@ -43,41 +43,31 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="dialog_message_input_page">Number of pages (from - to)</string>
     <string name="dialog_message_result_empty">The result is empty, find another document</string>
 
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="text_permission_storage_info">App needs storage permission for accessing database</string>
 
 
     <string name="text_title_translation">Translation</string>
-    <string name="text_title_sentence_index">Sentence Index</string>
     <string name="text_title_english">English Text</string>
-    <string name="text_title_indexed_sentence">Indexed Sentence</string>
 
     <string name="dialog_title_find_idioms">Find idioms</string>
     <string name="dialog_message_find_idioms">Now you could click idiom and it\'s meaning in indonesian is appears, After that, click the top right button to see the translation</string>
     <string name="dialog_find_idioms_and_replaced_it">Please wait until translation process is finished, While processing, now find idioms, and replaced it with using your senses and ability in english</string>
-    <string name="text_info_sentence_old">Old Sentence: </string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_action_bookmarks">Bookmarks</string>
     <string name="text_finished_saving">Saved!</string>
 
 
     <string name="text_navigation_do_translation">Translate</string>
-    <string name="text_navigation_bookmarks">Bookmarks</string>
     <string name="text_navigation_statistics">Statistics</string>
 
     <string name="text_statistic_books_translated">Books/Documents have been translated</string>
     <string name="text_statistic_idioms_found">Idioms have been found</string>
     <string name="text_statistic_indexed_sentences_found">Sentences that contain any Idiom been found</string>
 
-    <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="permission_required">Permission is required</string>
     <string name="text_not_valid_pdf">Not a valid pdf file</string>
     <string name="find_idioms">Find idioms</string>
-    <string name="bookmarks">Bookmarks</string>
     <string name="statistics">Statistics</string>
 
     <string name="error_invalid_page_number">Invalid number of pages</string>
@@ -88,49 +78,12 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="no">no</string>
 
 
-    <!-- Sign-in status messages -->
-    <string name="signed_in_fmt">Signed in as: %s</string>
-    <string name="signed_in">Signed in</string>
-    <string name="signing_in">Signing inâ€¦</string>
-    <string name="signed_out">Signed out</string>
-    <string name="signed_in_err">"Error: please check logs."</string>
-    <string name="error_null_person">
-        Error: Plus.PeopleApi.getCurrentPerson returned null. Ensure that the Google+ API is
-        enabled for your project, you have a properly configured google-services.json file
-        and that your device has an internet connection.
-    </string>
-    <string name="loading">Loading</string>
-    <string name="make_sure_connect">make sure your device is connected to Internet</string>
-    <string name="auth_code_fmt">Auth Code: %s</string>
-    <string name="id_token_fmt">ID Token: %s</string>
-
-    <!-- Google Play Services error for Toast -->
-    <string name="play_services_error_fmt">Google Play Services Error: %i</string>
-
-    <!-- Button labels -->
-    <string name="sign_out">Sign Out</string>
-    <string name="disconnect">Disconnect</string>
-
-    <!-- Content Description for images -->
-    <string name="desc_google_icon">Google Logo</string>
-
     <!-- Rationale for asking for Contacts -->
     <string name="contacts_permission_rationale">Contacts access is needed in order to retrieve your email address.</string>
-
-    <!-- Activity Names and Descriptions -->
-    <string name="name_sign_in_activity">SignInActivity</string>
-    <string name="desc_sign_in_activity">Signing in, signing out, and revoking access.</string>
-    <string name="desc_sign_in_activity_scopes">Signing in, signing out, and revoking access with Google Drive permissions.</string>
-    <string name="name_id_token_activity">IdTokenActivity</string>
-    <string name="desc_id_token_activity">Retrieving an ID Token for the user.</string>
-    <string name="desc_auth_code_activity">Demonstrate retrieving an auth code for authorizing your server.</string>
-    <string name="name_auth_code_activity">ServerAuthCodeActivity</string>
 
     <!-- TODO(user): replace with your real server client ID -->
     <!-- Server Client ID.  This should be a valid Web OAuth 2.0 Client ID obtained
          from https://console.developers.google.com/ -->
-    <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
-    <string name="name">Name :</string>
     <string name="select_file">Select File</string>
     <string name="select_folder">Select Folder</string>
     <string name="file_created">File Created</string>
@@ -139,26 +92,15 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="file_not_selected">File is not selected</string>
     <string name="content_loaded">Content loaded</string>
     <string name="read_failed">Read failed</string>
-    <string name="download_progress">Download progress</string>
     <string name="indonesian_text">indonesian text</string>
     <string name="menuOptions_updateIndonesian">Update Indonesian</string>
     <string name="success_update">Update Successful</string>
     <string name="failed_update">Update Failed</string>
     <string name="permission_denied_storage">Permission Denied</string>
-    <string name="permission_denied">Permission Denied</string>
     <string name="permission_deny">Deny</string>
     <string name="permission_retry">Retry</string>
-    <string name="save_as_success">Save successful as %s</string>
-    <string name="load_failure_1">Load failure</string>
-    <string name="save_as_failure">Save as failure %s</string>
-    <string name="load_failure_2">Load Failure %s</string>
     <string name="save_as">Save As</string>
-    <string name="no_file_picker">No file picker %s</string>
-    <string name="label_subject">Subject</string>
-    <string name="label_message">Message</string>
-    <string name="label_signature">Signature</string>
-    <string name="failed_docs">Couldn\'t find the doc</string>
-    <string name="histories">Histories</string>
+    <string name="no_file_picker" translatable="false">No file picker %s</string>
     <string name="text_navigation_history">History</string>
     <string name="update_translation">Update Translation</string>
     <string name="open_doc">Open doc</string>
@@ -166,13 +108,12 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="translating">Translating</string>
     <string name="done">Done</string>
     <string name="explore_idioms">You can explore synonym of each idiom based on founded idioms</string>
-    <string name="request_permission">REQUEST PERMISSION</string>
+    <string name="request_permission" translatable="false">REQUEST PERMISSION</string>
     <string name="empty">Empty</string>
     <string name="number_of_pages_allowed">Maximum Number of Pages Allowed is 14</string>
     <string name="language_setting">Language Setting</string>
     <string name="english">English</string>
     <string name="indonesian">Indonesian</string>
-    <string name="options">Options</string>
     <string name="number_of_pages">Number of pages</string>
     <string name="error_check_your_connection">Error : Check Your Connection</string>
     <string name="remind_me_later">Remind me later</string>
@@ -183,22 +124,20 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="new_file">New File Name</string>
     <string name="label_save">Save</string>
     <string name="decline">Decline</string>
-    <string name="drop_here">Drop_here</string>
 
-    <string name="error_translate_service_hasnt_ready">Error: Translate Service hasn\'t ready</string>
+    <string name="error_translate_service_hasnt_ready" translatable="false">Error: Translate Service hasn\'t ready</string>
     <string name="mode_synonym">Synonym</string>
     <string name="mode_translate">Translate</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="founded_sentences">Founded Sentences</string>
     <string name="idiom_not_found">Idiom not found</string>
     <string name="menuOptions_idiom_linear">Show Idiom List in Linear</string>
     <string name="menuOptions_idiom_slide">Show Idiom List In Slide</string>
     <string name="menuOptions_idiom_card">Show Idiom List in Card</string>
+    <string name="options">Options</string>
+    <string name="navigation_drawer_open">open navigation</string>
+    <string name="navigation_drawer_close">close navigation</string>
+    <string name="permission_denied" translatable="false">Permission Denied</string>
+    <string name="loading" translatable="false">Loading</string>
 </resources>
 

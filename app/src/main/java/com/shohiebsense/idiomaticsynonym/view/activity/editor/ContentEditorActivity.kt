@@ -54,13 +54,7 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
         var message: String? = null
         if (savedInstanceState == null) {
             val intent = intent
-            message = getStringExtra(intent, PARAM_MESSAGE)
-            mUseDarkTheme = intent.getBooleanExtra(PARAM_DARK_THEME, false)
-            mSplitToolbar = intent.getBooleanExtra(PARAM_SPLIT_TOOLBAR, false)
 
-        } else {
-            mUseDarkTheme = savedInstanceState.getBoolean(PARAM_DARK_THEME, false)
-            mSplitToolbar = savedInstanceState.getBoolean(PARAM_SPLIT_TOOLBAR, false)
         }
 
         // set theme
@@ -119,9 +113,6 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
 
         mRTManager!!.onSaveInstanceState(outState)
 
-
-        outState.putBoolean(PARAM_DARK_THEME, mUseDarkTheme)
-        outState.putBoolean(PARAM_SPLIT_TOOLBAR, mSplitToolbar)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -173,7 +164,6 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
                     filePath = filePath.replace("message_", "signature_")
                     s = FileHelper.load(this, filePath)
                 } else {
-                    Toast.makeText(this, R.string.load_failure_1, Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -227,9 +217,6 @@ class ContentEditorActivity : RTEditorBaseActivity(), BookmarkDataEmitter.Single
     private fun startAndFinish(clazz: Class<out Activity>) {
         val message = edit_content.getText(RTFormat.HTML)
         val intent = Intent(this, clazz)
-                .putExtra(PARAM_DARK_THEME, mUseDarkTheme)
-                .putExtra(PARAM_SPLIT_TOOLBAR, mSplitToolbar)
-                .putExtra(PARAM_MESSAGE, message)
         startActivity(intent)
         finish()
     }

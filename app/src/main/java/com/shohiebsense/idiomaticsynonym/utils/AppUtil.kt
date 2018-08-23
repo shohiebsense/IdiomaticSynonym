@@ -25,6 +25,8 @@ import org.apache.commons.lang3.time.StopWatch
 import org.jetbrains.anko.defaultSharedPreferences
 import android.support.design.widget.Snackbar
 import de.mateware.snacky.Snacky
+import io.reactivex.Observable
+import io.reactivex.Observer
 
 
 /**
@@ -551,6 +553,8 @@ class AppUtil {
             }
             return foundedSentences
         }
+
+
 
         fun showSnackbar(activity: Activity, state : Int, message : String, duration : Int){
             val snackbar = Snacky.builder().setActivity(activity).setText(message)

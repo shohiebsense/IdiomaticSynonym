@@ -339,13 +339,14 @@ class DetailActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransa
                 // Snacky.builder().setActivity(this).setText(getString(R.string.success_update)).success().show()
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.failed_docs))
+               // AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.failed_docs))
             }
         }
     }
 
     override fun onErrorShowing() {
         AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,getString(R.string.error_translate_service_hasnt_ready))
+        EventBus.getDefault().post(EnglishFragmentErrorEvent())
     }
 
     fun getTranslation(idiom : String){

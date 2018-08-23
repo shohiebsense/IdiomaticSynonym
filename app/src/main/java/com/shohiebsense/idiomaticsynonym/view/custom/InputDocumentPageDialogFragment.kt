@@ -42,7 +42,7 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
 
 
     interface InputDialogListener {
-        fun onConfirmedProcess(from : Int, to:Int)
+        fun performFetchingText(from : Int, to:Int)
     }
 
     lateinit var listener : InputDialogListener
@@ -89,7 +89,7 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
             var from = fromEditText.text.toString().toInt()
             var to = toEditText.text.toString().toInt()
             var number = to - from
-            listener.onConfirmedProcess(from,to)
+            listener.performFetchingText(from,to)
             dismiss()
         }
 

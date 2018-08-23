@@ -42,7 +42,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
                     android:text="@string/decline"
                     android:textColor="@android:color/white"/>
 
@@ -52,8 +51,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/drop_here"
                     android:textColor="@android:color/white"/>
 
             </LinearLayout>

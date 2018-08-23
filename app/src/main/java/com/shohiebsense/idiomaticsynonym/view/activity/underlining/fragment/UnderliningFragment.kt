@@ -138,7 +138,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         behaviour = BottomSheetBehavior.from(bottomSheetLayout)
         tooltips = ToolTipManager(act)
         var snackbarView = snackbar.view
-        snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryLightColor))
+        snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryDarkColor))
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
         idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
@@ -188,8 +188,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onStart() {
         super.onStart()
         if(KEY_STATE == 1 || KEY_STATE == 2 && !fileName.isBlank()){
-            cardViewPager.visibility = View.GONE
-            textFetchedTextView.visibility = View.VISIBLE
             activity.title = fileName
             if(goToTranslatedDisplayMenuItem != null){
                 goToTranslatedDisplayMenuItem!!.isVisible = true
@@ -245,16 +243,18 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         object : Thread(){
             override fun start() {
                 Handler(Looper.getMainLooper()).post {
-                    activity.title = fileName
-                    showSuccessfulMessageDialog()
-                    toolbar.title = getString(R.string.done)
-                    addToToolTipView(getString(R.string.explore_idioms))
-                    translated = true
-                    AppUtil.makeErrorLog("not hello "+translated+ "  "+underlined+ "   "+goToTranslatedDisplayMenuItem)
-                    if(translated && underlined && goToTranslatedDisplayMenuItem != null){
-                        goToTranslatedDisplayMenuItem?.isVisible = true
+                    if(activity != null){
+                        showSuccessfulMessageDialog()
+                        toolbar.title = getString(R.string.done)
+                        addToToolTipView(getString(R.string.explore_idioms))
+                        translated = true
+                        AppUtil.makeErrorLog("not hello "+translated+ "  "+underlined+ "   "+goToTranslatedDisplayMenuItem)
+                        if(translated && underlined && goToTranslatedDisplayMenuItem != null){
+                            goToTranslatedDisplayMenuItem?.isVisible = true
 
+                        }
                     }
+
                 }
             }
         }.start()
@@ -527,6 +527,17 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         dialog.setTargetFragment(this, 1)
         dialog.show(fragmentManager, EmptyResultDialogFragment::class.java.simpleName)
 
+    }
+
+    override fun onErrorTranslating() {
+        if(activity != null){
+            Completable.create {
+                AppUtil.showSnackbar(activity,AppUtil.SNACKY_ERROR,getString(R.string.error_check_your_connection))
+                tooltips!!.closeActiveTooltip()
+                tooltips!!.closeTooltipImmediately()
+                toolbar.title = "Check Your Connection"
+            }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(AndroidSchedulers.mainThread()).subscribe()
+        }
     }
 
 }

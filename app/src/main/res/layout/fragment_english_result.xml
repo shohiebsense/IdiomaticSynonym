@@ -12,7 +12,8 @@
         android:id="@+id/layout_constraint"
         android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true">
 
 
 
@@ -52,8 +53,7 @@
                 android:id="@+id/englishTextsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/RootPadding"
-                android:text="@string/hello_blank_fragment" />
+                style="@style/RootPadding" />
 
         </ScrollView>
     </android.support.constraint.ConstraintLayout>

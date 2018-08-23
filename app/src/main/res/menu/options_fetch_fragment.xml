@@ -10,7 +10,7 @@
     <item
         android:id="@+id/translateTextMenuOptions"
         android:title="@string/menuOptions_translate"
-        android:icon="@drawable/ic_g_translate_white_18dp"
+        android:icon="@drawable/translate_white_24x24"
         app:showAsAction="always"/>
     <item
         android:id="@+id/settingMenuOption"

@@ -159,6 +159,7 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
+            (activity as DetailActivity).isFromEnglishFragment = true
             if(isFirstTimeClickedIdiom){
                 currentClickedIdiomTranslation = word
                 isFirstTimeClickedIdiom = false
@@ -386,6 +387,13 @@ class EnglishResultFragment : Fragment(), BookmarkDataEmitter.SingleBookmarkCall
                 }
             }
         }.start()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun dismissEvent(e : EnglishFragmentErrorEvent){
+        if(mPopupWindow != null){
+            mPopupWindow?.dismiss()
+        }
     }
 
     fun toggleBottomSheet(){

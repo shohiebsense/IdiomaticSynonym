@@ -103,8 +103,6 @@ public class FileHelper {
 
             return outFile.getAbsolutePath();
         } catch (IOException ioe) {
-            String toastMsg = context.getString(R.string.save_as_failure, ioe.getMessage());
-            Toast.makeText(context, toastMsg, Toast.LENGTH_LONG).show();
         } finally {
             Helper.closeQuietly(in);
             Helper.closeQuietly(out);
@@ -126,8 +124,7 @@ public class FileHelper {
 
             return out.toString();
         } catch (IOException ioe) {
-            String toastMsg = context.getString(R.string.load_failure_2, ioe.getMessage());
-            Toast.makeText(context, toastMsg, Toast.LENGTH_LONG).show();
+
         } finally {
             Helper.closeQuietly(in);
             Helper.closeQuietly(out);

@@ -56,7 +56,7 @@ public class CircleAnimationUtil {
     }
 
     public CircleAnimationUtil attachActivity(Activity activity) {
-        mContextReference = new WeakReference<Activity>(activity);
+        mContextReference = new WeakReference<>(activity);
         return this;
     }
 
@@ -166,13 +166,10 @@ public class CircleAnimationUtil {
                 float y = mImageView.getY();
                 float x = mImageView.getX();
                 Animator translatorX = ObjectAnimator.ofFloat(mImageView, View.X, x, x + dest[0] - (src[0] + (originX * scaleFactor - 2 * endRadius * scaleFactor) / 2) + (0.5f * destX - scaleFactor * endRadius));
-                translatorX.setInterpolator(new TimeInterpolator() {
-                    @Override
-                    public float getInterpolation(float input) {
+                translatorX.setInterpolator(input -> {
 //                        return (float) (Math.sin((0.5f * input) * Math.PI));
-                        //-(1-x)^2+1
-                        return (float) (-Math.pow(input - 1, 2) + 1f);
-                    }
+                    //-(1-x)^2+1
+                    return (float) (-Math.pow(input - 1, 2) + 1f);
                 });
                 Animator translatorY = ObjectAnimator.ofFloat(mImageView, View.Y, y, y + dest[1] - (src[1] + (originY * scaleFactor - 2 * endRadius * scaleFactor) / 2) + (0.5f * destY - scaleFactor * endRadius));
                 translatorY.setInterpolator(new LinearInterpolator());

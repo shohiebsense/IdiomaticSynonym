@@ -14,7 +14,6 @@
 package com.shohiebsense.idiomaticsynonym.obsoletes;
 
 import android.content.Intent;
-import android.content.IntentSender;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -34,9 +33,6 @@ import com.google.android.gms.drive.query.SearchableField;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;*/
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * An abstract activity that handles authorization and connection to the Drive services.

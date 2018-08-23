@@ -20,14 +20,8 @@
         android:theme="@style/BaseTheme.Red"
         tools:replace="android:allowBackup">
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/API_TRANSLATE_KEY" />
-        <meta-data
             android:name="CLOUDINARY_URL"
             android:value="cloudinary://@shohiebsense" />
-
-
-
         <activity android:name=".view.activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,15 +29,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity" />
+        <activity android:name="com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
         <activity android:name="com.shohiebsense.idiomaticsynonym.view.activity.detail.DetailActivity" />
         <activity android:name=".obsoletes.BookmarkedActivity" />
         <activity android:name=".view.activity.underlining.UnderliningActivity" />
-        <activity android:name=".obsoletes.DriveSignInActivity" />
         <activity
             android:name=".obsoletes.DriveCreateFileActivity"
             android:noHistory="true" />
-        <activity android:name=".obsoletes.DriveOpenFileActivity" />
         <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
         <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
         <activity android:name=".view.activity.editor.ContentEditorActivity" />

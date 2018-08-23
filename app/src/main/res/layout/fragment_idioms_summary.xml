@@ -21,8 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             style="@style/RootPadding"
-            android:visibility="gone"
-            android:text="@string/hello_blank_fragment" />
+            android:visibility="gone" />
 
         <com.leochuan.AutoPlayRecyclerView
             android:id="@+id/idiomsRecyclerView"

@@ -340,7 +340,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.translateTextMenuOptions -> {
-                showInputPageDialog()
+                performFetchingTextDialog()
             }
             R.id.loadPdfMenuOptions -> {
                 loadPdf()
@@ -457,19 +457,18 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
 
 
-    fun showInputPageDialog(){
+    fun performFetchingTextDialog(){
         var dialog = InputDocumentPageDialogFragment.newInstance(pageCount)
         dialog.setTargetFragment(this, 1)
         dialog.show(fragmentManager, InputDocumentPageDialogFragment::class.java.simpleName)
 
     }
 
-    override fun onConfirmedProcess(from: Int, to : Int) {
+    override fun performFetchingText(from: Int, to : Int) {
         if(activity != null){
             AppUtil.showSnackbar(activity as Activity,AppUtil.SNACKY_INFO,getString(R.string.loading),Snacky.LENGTH_INDEFINITE)
         }
         avLoadingIndicatorView.visibility = View.VISIBLE
-       // CustomSnackbar.make(view!!.parent as ViewGroup, CustomSnackbar.LENGTH_INDEFINITE).setText("Please Wait ").hidePermissionAction().show()
         pdfDisplayerService.fetchText(from,to)
     }
 

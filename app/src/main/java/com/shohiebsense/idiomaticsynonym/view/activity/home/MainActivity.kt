@@ -133,8 +133,8 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
 
 
         val item1 = AHBottomNavigationItem(R.string.text_navigation_do_translation, R.drawable.ic_note_add_white_24dp, R.color.soft_white)
-        val item2 = AHBottomNavigationItem(R.string.text_navigation_history, R.drawable.ic_subject_white_18dp, R.color.soft_white)
-        val item3 = AHBottomNavigationItem(R.string.text_navigation_statistics, R.drawable.ic_subject_white_18dp, R.color.soft_white)
+        val item2 = AHBottomNavigationItem(R.string.text_navigation_history, R.drawable.baseline_subject_white_24, R.color.soft_white)
+        val item3 = AHBottomNavigationItem(R.string.text_navigation_statistics, R.drawable.baseline_filter_none_white_24, R.color.soft_white)
        // item1.setColorRes(R.color.soft_white)
         bottomNavigation.isTranslucentNavigationEnabled = false
         bottomNavigation.addItem(item1)
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity(), BookmarkDataEmitter.BookmarksCallback,
                 }
                 when(position){
                     0 -> toolbar.title = getString(R.string.app_name) + " - "+ getString(R.string.find_idioms)
-                    1 -> toolbar.title = getString(R.string.histories)
+                    1 -> toolbar.title = getString(R.string.text_navigation_history)
                     2 -> toolbar.title = getString(R.string.statistics)
                 }
                 mainViewPager.currentItem = position

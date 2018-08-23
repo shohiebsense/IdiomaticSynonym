@@ -217,7 +217,7 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
         db.select(Bookmark.TABLE_BOOKMARK_ENGLISH).whereArgs(Bookmark.COLUMN_ID +"="+ id).limit(1).exec {
             //val parser = getBookmarkedEnglishParser()
             val parser = rowParser { id: Int, fileName: String, english: String, indonesian: String , idioms : String, indexedSentences : String, uploadId : String ->
-                AppUtil.makeDebugLog("the englishhh is  "+english )
+                //AppUtil.makeDebugLog("the englishhh is index of  "+english.indexOf("Rois en")  )
                 //englishText = english
                 BookmarkedEnglish(id,fileName,english,indonesian,idioms,indexedSentences,uploadId)
             }

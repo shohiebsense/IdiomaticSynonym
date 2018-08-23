@@ -18,7 +18,6 @@ import com.shohiebsense.idiomaticsynonym.R;
  */
 
 public class CustomSnackbar extends BaseTransientBottomBar {
-    private final WindowManager windowManager;
 
 
     /**
@@ -30,7 +29,7 @@ public class CustomSnackbar extends BaseTransientBottomBar {
      */
     protected CustomSnackbar(@NonNull ViewGroup parent, @NonNull View content, @NonNull ContentViewCallback contentViewCallback) {
         super(parent, content, contentViewCallback);
-        this.windowManager = (WindowManager) parent.getContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) parent.getContext().getSystemService(Context.WINDOW_SERVICE);
     }
 
     public static CustomSnackbar make(ViewGroup parent, int duration) {

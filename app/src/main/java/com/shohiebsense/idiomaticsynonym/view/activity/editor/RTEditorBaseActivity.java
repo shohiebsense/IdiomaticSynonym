@@ -35,11 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RTEditorBaseActivity extends AppCompatActivity {
 
-    protected static final String PARAM_SUBJECT = "subject";
-    protected static final String PARAM_MESSAGE = "message";
-    protected static final String PARAM_SIGNATURE = "signature";
-    protected static final String PARAM_DARK_THEME = "useDarkTheme";
-    protected static final String PARAM_SPLIT_TOOLBAR = "splitToolbar";
     private static final String PARAM_REQUEST_IN_PROCESS = "requestPermissionsInProcess";
 
     private static final int REQUEST_PERMISSION = 3;
@@ -74,7 +69,7 @@ public class RTEditorBaseActivity extends AppCompatActivity {
 
     @TargetApi(Build.VERSION_CODES.M)
     private boolean checkPermissionInternal(String[] permissions) {
-        ArrayList<String> requestPerms = new ArrayList<String>();
+        ArrayList<String> requestPerms = new ArrayList<>();
         for (String permission : permissions) {
             if (checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED && !userDeniedPermissionAfterRationale(permission)) {
                 requestPerms.add(permission);
@@ -111,21 +106,15 @@ public class RTEditorBaseActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.permission_denied)
                     .setMessage(promptResId)
-                    .setPositiveButton(R.string.permission_deny, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try { dialog.dismiss(); } catch (Exception ignore) { }
-                            setUserDeniedPermissionAfterRationale(permission);
-                            mRequestPermissionsInProcess.set(false);
-                        }
+                    .setPositiveButton(R.string.permission_deny, (dialog, which) -> {
+                        try { dialog.dismiss(); } catch (Exception ignore) { }
+                        setUserDeniedPermissionAfterRationale(permission);
+                        mRequestPermissionsInProcess.set(false);
                     })
-                    .setNegativeButton(R.string.permission_retry, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try { dialog.dismiss(); } catch (Exception ignore) { }
-                            mRequestPermissionsInProcess.set(false);
-                            checkPermissions(new String[]{permission});
-                        }
+                    .setNegativeButton(R.string.permission_retry, (dialog, which) -> {
+                        try { dialog.dismiss(); } catch (Exception ignore) { }
+                        mRequestPermissionsInProcess.set(false);
+                        checkPermissions(new String[]{permission});
                     })
                     .show();
         }

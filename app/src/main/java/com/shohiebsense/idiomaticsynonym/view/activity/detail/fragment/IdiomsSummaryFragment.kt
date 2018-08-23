@@ -176,7 +176,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
         Observable.just(AppUtil.getListOfIdioms((activity as DetailActivity).bookmark.idioms))
         .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()) .subscribe {
             if(it.isEmpty()){
-                emptyTextView.text = "Empty"
+                emptyTextView.text = getString(R.string.empty)
             }
             idioms.clear()
             idioms.addAll(it)
@@ -196,7 +196,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
             idiomsRecyclerView.layoutManager = LinearLayoutManager(context)
             idiomsRecyclerView.adapter = MyIndexedSentenceListRecyclerViewAdapter(indexedSentences, mListener)
             if(indexedSentences.isEmpty()){
-                emptyTextView.text = "Empty"
+                emptyTextView.text = getString(R.string.empty)
             }
             it.onComplete()
         }.subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).subscribe()

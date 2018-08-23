@@ -22,8 +22,14 @@ import java.util.regex.Pattern
  * Created by Shohiebsense on 25/05/2018
  */
 
-class WordClickableService(var context : Context, var wordClickableCallback: WordClickableCallback) {
-    var translateService : YandexTranslationService? = YandexTranslationService(context)
+class WordClickableService(var context : Context, var wordClickableCallback: WordClickableCallback) : YandexTranslationService.YandexListener {
+    override fun onGetTranslation(text: String) {
+
+    }
+
+
+
+    var translateService : YandexTranslationService? = YandexTranslationService(context,this)
     lateinit var currentIdiom : String
     var isReady = true
 
@@ -188,6 +194,10 @@ class WordClickableService(var context : Context, var wordClickableCallback: Wor
         else{
             wordClickableCallback.onErrorShowing()
         }
+    }
+
+    override fun onErrorConnection() {
+        wordClickableCallback.onErrorShowing()
     }
 
 }

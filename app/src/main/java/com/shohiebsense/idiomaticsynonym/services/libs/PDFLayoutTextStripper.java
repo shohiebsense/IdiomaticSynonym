@@ -70,7 +70,7 @@ public class PDFLayoutTextStripper extends PDFTextStripper {
   public PDFLayoutTextStripper() throws IOException {
     super();
     this.previousTextPosition = null;
-    this.textLineList = new ArrayList<TextLine>();
+    this.textLineList = new ArrayList<>();
   }
 
   @Override
@@ -80,7 +80,7 @@ public class PDFLayoutTextStripper extends PDFTextStripper {
       this.setCurrentPageWidth(pageRectangle.getWidth());
       super.processPage(page);
       this.previousTextPosition = null;
-      this.textLineList = new ArrayList<TextLine>();
+      this.textLineList = new ArrayList<>();
     }
   }
 
@@ -135,7 +135,7 @@ public class PDFLayoutTextStripper extends PDFTextStripper {
   }
 
   private void iterateThroughTextList(Iterator<TextPosition> textIterator) {
-    List<TextPosition> textPositionList = new ArrayList<TextPosition>();
+    List<TextPosition> textPositionList = new ArrayList<>();
 
     while ( textIterator.hasNext() ) {
       TextPosition textPosition = (TextPosition)textIterator.next();
@@ -384,10 +384,6 @@ class CharacterFactory {
 
   private TextPosition previousTextPosition;
   private boolean firstCharacterOfLineFound;
-  private boolean isCharacterPartOfPreviousWord;
-  private boolean isFirstCharacterOfAWord;
-  private boolean isCharacterAtTheBeginningOfNewLine;
-  private boolean isCharacterCloseToPreviousWord;
 
   public CharacterFactory(boolean firstCharacterOfLineFound) {
     this.firstCharacterOfLineFound = firstCharacterOfLineFound;
@@ -395,10 +391,10 @@ class CharacterFactory {
 
   public Character createCharacterFromTextPosition(final TextPosition textPosition, final TextPosition previousTextPosition) {
     this.setPreviousTextPosition(previousTextPosition);
-    this.isCharacterPartOfPreviousWord = this.isCharacterPartOfPreviousWord(textPosition);
-    this.isFirstCharacterOfAWord = this.isFirstCharacterOfAWord(textPosition);
-    this.isCharacterAtTheBeginningOfNewLine = this.isCharacterAtTheBeginningOfNewLine(textPosition);
-    this.isCharacterCloseToPreviousWord = this.isCharacterCloseToPreviousWord(textPosition);
+    boolean isCharacterPartOfPreviousWord = this.isCharacterPartOfPreviousWord(textPosition);
+    boolean isFirstCharacterOfAWord = this.isFirstCharacterOfAWord(textPosition);
+    boolean isCharacterAtTheBeginningOfNewLine = this.isCharacterAtTheBeginningOfNewLine(textPosition);
+    boolean isCharacterCloseToPreviousWord = this.isCharacterCloseToPreviousWord(textPosition);
     char character = this.getCharacterFromTextPosition(textPosition);
     int index = (int)textPosition.getX() / PDFLayoutTextStripper.OUTPUT_SPACE_CHARACTER_WIDTH_IN_PT;
     return new Character(character,
