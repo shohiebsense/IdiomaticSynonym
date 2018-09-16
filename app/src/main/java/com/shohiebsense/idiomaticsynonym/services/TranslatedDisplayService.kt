@@ -11,7 +11,6 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
-import com.eaio.stringsearch.BNDMCI
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.TranslatedDisplayCallback
@@ -33,7 +32,7 @@ class TranslatedDisplayService(val context: Context , val callback: TranslatedDi
 
     fun extract(){
 
-        var bndmci = BNDMCI()
+       // var bndmci = BNDMCI()
         var spannableStrings : CharSequence = ""
         AppUtil.makeDebugLog("STILL THE SIZEE IS "+idiomList)
 
@@ -76,7 +75,7 @@ class TranslatedDisplayService(val context: Context , val callback: TranslatedDi
            for(idioms in idiomList){
                AppUtil.makeDebugLog("spannablestrings spans  "+idioms)
 
-               if(sentence.contains(idioms,true)){
+            /*   if(sentence.contains(idioms,true)){
                    var index = bndmci.searchString(sentence, idioms)
                    var spaceIndex = BNDMCI().searchString(sentence, " ")
                    if(index != -1 && spaceIndex != -1){
@@ -84,7 +83,7 @@ class TranslatedDisplayService(val context: Context , val callback: TranslatedDi
 
                    }
 
-               }
+               }*/
 
            }
            //finish

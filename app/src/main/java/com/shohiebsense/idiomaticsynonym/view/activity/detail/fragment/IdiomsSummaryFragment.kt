@@ -164,7 +164,7 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
 
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
-        idiomRecyclerView.layoutManager = GridLayoutManager(activity,2)
+        idiomRecyclerView.layoutManager = cardLayoutManager
         idiomRecyclerView.adapter = idiomMeaningFastAdapter
         onShowingBottomSheet()
 
