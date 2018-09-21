@@ -20,9 +20,6 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
-import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.view.activity.setting.SettingsActivity
 import com.shohiebsense.idiomaticsynonym.view.activity.underlining.UnderliningActivity
@@ -68,7 +65,7 @@ import kotlin.collections.ArrayList
  * 2. Langsung query db, cocokin
  */
 
-class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListener, PdfDisplayCallback,  InputDocumentPageDialogFragment.InputDialogListener {
+class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDialogFragment.InputDialogListener {
 
 
 
@@ -84,23 +81,7 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
 
     //REACTIVEXKAN
-    override fun loadComplete(nbPages: Int) {
-        var TAG = "shohiebsense"
-        val meta = uploadPdfView.getDocumentMeta()
-        //printBookmarksTree(uploadTextView.getTableOfContents(), "-")
-        Log.e(TAG, "title = " + meta.title)
-        Log.e(TAG, "author = " + meta.author)
-        Log.e(TAG, "subject = " + meta.subject)
-        Log.e(TAG, "keywords = " + meta.keywords)
-        Log.e(TAG, "creator = " + meta.creator)
-        Log.e(TAG, "creationDate = " + meta.creationDate)
-        Log.e(TAG, "modDate = " + meta.modDate)
-    }
 
-
-    override fun onPageChanged(page: Int, pageCount: Int) {
-
-    }
 
     //gettext from pdf turn into reactivex
 
@@ -167,7 +148,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
     override fun onStart() {
         super.onStart()
-        resumeLoadedPdf()
     }
 
     var currentPage = 0
@@ -212,7 +192,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         when(ERROR_NO){
             PdfDisplayerService.ERROR_LOAD -> {
                 pdfLoadMenuItem.setVisible(true)
-                uploadPdfView.visibility = View.GONE
                 //fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
                 fragmentFetchCardViewPager.visibility = View.VISIBLE
                 return;
@@ -222,7 +201,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
                 pdfLoadMenuItem.setVisible(false)
                 //fragmentFetchViewPagerIndicator.visibility = View.GONE
                 fragmentFetchCardViewPager.visibility = View.GONE
-                uploadPdfView.visibility = View.VISIBLE
                 return
             }
 
@@ -238,33 +216,12 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         //AppUtil.makeDebugLog("factCardView toggled ")
 
         when(STATUS){
-            PdfDisplayerService.STATUS_LOADING -> {
-               // AppUtil.makeDebugLog("status loadinggg ")
-                textFetchedScrollView.visibility = View.GONE
-                uploadPdfView.visibility = View.VISIBLE
-                fragmentFetchCardViewPager.visibility = View.GONE
-                //fragmentFetchViewPagerIndicator.visibility = View.GONE
-                avLoadingIndicatorView.visibility = View.VISIBLE
 
-            }
-            PdfDisplayerService.STATUS_LOADED -> {
-                textFetchedScrollView.visibility = View.GONE
-                uploadPdfView.visibility = View.VISIBLE
-            }
-            PdfDisplayerService.STATUS_RESUMED -> {
-                textFetchedScrollView.visibility = View.GONE
-                uploadPdfView.visibility = View.VISIBLE
-                pdfLoadMenuItem.isVisible = true
-                activity!!.title = getString(R.string.app_name)
-                activity!!.invalidateOptionsMenu()
-            }
             PdfDisplayerService.STATUS_FETCHED -> {
-                uploadPdfView.visibility = View.GONE
                 textFetchedScrollView.visibility = View.VISIBLE
             }
             PdfDisplayerService.STATUS_INIT -> {
                 textFetchedScrollView.visibility = View.GONE
-                uploadPdfView.visibility = View.VISIBLE
                 fragmentFetchCardViewPager.visibility = View.VISIBLE
                 //fragmentFetchViewPagerIndicator.visibility = View.VISIBLE
                 avLoadingIndicatorView.visibility = View.GONE
@@ -305,10 +262,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
             -1 -> {
                 pdfLoadMenuItem.setVisible(true)
                 translateMenuItem.setVisible(false)
-            }
-            PdfDisplayerService.STATUS_LOADED -> {
-                pdfLoadMenuItem.setVisible(false)
-                translateMenuItem.setVisible(true)
             }
         }
 
@@ -376,34 +329,16 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onLoadingPdf() {
-        toggleViews(PdfDisplayerService.STATUS_LOADING)
     }
 
-    fun resumeLoadedPdf(){
-        if(!fileName.isBlank()){
-            //onFinishedLoadingPdf(pdfFilePath)
-            VIEW_STATE= PdfDisplayerService.STATUS_RESUMED
-            toggleViews(VIEW_STATE)
-        }
-    }
 
     override fun onFinishedLoadingPdf() {
         pdfLoadMenuItem.setVisible(false)
-        uploadPdfView.fromFile(pdfDisplayerService.pdfFile)
-                .defaultPage(pageNumber)
-                .onPageChange(this)
-                .enableAnnotationRendering(true)
-                .onLoad(this)
-                .scrollHandle(DefaultScrollHandle(activity))
-                .spacing(10) // in dp
-                .load()
         pageCount = pdfDisplayerService.loadedDocument.numberOfPages
-        AppUtil.makeErrorLog("page count "+pageCount)
-        VIEW_STATE = PdfDisplayerService.STATUS_LOADED
-        toggleViews(VIEW_STATE)
         translateMenuItem.setVisible(true)
         this.fileName = AppUtil.getOnlyFileName(pdfDisplayerService.pdfFile.name)
         activity!!.invalidateOptionsMenu()
+        performFetchingTextDialog()
     }
 
     fun saveStateFileName(fileString: String) : Bundle {
@@ -412,7 +347,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
     }
 
     override fun onProcess() {
-        toggleViews(PdfDisplayerService.STATUS_LOADING)
 
     }
 
@@ -430,7 +364,6 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
         this.fetchedText = fetchedText as ArrayList<String>
         //AppUtil.makeDebugLog("casting mutable to arraylist succeed with size "+this.fetchedText.size)
         // textFetchedTextView.setText(extractedPdfTexts)
-        toggleViews(PdfDisplayerService.STATUS_FETCHED)
         var intent = Intent(activity, UnderliningActivity::class.java)
         var fetchedTextAsList = ArrayList<String>()
         intent.putExtra(UnderliningActivity.INTENT_MESSAGE, UnderliningFragment::class.java.name)
@@ -458,7 +391,8 @@ class PdfDisplayFragment : Fragment(), OnPageChangeListener, OnLoadCompleteListe
 
 
     fun performFetchingTextDialog(){
-        var dialog = InputDocumentPageDialogFragment.newInstance(pageCount)
+
+        var dialog = InputDocumentPageDialogFragment.newInstance(pageCount, pdfDisplayerService.pdfFile.name)
         dialog.setTargetFragment(this, 1)
         dialog.show(fragmentManager, InputDocumentPageDialogFragment::class.java.simpleName)
 

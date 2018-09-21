@@ -27,7 +27,6 @@ class YandexTranslationService(val context: Context, val listener: YandexListene
     val JSON = MediaType.parse("application/json; charset=utf-8")
 
     fun translateExe(word : String): Response? {
-        AppUtil.makeErrorLog("trabskate executedd")
         var client = OkHttpClient.Builder().retryOnConnectionFailure(true)
                 .build()
         var request = Request.Builder()

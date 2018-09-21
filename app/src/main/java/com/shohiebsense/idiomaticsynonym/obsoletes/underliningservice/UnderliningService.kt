@@ -168,53 +168,7 @@ class UnderliningService constructor (val context: Context) {
                 spannableStringBuilder.setSpan(clickableSpan, matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 flagged = true
             }
-          //  indexedSentences.add(TempIndexedSentence(spannableStringBuilder,flagged))
         }
-
-
-
-       /* MaxentTagger.tokenizeText(StringReader(extractedPdfString)).forEachIndexed { sentenceIndex, sentenceChar ->
-            var sentence = Sentence.listToString(sentenceChar)
-            var spannableStringBuilder = SpannableStringBuilder(sentence)
-            var flagged = false
-            for(combinedIdiom in list){
-
-
-                var index = sentence.toLowerCase().indexOf(combinedIdiom.idiom+"\\b",0,true)
-
-                //  val matcher =Pattern.compile( combinedIdiom.idiom+"\\b",Pattern.CASE_INSENSITIVE).matcher(sentence)
-                // if(matcher.find()){
-                if(index >= 0){
-                    // AppUtil.makeDebugLog("ketemu lhooo "+matcher.start()+"  " + matcher.end() + combinedIdiom + "  -  "+sentence)
-                    //spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                    //idiomList!!.put(index,meaning)
-                    var lastIndex = index+combinedIdiom.idiom.length-1
-                    spannableStringBuilder.setSpan(StyleSpan(Typeface.BOLD), index, index+combinedIdiom.idiom.length-1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                    spannableStringBuilder.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, R.color.secondaryDarkColor)), index, lastIndex, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                    val clickableSpan = object : ClickableSpan() {
-                        override fun onClick(widget: View?) {
-                            if (combinedIdiom.meaning.isBlank()) {
-                                getIdiomTranslate(combinedIdiom.idiom,sentenceIndex, sentence)
-                                return
-                            }
-                            underliningCallback.onClickedIdiomText(combinedIdiom.meaning)
-                            //
-                        }
-                        override fun updateDrawState(ds: TextPaint) {
-                            super.updateDrawState(ds)
-                            ds.isUnderlineText = false
-                        }
-                    }
-                    spannableStringBuilder.setSpan(clickableSpan, index, lastIndex, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                    //bookmarkDataEmitter.insertIndexedSentence(sentenceIndex, sentence, combinedIdiom.idiom)
-                    flagged = true
-                    //indices.add(sentenceIndex)
-                    //underliningCombinedIdiomProcess(index,spannableStringBuilder,combinedIdiom,sentenceIndex,sentence)
-                    //indices.add(sentenceIndex)
-                }
-            }
-            indexedSentences.add(TempIndexedSentence(spannableStringBuilder,flagged))
-        }*/
         return indexedSentences
     }
 

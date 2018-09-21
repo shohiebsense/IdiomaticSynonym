@@ -29,12 +29,9 @@ class PdfDisplayerService(val context: Context) : PDFTextStripper() {
 
 
     companion object {
-        val STATUS_LOADING = 5
         val ERROR_LOAD = 0
         val ERROR_FETCH = 1
         val ERROR_TRANSLATE = 2
-        val STATUS_LOADED = 10
-        val STATUS_RESUMED = 11
         val STATUS_FETCHED = 9
         val STATUS_TRANSLATED = 8
         val STATUS_FETCHED_DB = 7

@@ -21,11 +21,13 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
 
     companion object {
         val PAGE_COUNT = "pagecount"
+        val FILE_NAME = "filename"
 
-        fun newInstance(pageCount : Int) : InputDocumentPageDialogFragment{
+        fun newInstance(pageCount : Int, fileName : String) : InputDocumentPageDialogFragment{
             val fragment = InputDocumentPageDialogFragment()
             var args = Bundle()
             args.putInt(PAGE_COUNT,pageCount)
+            args.putString(FILE_NAME,fileName)
             fragment.arguments = args
             return fragment
         }
@@ -51,12 +53,14 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
     lateinit var toEditText: EditText
     lateinit var okButton : Button
     var pageCount = 0
+    var fileName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.SherifDialogTheme)
         if (arguments != null) {
             pageCount = arguments!!.getInt(InputDocumentPageDialogFragment.PAGE_COUNT)
+            fileName = arguments!!.getString(InputDocumentPageDialogFragment.FILE_NAME)
         }
     }
 
@@ -76,7 +80,7 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var builder = AlertDialog.Builder(activity)
-        builder.setTitle(R.string.dialog_title_find_idioms)
+        builder.setTitle(fileName)
         listener = targetFragment as InputDialogListener
         var view = activity!!.layoutInflater.inflate(R.layout.fragment_dialog_input_document_page, null)
         fromEditText = view.inputNumberFromEditText
@@ -84,7 +88,7 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
         okButton = view.okButton
         fromEditText.addTextChangedListener(this)
         toEditText.addTextChangedListener(this)
-        view.limitNumberPageTextView.append("\n"+getString(R.string.number_of_pages) + ":"+pageCount)
+        view.limitNumberPageTextView.append("\n"+getString(R.string.number_of_pages) + ": "+pageCount)
         view.okButton.setOnClickListener{
             var from = fromEditText.text.toString().toInt()
             var to = toEditText.text.toString().toInt()
@@ -95,10 +99,7 @@ class InputDocumentPageDialogFragment : DialogFragment(), TextWatcher {
 
         builder.setView(view)
         // inputNumberOfPagesEditText.filters = arrayOf(InputFilterPageMax())
-
         builder.setMessage(R.string.dialog_message_input_page)
         return builder.create()
     }
-
-
 }

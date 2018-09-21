@@ -105,7 +105,7 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="update_translation">Update Translation</string>
     <string name="open_doc">Open doc</string>
     <string name="process_finding_idiom">Finding Idiom(s) …</string>
-    <string name="translating">Translating</string>
+    <string name="translating">Translating Page %d/%d</string>
     <string name="done">Done</string>
     <string name="explore_idioms">You can explore synonym of each idiom based on founded idioms</string>
     <string name="request_permission" translatable="false">REQUEST PERMISSION</string>

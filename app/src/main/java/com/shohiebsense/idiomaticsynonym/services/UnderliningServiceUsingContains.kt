@@ -66,11 +66,13 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
     lateinit var fileName : String
     lateinit var  extractedPdfTexts : CharSequence
     var sentenceIndex : StringBuilder = StringBuilder("")
+    var numberofPages = 0
 
     init {
         /* extractedPdfTexts.toObservable().observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe {
             englishSentences = AppUtil.splitParagraphsIntoSentences(it)
         }*/
+
     }
 /*
        JADI GINI, BAWA HASIL IDIOM DALAM BENTUK ARRAYLIST
@@ -89,6 +91,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
     constructor(activity: Context, extractedPdfText: CharSequence) : this(activity){
         this.extractedPdfTexts = extractedPdfText
         sentences = AppUtil.splitParagraphsIntoSentences(extractedPdfTexts.toString())
+        numberofPages = sentences.lastIndex
     }
 
 
@@ -97,6 +100,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
         this.underliningCallback = underliningCallback
         this.fileName = fileName
         sentences = AppUtil.splitParagraphsIntoSentences(extractedPdfTexts.toString())
+        numberofPages = sentences.lastIndex
     }
 
     constructor(activity: Context, extractedPdfText:String, underliningCallback: UnderliningCallback,fileName : String) : this(activity){
@@ -164,10 +168,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
             AppUtil.makeErrorLog("check your connection")
         }
         val singleCombinedIdiom = HashSet<String>()
-        //MaxentTagger.tokenizeText(StringReader(extractedPdfTexts.toString())).forEachIndexed { sentenceIndex, sentenceChar ->
         AppUtil.makeDebugLog("tokenize finished")
-        // var sentence = Sentence.listToString(sentenceChar)
-        // var spannableStringBuilder = SpannableStringBuilder(sentence)
         val idioms = StringBuilder()
         for(i in combinedIdioms.indices){
             if(extractedPdfTexts.contains(combinedIdioms[i].idiom) && singleCombinedIdiom.add(combinedIdioms[i].idiom)) {
@@ -178,8 +179,6 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                 var boolFinal = afterLastIndex.isLetter()
                 if(index >= 0 && (!bool && !boolFinal)){
                     idioms.append(combinedIdioms[i].idiom+", ")
-                    //AppUtil.makeErrorLog("this is worddd "+ combinedIdioms[i].idiom + " last char "+ afterLastIndex+ "  prevChar "+ prevIndex)
-                    //AppUtil.makeErrorLog("this is real word "+ combinedIdioms[i].idiom + " last char "+ extractedPdfTexts[index] + "  prevChar "+ extractedPdfTexts[index+combinedIdiom.idiom.length])
                     sentenceIndex.append("$i, ")
 
                     val link = Link(Pattern.compile("[\\s]"+ combinedIdioms[i].idiom+"[^a-z]",Pattern.CASE_INSENSITIVE))
@@ -264,6 +263,7 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
           "unkniwn "+it.message
         } .subscribeBy  (
                 onNext = {
+                    underliningCallback.onTranslatingText(index)
                     extractTranslation(it,index)
                     index++
                 },

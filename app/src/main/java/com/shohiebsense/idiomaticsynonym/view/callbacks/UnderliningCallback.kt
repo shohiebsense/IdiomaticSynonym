@@ -2,7 +2,6 @@ package com.shohiebsense.idiomaticsynonym.view.callbacks
 
 import android.text.SpannableStringBuilder
 import com.klinker.android.link_builder.Link
-import com.shohiebsense.idiomaticsynonym.model.TempIndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
 import kotlin.collections.ArrayList
@@ -11,7 +10,7 @@ import kotlin.collections.ArrayList
  * Created by Shohiebsense on 21/10/2017.
  */
 interface UnderliningCallback {
-    fun onTranslatingText()
+    fun onTranslatingText(index: Int)
     fun onErrorTranslatingText(error : String)
     fun onFinishedTranslatingText()
     fun onFetchingDatabase()

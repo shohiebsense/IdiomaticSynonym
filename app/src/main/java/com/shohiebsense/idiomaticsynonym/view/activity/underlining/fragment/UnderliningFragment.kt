@@ -43,7 +43,9 @@ import com.shohiebsense.idiomaticsynonym.view.items.IndexedSentenceViewHolder
 import com.spyhunter99.supertooltips.ToolTip
 import com.spyhunter99.supertooltips.ToolTipManager
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_underlining.*
 import kotlinx.android.synthetic.main.fragment_underlining2.*
 import org.jetbrains.anko.act
@@ -73,10 +75,10 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     lateinit var idiomMeaningItemAdapter: ItemAdapter<IdiomMeaningItem>
     lateinit var indexedSentenceItemAdapter : ItemAdapter<IndexedSentenceItem>
     lateinit var behaviour : BottomSheetBehavior<View>
-    lateinit var snackbar : CustomSnackbar
     var translated = false
     var underlined = false
     var currentClickedWord = ""
+    lateinit var snackbar : CustomSnackbar
 
     lateinit var kategloService : KategloService
 
@@ -132,13 +134,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         toolbar = (activity as UnderliningActivity).toolbar
         toolbar.title = getString(R.string.process_finding_idiom)
         activity.invalidateOptionsMenu()
-        snackbar = CustomSnackbar.make(rootCoordinatorLayout,
-                CustomSnackbar.LENGTH_INDEFINITE).setText("pleasewait ").hidePermissionAction()
-        snackbar.show()
+
         behaviour = BottomSheetBehavior.from(bottomSheetLayout)
         tooltips = ToolTipManager(act)
-        var snackbarView = snackbar.view
-        snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryDarkColor))
         idiomMeaningItemAdapter = ItemAdapter.items()
         idiomMeaningFastAdapter = FastAdapter.with(idiomMeaningItemAdapter)
         idiomRecyclerView.layoutManager = GridLayoutManager(activity,2) as GridLayoutManager
@@ -155,6 +153,12 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
                 TranslatedAndUntranslatedDataEmitter(activity,fetcCallback).getAll()
             }
         }
+
+        snackbar = CustomSnackbar.make(rootCoordinatorLayout,
+                CustomSnackbar.LENGTH_INDEFINITE).setText("please wait ").hidePermissionAction()
+        var snackbarView = snackbar.view
+        snackbarView.setBackgroundColor(ContextCompat.getColor(act, R.color.secondaryDarkColor))
+        snackbar.show()
     }
 
 
@@ -235,8 +239,11 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         }
     }
 
-    override fun onTranslatingText() {
-        // toggleViews(UnderliningService.STATUS_LOADING)
+    override fun onTranslatingText(index: Int) {
+        Observable.just{
+            toolbar.title = getString(R.string.done)
+            String.format(getString(R.string.translating),index,underliningService.numberofPages)
+        }.subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).subscribe()
     }
     override fun onFinishedTranslatingText() {
 
@@ -539,5 +546,6 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
             }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(AndroidSchedulers.mainThread()).subscribe()
         }
     }
+
 
 }

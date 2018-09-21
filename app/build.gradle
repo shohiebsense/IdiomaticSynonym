@@ -62,7 +62,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
     implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
     implementation 'com.tom_roush:pdfbox-android:1.8.10.0'
-    implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'
     implementation 'com.github.matecode:Snacky:1.0.3'
     implementation 'com.github.angads25:filepicker:1.1.1'
     implementation 'com.wang.avi:library:2.1.3'

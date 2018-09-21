@@ -64,7 +64,7 @@
     <string name="update_translation">Update Translasi</string>
     <string name="open_doc">Buka Dokumen</string>
     <string name="process_finding_idiom">Pencarian Idiom…</string>
-    <string name="translating">Mentranslasi</string>
+    <string name="translating">Mentranslasi Halaman %d/%d</string>
     <string name="done">Selesai</string>
     <string name="explore_idioms">Anda bisa menjelajahi idiom dan padanan kata yang terkait</string>
     <string name="empty">Kosong</string>
