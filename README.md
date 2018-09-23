@@ -10,7 +10,7 @@ Showcase Brief
 ....
 
 
-Libraries being used:
+Libraries used:
 
 a. Views:
 - Android Supports: appcompat, design, support, constraintlayout, cardview
