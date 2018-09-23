@@ -15,8 +15,8 @@ import java.io.FileOutputStream
  * Created by Shohiebsense on 13/10/2017.
  */
 
-class IdiomDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context, Idioms.NAME, null, 1){
-    private var dbPath: String = context.getDatabasePath(Idioms.NAME).toString()
+class IdiomDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context, IdiomsDbConstants.NAME, null, 1){
+    private var dbPath: String = context.getDatabasePath(IdiomsDbConstants.NAME).toString()
 
 
     private val currentVersion = 1
@@ -68,7 +68,7 @@ class IdiomDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context, Id
     fun copy(){
         AppUtil.makeDebugLog("copyyingg ")
         try {
-            val file = File(context.getDatabasePath(Idioms.NAME).getParent())
+            val file = File(context.getDatabasePath(IdiomsDbConstants.NAME).getParent())
             file.mkdir()
 
             //            String zipFilePath = context.getDatabasePath("quran.zip").toString();
@@ -76,7 +76,7 @@ class IdiomDbHelper(val context : Context) : ManagedSQLiteOpenHelper(context, Id
             //            ZipInputStream zis = new ZipInputStream(context.getResources().openRawResource(R.raw.quran));
             //            zis.getNextEntry();
 
-            val zis = context.assets.open(Idioms.NAME)
+            val zis = context.assets.open(IdiomsDbConstants.NAME)
             AppUtil.makeDebugLog("Db path" + dbPath)
             FileOutputStream(dbPath).use { out ->
                 zis.use {

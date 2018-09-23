@@ -166,7 +166,4 @@ class TranslatedAndUntranslatedDataEmitter(val context: Context) {
         }
 
     }
-
-
-
 }

@@ -1,7 +1,7 @@
 package com.shohiebsense.idiomaticsynonym.services.dbs
 
 import android.database.sqlite.SQLiteDatabase
-import com.shohiebsense.idiomaticsynonym.db.Idioms
+import com.shohiebsense.idiomaticsynonym.db.IdiomsDbConstants
 import com.shohiebsense.idiomaticsynonym.model.CombinedIdiom
 import com.shohiebsense.idiomaticsynonym.model.TranslatedIdiom
 import com.shohiebsense.idiomaticsynonym.model.UntranslatedIdiom
@@ -26,14 +26,14 @@ class QueryService(val db : SQLiteDatabase)  {
         val idioms = arrayListOf<CombinedIdiom>()
         Observable.create<ArrayList<CombinedIdiom>> {
             e->
-            db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM).groupBy(Idioms.COLUMN_IDIOM)
+            db.select(IdiomsDbConstants.TABLE_UNTRANSLATED_IDIOM).columns(IdiomsDbConstants.COLUMN_IDIOM).groupBy(IdiomsDbConstants.COLUMN_IDIOM)
                     .exec {
                         val parser = getCombinedIdiomParser()
                         asSequence().forEach {
                             row -> idioms.add(parser.parseRow(row))
                         }
                     }
-            db.select(Idioms.TABLE_TRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM,Idioms.COLUMN_MEANING)
+            db.select(IdiomsDbConstants.TABLE_TRANSLATED_IDIOM).columns(IdiomsDbConstants.COLUMN_IDIOM,IdiomsDbConstants.COLUMN_MEANING)
                     .exec {
                         val parser = getCombinedIdiomTranslatedParser()
                         asSequence().forEach {
@@ -55,7 +55,7 @@ class QueryService(val db : SQLiteDatabase)  {
         val idioms = arrayListOf<CombinedIdiom>()
         Observable.create<ArrayList<CombinedIdiom>> {
             e->
-            db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM)
+            db.select(IdiomsDbConstants.TABLE_UNTRANSLATED_IDIOM).columns(IdiomsDbConstants.COLUMN_IDIOM)
                     .exec {
                         val parser = getCombinedIdiomParser()
                         asSequence().forEach {
@@ -64,7 +64,7 @@ class QueryService(val db : SQLiteDatabase)  {
 
                     }
 
-            db.select(Idioms.TABLE_TRANSLATED_IDIOM).columns(Idioms.COLUMN_IDIOM,Idioms.COLUMN_MEANING)
+            db.select(IdiomsDbConstants.TABLE_TRANSLATED_IDIOM).columns(IdiomsDbConstants.COLUMN_IDIOM,IdiomsDbConstants.COLUMN_MEANING)
                     .exec {
                         val parser = getCombinedIdiomParser()
                         asSequence().forEach {
@@ -91,7 +91,7 @@ class QueryService(val db : SQLiteDatabase)  {
         Observable.create<ArrayList<TranslatedIdiom>>{
             e->
             AppUtil.makeDebugLog("mmasukk sini")
-            db.select(Idioms.TABLE_TRANSLATED_IDIOM).columns(Idioms.COLUMN_ID,Idioms.COLUMN_IDIOM, Idioms.COLUMN_MEANING)
+            db.select(IdiomsDbConstants.TABLE_TRANSLATED_IDIOM).columns(IdiomsDbConstants.COLUMN_ID,IdiomsDbConstants.COLUMN_IDIOM, IdiomsDbConstants.COLUMN_MEANING)
                     .exec {
                         val parser = getTranslatedIidomParser()
                       /*  parseList(object : MapRowParser<List<TranslatedIdiom>> {
@@ -155,7 +155,7 @@ class QueryService(val db : SQLiteDatabase)  {
         Observable.create<ArrayList<UntranslatedIdiom>>{
             e->
             AppUtil.makeDebugLog("masuk untranslated")
-            db.select(Idioms.TABLE_UNTRANSLATED_IDIOM).columns(Idioms.COLUMN_ID,Idioms.COLUMN_IDIOM).groupBy(Idioms.COLUMN_IDIOM)
+            db.select(IdiomsDbConstants.TABLE_UNTRANSLATED_IDIOM).columns(IdiomsDbConstants.COLUMN_ID,IdiomsDbConstants.COLUMN_IDIOM).groupBy(IdiomsDbConstants.COLUMN_IDIOM)
                     .exec {
                         val parser = getUntranslatedIdiomParser()
                         /*  parseList(object : MapRowParser<List<TranslatedIdiom>> {
@@ -187,7 +187,7 @@ class QueryService(val db : SQLiteDatabase)  {
         AppUtil.makeErrorLog("harusnya masuk sini lahhh ")
         Observable.create<TranslatedIdiom>{
             e->
-            db.select(Idioms.TABLE_TRANSLATED_IDIOM).whereArgs(Idioms.COLUMN_IDIOM +"=\'"+idiom+"\'")
+            db.select(IdiomsDbConstants.TABLE_TRANSLATED_IDIOM).whereArgs(IdiomsDbConstants.COLUMN_IDIOM +"=\'"+idiom+"\'")
                     .exec {
                         val parser = getTranslatedIdiomParser()
                         //asSequence().forEach { row -> AppUtil.makeDebugLog ("wuttt "+ parser.parseRow(row).idiom) }

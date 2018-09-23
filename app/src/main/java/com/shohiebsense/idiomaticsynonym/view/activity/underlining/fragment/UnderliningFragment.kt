@@ -34,7 +34,6 @@ import com.shohiebsense.idiomaticsynonym.services.kateglo.KategloService
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
 import com.shohiebsense.idiomaticsynonym.view.callbacks.DatabaseCallback
 import com.shohiebsense.idiomaticsynonym.view.callbacks.UnderliningCallback
-import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.custom.EmptyResultDialogFragment
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
@@ -200,10 +199,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     }
 
     fun initAdapter(){
-        var adapter = CardPagerAdapter(activity)
-        cardViewPager.adapter = adapter
-        // fragmentFetchViewPagerIndicator.addOnPageChangeListener(mOnPageChangeListener)
-        adapter.notifyDataSetChanged()
+
 
     }
 

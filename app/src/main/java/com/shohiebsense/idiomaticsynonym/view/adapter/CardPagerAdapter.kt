@@ -22,8 +22,6 @@ import com.wang.avi.AVLoadingIndicatorView
 import android.os.Build.VERSION
 
 
-
-
 /**
  * Created by Shohiebsense on 25/11/2017.
  */

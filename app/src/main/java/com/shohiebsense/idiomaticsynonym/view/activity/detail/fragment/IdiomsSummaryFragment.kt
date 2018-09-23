@@ -23,8 +23,8 @@ import com.shohiebsense.idiomaticsynonym.model.IndexedSentence
 import com.shohiebsense.idiomaticsynonym.model.event.*
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomAdapter
-import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomCardAdapter
+import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomSumarryAdapter
+import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomCardSumarryAdapter
 import com.shohiebsense.idiomaticsynonym.view.adapter.MyIndexedSentenceListRecyclerViewAdapter
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningItem
 import com.shohiebsense.idiomaticsynonym.view.items.IdiomMeaningViewHolder
@@ -180,8 +180,8 @@ class IdiomsSummaryFragment : Fragment(), BookmarkDataEmitter.IndexedSentenceCal
             }
             idioms.clear()
             idioms.addAll(it)
-            val adapter = IdiomAdapter(idioms,mListener)
-            val cardAdapter = IdiomCardAdapter(idioms,mListener)
+            val adapter = IdiomSumarryAdapter(idioms,mListener)
+            val cardAdapter = IdiomCardSumarryAdapter(idioms,mListener)
             idiomsRecyclerView.layoutManager = layoutManager
             idiomsRecyclerView.adapter = adapter
             idiomsCardRecyclerView.layoutManager = staggeredGridLayoutManager

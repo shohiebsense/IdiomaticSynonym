@@ -14,22 +14,23 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.*
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.shohiebsense.idiomaticsynonym.R
+import com.shohiebsense.idiomaticsynonym.model.Idiom
 import com.shohiebsense.idiomaticsynonym.view.activity.setting.SettingsActivity
 import com.shohiebsense.idiomaticsynonym.view.activity.underlining.UnderliningActivity
 import com.shohiebsense.idiomaticsynonym.services.PdfDisplayerService
 import com.shohiebsense.idiomaticsynonym.services.emitter.BookmarkDataEmitter
+import com.shohiebsense.idiomaticsynonym.services.emitter.IdiomEmitter
 import com.shohiebsense.idiomaticsynonym.utils.AppUtil
-import com.shohiebsense.idiomaticsynonym.view.adapter.CardPagerAdapter
 import com.shohiebsense.idiomaticsynonym.view.custom.InputDocumentPageDialogFragment
 import com.shohiebsense.idiomaticsynonym.view.callbacks.PdfDisplayCallback
 import com.shohiebsense.idiomaticsynonym.view.activity.underlining.fragment.UnderliningFragment
+import com.shohiebsense.idiomaticsynonym.view.adapter.IdiomAdapter
 import de.mateware.snacky.Snacky
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -65,9 +66,7 @@ import kotlin.collections.ArrayList
  * 2. Langsung query db, cocokin
  */
 
-class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDialogFragment.InputDialogListener {
-
-
+class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDialogFragment.InputDialogListener, IdiomEmitter.IdiomCallback {
 
     lateinit var fetchedText : ArrayList<String>
     lateinit var transitionsContainer : ViewGroup
@@ -76,6 +75,7 @@ class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDia
     var VIEW_STATE = -1
 
     val ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 1
+    var idiomsize = 0
 
 
 
@@ -97,15 +97,24 @@ class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDia
 
     lateinit var translateMenuItem : MenuItem
     lateinit var pdfLoadMenuItem: MenuItem
-
+    lateinit var emitter : IdiomEmitter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //AppUtil.makeErrorLog("sizee sampe fetched translatedIdiom "+ TranslatedAndUntranslatedDataEmitter.translatedIdiomList.size )
-        //AppUtil.makeErrorLog("sizee sampe fetched UNTRANSLATED "+ TranslatedAndUntranslatedDataEmitter.untranslatedIdiomList.size )
         setHasOptionsMenu(true)
         pdfDisplayerService = PdfDisplayerService(context!!, this).init()
+        emitter = IdiomEmitter(context!!,this)
+        AppUtil.makeErrorLog("get all idioms")
     }
+
+    override fun onFetched(idioms: ArrayList<Idiom>) {
+        var adapter = IdiomAdapter(activity!!,idioms)
+        fragmentFetchCardViewPager.adapter = adapter
+        performAutomaticSlide()
+        idiomsize = idioms.size
+    }
+
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -139,11 +148,9 @@ class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDia
 
         }
         onTouchTextViewFunctionality()
-        var adapter = CardPagerAdapter(activity!!)
-        fragmentFetchCardViewPager.adapter = adapter
-        adapter.notifyDataSetChanged()
-        performAutomaticSlide()
+
         AppUtil.makeDebugLog("lhoo ke sini kan?")
+        emitter.getAllIdioms()
     }
 
     override fun onStart() {
@@ -159,7 +166,7 @@ class PdfDisplayFragment : Fragment(), PdfDisplayCallback,  InputDocumentPageDia
     fun performAutomaticSlide(){
         var handler = Handler()
         var slideRunnable = Runnable {
-            if (currentPage == 15 -1){
+            if (currentPage == idiomsize - 1){
                 currentPage = 0
             }
             if(fragmentFetchCardViewPager != null)
