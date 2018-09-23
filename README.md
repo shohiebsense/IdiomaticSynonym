@@ -11,6 +11,7 @@ Showcase Brief
 
 
 Libraries being used:
+
 a. Views:
 - Android Supports: appcompat, design, support, constraintlayout, cardview
 - Snacky
