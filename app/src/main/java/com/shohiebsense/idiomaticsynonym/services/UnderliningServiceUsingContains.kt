@@ -350,13 +350,13 @@ class UnderliningServiceUsingContains constructor (val context: Context) : Yande
                                 Observable.just(isNextCharacterValid(i,index,combinedIdioms)).subscribeBy (
                                     onNext = {nextText ->
                                         if(index >= 0 && (nextText)){
-                                            AppUtil.makeErrorLog("dapatt "+combinedIdioms[i].idiom)
+                                            //AppUtil.makeErrorLog("dapatt "+combinedIdioms[i].idiom)
                                             idioms.append(combinedIdioms[i].idiom+", ")
                                         }
                                     },
                                     onError =  {
                                         if(index >= 0){
-                                            AppUtil.makeErrorLog("dapatt by onError"+combinedIdioms[i].idiom)
+                                            //AppUtil.makeErrorLog("dapatt by onError"+combinedIdioms[i].idiom)
                                             idioms.append(combinedIdioms[i].idiom+", ")
                                         }
                                     },

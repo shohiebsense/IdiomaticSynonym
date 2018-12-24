@@ -385,11 +385,12 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
 
     fun toggleBottomSheet(){
+        AppUtil.makeDebugLog("state bottom "+behaviour.state)
         if(behaviour.state != BottomSheetBehavior.STATE_EXPANDED){
             behaviour.state = BottomSheetBehavior.STATE_EXPANDED
         }
         else{
-            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            behaviour.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
@@ -432,7 +433,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
 
     var idiomItemClickedListener = object : IdiomMeaningViewHolder.IdiomItemClickListener {
         override fun onIdiomItemClick(word: String) {
-            behaviour.state = BottomSheetBehavior.STATE_HIDDEN
+            behaviour.state = BottomSheetBehavior.STATE_COLLAPSED
             currentClickedWord = word
             kategloService.getSynonymStrings(word,this@UnderliningFragment)
         }
@@ -441,6 +442,7 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
     override fun onGetSynonyms(synonyms: MutableList<String>) {
         synonyms.add(0,currentClickedWord)
         if(synonyms.isEmpty()){
+            AppUtil.showSnackbar(activity,AppUtil.SNACKY_ERROR,getString(R.string.error_synonyms_empty))
             return;
         }
         var items = mutableListOf<IdiomMeaningItem>()
@@ -477,9 +479,9 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         }
         builder.setTitle(getString(R.string.dialog_title_find_idioms))
                 .setMessage(getString(R.string.dialog_message_find_idioms))
-                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, which ->
-                    // continue with delete
-                })
+                .setPositiveButton(android.R.string.yes) { dialog, which ->
+                    // continue wit h delete
+                }
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show()
     }
@@ -543,5 +545,8 @@ class UnderliningFragment : Fragment(), UnderliningCallback, BookmarkDataEmitter
         }
     }
 
+    override fun onGetSynonymsError(message: String) {
+        AppUtil.showSnackbar(activity,AppUtil.SNACKY_ERROR,message)
+    }
 
 }

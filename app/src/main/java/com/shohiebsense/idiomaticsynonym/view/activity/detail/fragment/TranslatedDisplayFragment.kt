@@ -185,12 +185,12 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         translatedTextView.setText(decoratedSpan)
     }
 
-    override fun onGetSynonyms(syonyms: MutableList<String>) {
+    override fun onGetSynonyms(synonyms: MutableList<String>) {
         var items = mutableListOf<KategloItem>()
 
         AppUtil.makeDebugLog("komplittt ")
         itemAdapter.clear()
-        for (synonym in syonyms) {
+        for (synonym in synonyms) {
             items.add(KategloItem().withText(ChosenSynonymWord(synonym, index),this@TranslatedDisplayFragment))
 
         }
@@ -227,5 +227,10 @@ class TranslatedDisplayFragment : Fragment(), KategloViewHolder.KategloItemListe
         super.onDestroy()
         EventBus.getDefault().unregister(this)
     }
+
+    override fun onGetSynonymsError(message: String) {
+
+    }
+
 
 }

@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
+import timber.log.Timber
 import java.util.concurrent.Callable
 
 
@@ -27,6 +28,7 @@ class KategloService {
         // var gson = GsonBuilder().registerTypeAdapter(Synonym::class.java, Deserializer()).create()
 
         var client = OkHttpClient()
+        AppUtil.makeErrorLog("url to respond: $BASE_URL\"format=json&phrase=\"$word")
         var request = Request.Builder()
                 .url(BASE_URL + "format=json&phrase="+word)
                 .get()
@@ -93,6 +95,8 @@ class KategloService {
                     val relationObject = kategloObject.getJSONObject("relation")
                     val sumOfRelation = relationObject.getInt("relation_reverse")
 
+                    Timber.e("shohiebsenseee : response $relationObject")
+
                     val synonymObject = relationObject.getJSONObject("s")
 
 
@@ -114,6 +118,7 @@ class KategloService {
             }
 
             override fun onSubscribe(d: Disposable) {
+                AppUtil.makeErrorLog("subscribe the kateglo")
             }
 
             override fun onComplete() {
@@ -122,13 +127,14 @@ class KategloService {
             }
 
             override fun onError(e: Throwable) {
-
+                AppUtil.makeErrorLog("error: ${e.message}")
+                if(e.message != null){
+                    listener.onGetSynonymsError(e.message!!)
+                }
             }
 
         }
         Observable.fromCallable(callable).subscribeOn(Schedulers.io()).unsubscribeOn(AndroidSchedulers.mainThread()).subscribe(observer)
-        //Observable.fromCallable(callable).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer)
-
         AppUtil.makeDebugLog(" sizee "+syonymWordObjects.size)
         return syonymWordObjects
 
@@ -136,7 +142,8 @@ class KategloService {
 
 
     interface KategloListener {
-        fun onGetSynonyms(syonyms : MutableList<String>)
+        fun onGetSynonyms(synonyms : MutableList<String>)
+        fun onGetSynonymsError(message : String)
     }
 
 

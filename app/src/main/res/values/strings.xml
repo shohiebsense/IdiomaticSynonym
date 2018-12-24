@@ -116,6 +116,7 @@ Porta nascetur, nisl congue, in in urna, in est dui amet leo faucibus. Massa ves
     <string name="indonesian">Indonesian</string>
     <string name="number_of_pages">Number of pages</string>
     <string name="error_check_your_connection">Error : Check Your Connection</string>
+    <string name="error_synonyms_empty">Synonyms Are Empty</string>
     <string name="remind_me_later">Remind me later</string>
     <string name="pre_requisition_message">Now go to history and choose the item</string>
     <string name="idiom_guidance">You can click the highlited words/phrases and click the meaning to show the synonym if there\'s any</string>

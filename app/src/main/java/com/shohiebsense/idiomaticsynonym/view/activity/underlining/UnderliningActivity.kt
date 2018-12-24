@@ -9,9 +9,11 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.shohiebsense.idiomaticsynonym.view.activity.underlining.fragment.UnderliningFragment
 import android.content.DialogInterface
+import com.shohiebsense.idiomaticsynonym.BuildConfig
 import com.shohiebsense.idiomaticsynonym.R
 import com.shohiebsense.idiomaticsynonym.view.activity.home.MainActivity
 import kotlinx.android.synthetic.main.activity_underlining.*
+import timber.log.Timber
 
 
 class UnderliningActivity : AppCompatActivity() {
@@ -37,10 +39,17 @@ class UnderliningActivity : AppCompatActivity() {
         }
     }
 
+    fun initTimber(){
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree());
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_underlining)
 
+        initTimber()
         setSupportActionBar(toolbar)
         toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_white_24)
         toolbar.setNavigationOnClickListener { onBackPressed() }
@@ -51,16 +60,6 @@ class UnderliningActivity : AppCompatActivity() {
 
     fun navigateFragment(){
         var intentMessage : String? = intent.getStringExtra(INTENT_MESSAGE)
-
-        //DEVELOPMENT
-        //if(intentMessage == null) intentMessage = UnderliningFragment::class.java.name
-
-        //development only
-        //if(intentMessage == null) intentMessage = TranslatedDisplayFragment::class.java.name
-
-
-        // var clazz : Class<*> = Class.forName(INTENT_MESSAGE)
-        //var ctor : Constructor<*> =  clazz.getConstructor(String::class.java)
 
         fragment = Class.forName(intentMessage).getConstructor().newInstance() as Fragment
         if(intentMessage.equals(UnderliningFragment::class.java.name)){
@@ -89,15 +88,6 @@ class UnderliningActivity : AppCompatActivity() {
 
     fun replaceFragment(fragment : Fragment, frameId : Int){
         fragmentManager.inTransaction { replace(frameId, fragment) }
-    }
-
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onBackPressed() {

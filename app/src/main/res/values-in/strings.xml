@@ -99,4 +99,7 @@
     <string name="options">Pilihan</string>
     <string name="navigation_drawer_open">open navigation</string>
     <string name="navigation_drawer_close">close navigation</string>
+
+    <string name="error_synonyms_empty">Sinonim Tidak Ditemukan</string>
+
 </resources>

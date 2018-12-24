@@ -154,13 +154,13 @@ class DetailActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransa
         kategloService.getSynonymStrings(word,this)
     }
 
-    override fun onGetSynonyms(syonyms: MutableList<String>) {
-        syonyms.add(0,currentSelectedWord)
+    override fun onGetSynonyms(synonyms: MutableList<String>) {
+        synonyms.add(0,currentSelectedWord)
         if(isFromEnglishFragment){
-            EventBus.getDefault().post(EnglishFragmentSynonymEvent(syonyms))
+            EventBus.getDefault().post(EnglishFragmentSynonymEvent(synonyms))
         }
         else{
-            EventBus.getDefault().post(IdiomsSummarySynonymEvent(syonyms))
+            EventBus.getDefault().post(IdiomsSummarySynonymEvent(synonyms))
         }
     }
 
@@ -367,6 +367,10 @@ class DetailActivity : AppCompatActivity(), BookmarkQueryService.CompletedTransa
     }
 
     override fun onError(message: String) {
+        AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,message)
+    }
+
+    override fun onGetSynonymsError(message: String) {
         AppUtil.showSnackbar(this,AppUtil.SNACKY_ERROR,message)
     }
 
