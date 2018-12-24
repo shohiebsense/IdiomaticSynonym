@@ -317,7 +317,6 @@ class BookmarkQueryService(val db : SQLiteDatabase) {
                 val parser = getBookmarkedEnglishParser()
                 asSequence().forEach {
                     row ->
-                    Log.e("shohiebsenseee ",""+ parser.parseRow(row).id + " " +parser.parseRow(row).fileName + " " + parser.parseRow(row).idioms )
                     bookmarkedEnglishes.add(parser.parseRow(row))
                 }
                 if(!e.isDisposed){
